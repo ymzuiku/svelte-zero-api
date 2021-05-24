@@ -27,7 +27,6 @@ import zeroApiWatch from "svelte-zero-api/watch";
 // 2. add watch by change watchPath files, auto create api files:
 zeroApiWatch({
   watchPath: "./src/routes/api",
-  baseUrl: "/api",
   // exportName: 'api',
   // dirName: 'zero-api',
 });

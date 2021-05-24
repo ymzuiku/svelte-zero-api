@@ -1,14 +1,12 @@
 import preprocess from 'svelte-preprocess';
 
 // 1. import
-import zeroApiWatch from "svelte-zero-api/watch";
+import zeroApiWatch from 'svelte-zero-api/watch';
 
 // 2. add watch by change watchPath files, auto create api files:
 zeroApiWatch({
-  watchPath: "./src/routes/api",
-  baseUrl: "/api",
+	watchPath: './src/routes/api'
 });
-
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

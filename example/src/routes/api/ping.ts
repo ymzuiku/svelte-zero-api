@@ -1,11 +1,13 @@
 interface Post {
-  body: {
-    pong: string;
-  }
+	body: {
+		pong: string;
+	};
 }
 
-export function post({body}:Post){
-  return {body:{
-    thePong: body.pong
-  }}
+export function post({ body }: Post) {
+	return {
+		body: {
+			thePong: body.pong
+		}
+	};
 }

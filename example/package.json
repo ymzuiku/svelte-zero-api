@@ -24,6 +24,6 @@
   },
   "type": "module",
   "dependencies": {
-    "svelte-zero-api": "^0.1.9"
+    "svelte-zero-api": "^0.1.17"
   }
 }
