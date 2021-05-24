@@ -63,6 +63,8 @@ at `src/routes/index.svelte`
 
 ## API Example
 
+at `src/routes/api/hello.ts`
+
 ```ts
 import type { QueryGet } from "svelte-zero-api";
 
