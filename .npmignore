@@ -5,8 +5,8 @@ pnpm-lock.yaml
 rollup.config.js
 tsconfig.json
 example
+**/example
 
-example
 lib
 tslint.json
 tsconfig.json
