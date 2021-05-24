@@ -6,6 +6,8 @@ rollup.config.js
 tsconfig.json
 example
 **/example
+**/.svelte-kit
+.svelte-kit
 
 lib
 tslint.json
