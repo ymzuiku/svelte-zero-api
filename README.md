@@ -1,5 +1,7 @@
 # svelte-zero-api
 
+[My broken english video](https://youtu.be/v2cYbPPfGNo)
+
 > Only 2kb size (not gzip)
 
 Easy change [Svelte Kit](https://kit.svelte.dev/) APIs to `Zero API`.
