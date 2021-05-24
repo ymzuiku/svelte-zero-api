@@ -1,10 +1,10 @@
 # svelte-zero-api
 
+> Only 2kb size (not gzip)
+
 Easy change [Svelte Kit](https://kit.svelte.dev/) APIs to `Zero API`.
 
 Use [Svelte Kit](https://kit.svelte.dev/) APIs like call function, support Typescript.
-
-> Only 1kb size before gzip in font-ent client
 
 ![](./zero-api.png)
 
@@ -16,7 +16,7 @@ npm install svelte-zero-api
 
 ## Getting started
 
-1 - Edit `svelte.config.js`, example:
+### 1. Edit `svelte.config.js`, example:
 
 ```js
 import preprocess from "svelte-preprocess";
@@ -38,7 +38,7 @@ export default {
 };
 ```
 
-2 - Use all api function in front-end pages, example:
+### 2. Use all api function in front-end pages, example:
 
 at `src/routes/index.svelte`
 
