@@ -2,8 +2,6 @@ import fs from "fs";
 import { resolve, parse } from "path";
 const cwd = process.cwd();
 
-let ignoreWatch = false;
-
 function fixName(p = "") {
   p = p.replace(/\./g, "");
   p = p.replace(/-/g, "_");
@@ -70,7 +68,6 @@ function updateAPI(realPath = "", dirName) {
   loadDir(realPath, dir);
   const dirText = JSON.stringify(dir).replace(/\"/g, "");
 
-  ignoreWatch = true;
   fs.writeFile(
     resolve(realPath, dirName + "/types.d.ts"),
     makeApiCode(importCode, dirText),
@@ -78,9 +75,6 @@ function updateAPI(realPath = "", dirName) {
       if (err) {
         console.error(err);
       }
-      setTimeout(() => {
-        ignoreWatch = false;
-      });
     }
   );
 }
@@ -109,8 +103,8 @@ export default function ({ watchPath, dirName, exportName }) {
   }
 
   updateAPI(realPath, dirName);
-  fs.watch(realPath, (event, file) => {
-    if (!ignoreWatch) {
+  fs.watch(realPath, { recursive: true }, (event, file) => {
+    if (!/zero-api\//.test(file)) {
       updateAPI(realPath, dirName);
     }
   });

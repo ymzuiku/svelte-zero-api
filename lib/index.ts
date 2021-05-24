@@ -1,4 +1,4 @@
-import querystring from "querystring-number";
+import qs from "querystring-number";
 const cache = {} as any;
 
 export interface QueryGet<T extends { query: object }> {
@@ -17,15 +17,10 @@ interface IOptions extends RequestInit {
 }
 
 export const baseApi = async (url: string, obj?: any, opt: IOptions = {}) => {
-  fetch;
   let body: any = void 0;
-  let params = "";
-  if (opt.method === "GET") {
-    params = "?" + querystring.stringify(obj);
-  } else {
-    body = obj && JSON.stringify(obj);
-  }
-  const realUrl = (opt.baseUrl || "") + url + params;
+
+  body = obj && JSON.stringify(obj);
+  const realUrl = (opt.baseUrl || "") + url;
   const cacheKey = realUrl + body;
 
   // 若开启缓存，默认在内存中保留3分钟
@@ -99,8 +94,9 @@ const makeMethod = async (
   }
   let url = "/" + name;
   if (query) {
-    url += "?" + querystring.stringify(query);
+    url += "?" + qs.stringify(query);
   }
+
   return baseApi(url, body, { ...baseOptions, ...options, method });
 };
 
