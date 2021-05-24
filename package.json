@@ -1,0 +1,34 @@
+{
+  "name": "svelte-zero-api",
+  "version": "0.1.2",
+  "main": "es/index.js",
+  "types": "lib/index.ts",
+  "type": "module",
+  "exports": {
+    "./watch": "./watch.js",
+    ".": "./lib/index.ts"
+  },
+  "private": false,
+  "scripts": {
+    "es": "esbuild --define:process.env.NODE_ENV=\\\"production\\\" lib/index.ts --outdir=es --target=es6  --bundle --external:vanilla-ob --external:vanilla-life --format=esm --minify --splitting"
+  },
+  "devDependencies": {
+    "fs-extra": "^9.1.0",
+    "rollup": "^1.24.0",
+    "rollup-plugin-typescript2": "^0.24.3",
+    "rollup-plugin-uglify": "^6.0.3",
+    "tslib": "^2.2.0",
+    "typescript": "^4.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ymzuiku/svelte-zero-api.git"
+  },
+  "bugs": {
+    "url": "git+https://github.com/ymzuiku/svelte-zero-api.git"
+  },
+  "homepage": "git+https://github.com/ymzuiku/svelte-zero-api.git",
+  "dependencies": {
+    "querystring-number": "^1.0.8"
+  }
+}
