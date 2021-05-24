@@ -100,9 +100,9 @@ export const get = async ({ query }: Get & QueryGet<Get>) => {
 };
 ```
 
-How about dont't use style-zero-api/watch?
+## Other
 
-- [read this](./README-not-watch.md)
+- [How about dont't use style-zero-api/watch?](./README-not-watch.md)
 
 ---
 
