@@ -1,5 +1,6 @@
 /* eslint-disable */
 // Code generated once, CAN EDIT IT.
+
 import { createZeroApi } from 'svelte-zero-api';
 import type __types from './types';
 
