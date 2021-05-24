@@ -16,14 +16,11 @@ npm install svelte-zero-api
 
 ## Getting started
 
-1 - Edit `svelte.config.js`, add this codes:
-
-> olny add code-start to code-end
+1 - Edit `svelte.config.js`, example:
 
 ```js
 import preprocess from "svelte-preprocess";
 
-// --------------------- code-start
 // 1. import
 import zeroApiWatch from "svelte-zero-api/watch";
 
@@ -34,24 +31,11 @@ zeroApiWatch({
   // exportName: 'api',
   // dirName: 'zero-api',
 });
-// --------------------- code-end
 
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-  // Consult https://github.com/sveltejs/svelte-preprocess
-  // for more information about preprocessors
-  preprocess: [
-    preprocess({
-      postcss: true,
-    }),
-  ],
-  kit: {
-    // hydrate the <div id="svelte"> element in src/app.html
-    target: "#svelte",
-  },
+export default {
+  preprocess: [preprocess({ postcss: true })],
+  kit: { target: "#svelte" },
 };
-
-export default config;
 ```
 
 2 - Use all api function in front-end pages, example:
@@ -78,7 +62,7 @@ at `src/routes/index.svelte`
 
 ```
 
-## How definition get.query in typescript?
+## API Example
 
 ```ts
 import type { QueryGet } from "svelte-zero-api";
@@ -89,9 +73,21 @@ interface Get {
   };
 }
 
-// use `Get & QueryGet<Get>` definition types add query.get(K keyof query);
+interface Post {
+  body: {
+    name: string;
+  };
+}
+
+// Need return a Promise
+// use `Get & QueryGet<Get>` definition types add query.get(...);
 export const get = async ({ query }: Get & QueryGet<Get>) => {
   return { body: { world: "I'm a " + query.get("name") } };
+};
+
+// Need return a Promise
+export const post = async ({ body }: Post) => {
+  return { body: { world: "I'm a " + body.name } };
 };
 ```
 
