@@ -50,11 +50,10 @@ at `src/routes/index.svelte`
 
   // We can use api before onMount, because api function only run in browser.
   // like front end function, and have Typescrit point out.
-  let helloGet = api.hello.get({ query: { name: "Cat" } });
   let helloPost = api.hello.post({ body: { name: "Dog" } });
 </script>
 
-{#await helloFetch}
+{#await helloPost}
 	<div>loading...</div>
 {:then res}
 	<div>{res.body.world}</div>

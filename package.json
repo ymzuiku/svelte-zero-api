@@ -1,6 +1,6 @@
 {
   "name": "svelte-zero-api",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "main": "es/index.js",
   "types": "lib/index.ts",
   "type": "module",
