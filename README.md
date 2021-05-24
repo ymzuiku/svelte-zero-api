@@ -1,8 +1,8 @@
 # svelte-zero-api
 
-Use [Svelte Kit](https://kit.svelte.dev/) APIs like client functions, support Typescript.
-
 Easy change [Svelte Kit](https://kit.svelte.dev/) APIs to `Zero API`.
+
+Use [Svelte Kit](https://kit.svelte.dev/) APIs like call function, support Typescript.
 
 ![](./zero-api.png)
 
