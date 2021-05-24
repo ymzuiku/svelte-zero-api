@@ -4,6 +4,8 @@ Easy change [Svelte Kit](https://kit.svelte.dev/) APIs to `Zero API`.
 
 Use [Svelte Kit](https://kit.svelte.dev/) APIs like call function, support Typescript.
 
+> Only 1kb size before gzip in font-ent client
+
 ![](./zero-api.png)
 
 ## Install

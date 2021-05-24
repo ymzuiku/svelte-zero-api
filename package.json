@@ -1,6 +1,6 @@
 {
   "name": "svelte-zero-api",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "main": "es/index.js",
   "types": "lib/index.ts",
   "type": "module",
@@ -10,7 +10,7 @@
   },
   "private": false,
   "scripts": {
-    "es": "esbuild --define:process.env.NODE_ENV=\\\"production\\\" lib/index.ts --outdir=es --target=es6  --bundle --external:vanilla-ob --external:vanilla-life --format=esm --minify --splitting"
+    "es": "esbuild --define:process.env.NODE_ENV=\\\"production\\\" lib/index.ts --outdir=es --target=es6  --bundle --external:vanilla-ob --external:querystring-number --format=esm --minify --splitting"
   },
   "devDependencies": {
     "fs-extra": "^9.1.0",
