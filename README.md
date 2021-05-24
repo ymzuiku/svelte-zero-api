@@ -97,6 +97,7 @@ export const get = async ({ query }: Get & QueryGet<Get>) => {
 
 ## Other
 
+- [A simple Example](./example/README.md)
 - [How about dont't use style-zero-api/watch?](./README-not-watch.md)
 
 ---

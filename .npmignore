@@ -4,6 +4,7 @@ pnpm-lock.yaml
 .prettierrc
 rollup.config.js
 tsconfig.json
+example
 
 example
 lib
