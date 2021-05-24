@@ -16,30 +16,23 @@ npm install svelte-zero-api
 
 1 - Edit `svelte.config.js`, add this codes:
 
-```js
-import zeroApiWatch from "svelte-zero-api/watch";
-
-// add watch by change watchPath files, auto create api files:
-zeroApiWatch({
-  watchPath: "./src/routes/api",
-  baseUrl: "/api",
-  // exportName: 'api',
-  // createDir: 'zero-api'
-});
-```
-
-The `svelte.config.js` example of end change:
+> olny add code-start to code-end
 
 ```js
 import preprocess from "svelte-preprocess";
+
+// --------------------- code-start
+// 1. import
 import zeroApiWatch from "svelte-zero-api/watch";
 
+// 2. add watch by change watchPath files, auto create api files:
 zeroApiWatch({
   watchPath: "./src/routes/api",
   baseUrl: "/api",
   // exportName: 'api',
-  // createDir: 'zero-api'
+  // dirName: 'zero-api',
 });
+// --------------------- code-end
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
