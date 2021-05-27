@@ -126,7 +126,16 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
             }
             const url = target.___parent;
 
-            target[name] = ({ query, body, options }: any = {}) => {
+            target[name] = (prop: any = {}) => {
+              let { query, body, options } = prop;
+              // 兼容不以 svelte 入参的结构
+              if (!query && !body && !options) {
+                if (method === "GET") {
+                  query = prop;
+                } else {
+                  body = prop;
+                }
+              }
               return makeMethod(method, url, query, body, opt, options);
             };
           }
