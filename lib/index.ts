@@ -8,6 +8,7 @@ export interface QueryGet<T extends { query: object }> {
 }
 
 interface IOptions extends RequestInit {
+  baseData?: any;
   format?: "text" | "json";
   cacheTime?: number;
   baseUrl?: string;
@@ -147,5 +148,5 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
     return obj;
   };
 
-  return createProxy({});
+  return createProxy(opt.baseData || {});
 };
