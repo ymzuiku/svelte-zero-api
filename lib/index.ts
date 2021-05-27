@@ -120,7 +120,10 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
                 : name,
             });
           } else {
-            const method = name.toUpperCase();
+            let method = name.toUpperCase();
+            if (method === "DEL") {
+              method = "DELETE";
+            }
             const url = target.___parent;
 
             target[name] = ({ query, body, options }: any = {}) => {
