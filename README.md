@@ -27,11 +27,7 @@ import preprocess from "svelte-preprocess";
 import zeroApiWatch from "svelte-zero-api/watch";
 
 // 2. add watch by change watchPath files, auto create api files:
-zeroApiWatch({
-  watchPath: "./src/routes/api",
-  // exportName: 'api',
-  // dirName: 'zero-api',
-});
+zeroApiWatch();
 
 export default {
   preprocess: [preprocess({ postcss: true })],
@@ -45,13 +41,13 @@ at `src/routes/index.svelte`
 
 ```ts
 <script lang="ts">
-  import { api } from "./api/zero-api";
+  import { zeroApi } from "../zeroApi";
 
   import Button from "../lib/Button.svelte";
 
   // We can use api before onMount, because api function only run in browser.
   // like front end function, and have Typescrit point out.
-  let helloPost = api.hello.post({ body: { name: "Dog" } });
+  let helloPost = zeroApi.api.hello.post({ body: { name: "Dog" } });
 </script>
 
 {#await helloPost}

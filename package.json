@@ -1,11 +1,12 @@
 {
   "name": "svelte-zero-api",
-  "version": "0.1.26",
+  "version": "0.2.0-beta",
   "main": "es/index.js",
   "types": "lib/index.ts",
   "type": "module",
   "exports": {
     "./watch": "./watch.js",
+    "./onWatch": "./onWach.ts",
     ".": "./lib/index.ts"
   },
   "private": false,
