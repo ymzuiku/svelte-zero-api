@@ -1,6 +1,7 @@
 # svelte-zero-api
 
-[My broken english video](https://youtu.be/v2cYbPPfGNo)
+- [My broken english video](https://youtu.be/v2cYbPPfGNo)
+  - This video is svelte-zero-api@0.1.26; Now svelte-zero-api@0.2.0 is very sample.
 
 > Only 2kb size (not gzip)
 
@@ -27,7 +28,9 @@ import preprocess from "svelte-preprocess";
 import zeroApiWatch from "svelte-zero-api/watch";
 
 // 2. add watch by change watchPath files, auto create api files:
-zeroApiWatch();
+if (process.env.NODE_ENV !== "production") {
+  zeroApiWatch();
+}
 
 export default {
   preprocess: [preprocess({ postcss: true })],
