@@ -92,6 +92,7 @@ export const post = async ({ body }: Post) => {
 
 ## Other
 
+- Svelte Zero API use `Proxy`, So it ignore IE.
 - [A simple Example](./example/README.md)
 - [How about dont't use style-zero-api/watch?](./README-not-watch.md)
 
