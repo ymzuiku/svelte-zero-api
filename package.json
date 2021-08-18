@@ -1,17 +1,16 @@
 {
   "name": "svelte-zero-api",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "es/index.js",
   "types": "lib/index.ts",
-  "type": "module",
   "exports": {
-    "./watch": "./watch.js",
+    "./watch": "./watch.mjs",
     "./onWatch": "./onWach.ts",
     ".": "./lib/index.ts"
   },
   "private": false,
   "scripts": {
-    "es": "esbuild --define:process.env.NODE_ENV=\\\"production\\\" lib/index.ts --outdir=es --target=es6  --bundle --external:vanilla-ob --external:querystring-number --format=esm --minify --splitting"
+    "es": "esbuild --define:process.env.NODE_ENV=\\\"production\\\" lib/index.ts --outdir=es --target=es6  --bundle --external:vanilla-ob --external:querystring-number --format=cjs --minify"
   },
   "devDependencies": {
     "fs-extra": "^9.1.0",
@@ -30,6 +29,7 @@
   },
   "homepage": "git+https://github.com/ymzuiku/svelte-zero-api.git",
   "dependencies": {
+    "chokidar": "^3.5.2",
     "querystring-number": "^1.0.8"
   }
 }

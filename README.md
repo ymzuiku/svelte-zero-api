@@ -46,8 +46,6 @@ at `src/routes/index.svelte`
 <script lang="ts">
   import { zeroApi } from "../zeroApi";
 
-  import Button from "../lib/Button.svelte";
-
   // We can use api before onMount, because api function only run in browser.
   // like front end function, and have Typescrit point out.
   let helloPost = zeroApi.api.hello.post({ body: { name: "Dog" } });

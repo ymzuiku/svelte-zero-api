@@ -1,6 +1,34 @@
+/* c8 ignore start */
+import chokidar from "chokidar";
+import os from "os";
 import fs from "fs";
-import { resolve, parse } from "path";
+import { resolve } from "path";
 const cwd = process.cwd();
+
+export const watch = (uri, event, timeout = 65) => {
+  let lock = false;
+  const fn = async () => {
+    if (lock) {
+      return;
+    }
+    lock = true;
+    await Promise.resolve(event());
+    setTimeout(() => {
+      lock = false;
+    }, timeout);
+  };
+
+  if (/(darwin|window)/.test(os.type().toLowerCase())) {
+    chokidar.watch(uri).on("all", fn);
+    if (fs.statSync(uri).isDirectory()) {
+      fs.watch(uri, { recursive: true }, fn);
+    } else {
+      fs.watchFile(uri, fn);
+    }
+  } else {
+    chokidar.watch(uri).on("all", fn);
+  }
+};
 
 function fixName(p = "") {
   p = p.replace(/\./g, "");
@@ -93,9 +121,12 @@ export default function ({ routes, src } = {}) {
   }
 
   updateAPI(realPath, routes);
-  fs.watch(realPath, { recursive: true }, (event, file) => {
-    if (/\.ts/.test(file)) {
-      updateAPI(realPath, routes);
-    }
+  watch(realPath, () => {
+    updateAPI(realPath, routes);
   });
+  // fs.watch(realPath, { recursive: true }, (event, file) => {
+  //   if (/\.ts/.test(file)) {
+  //     updateAPI(realPath, routes);
+  //   }
+  // });
 }
