@@ -1,4 +1,3 @@
-import qs from "querystring-number";
 const cache = {} as any;
 
 export interface QueryGet<T extends { query: object }> {
@@ -95,7 +94,8 @@ const makeMethod = async (
   }
   let url = "/" + name;
   if (query) {
-    url += "?" + qs.stringify(query);
+	const searchParams = new URLSearchParams(query)
+	url += "?" + searchParams;
   }
 
   return baseApi(url, body, { ...baseOptions, ...options, method });
