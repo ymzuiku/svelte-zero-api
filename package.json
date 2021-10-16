@@ -29,7 +29,6 @@
   },
   "homepage": "git+https://github.com/ymzuiku/svelte-zero-api.git",
   "dependencies": {
-    "chokidar": "^3.5.2",
-    "querystring-number": "^1.0.8"
+    "chokidar": "^3.5.2"
   }
 }
