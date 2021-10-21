@@ -35,6 +35,8 @@ function fixName(p = "") {
 	p = p.replace(/\./g, "");
 	p = p.replace(/-/g, "_");
 	p = p.replace(/\//g, "_");
+	p = p.replace(/\[/g, "_");
+	p = p.replace(/]/g, "_");
 	return p;
 }
 
@@ -45,8 +47,12 @@ function makeApiCode() {
 	import type onWatch from 'sveltekit-zero-api/onWatch'
 
 	const routes = createZeroApi<typeof onWatch>({
+		// The folder we're in. (/src)
+		baseUrl: void 0,
+
 		// GET/POST memo cache time(ms)
 		cacheTime: 0,
+
 		// Deal with Error
 		onError: async (err) => console.error('[API]', err)
 	});
@@ -58,15 +64,13 @@ function makeApiCode() {
 }
 
 const fixRealPath = (inPath = "") => {
-	inPath = inPath.replace(/\.(ts|js)/, ""); // upload.json.ts → upload.json
+	inPath = inPath.slice(0, -3); // upload.json.ts → upload.json
 	// const out = inPath.replace(realPath, watchPath);
 	// console.log(inPath, realPath, watchPath, out);
 	return inPath;
 };
 
 function updateAPI(realPath = "", watchPath) {
-	
-
 	let apiDir = {};
 	let docDir = {};
 	let importCode = "";

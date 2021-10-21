@@ -1,4 +1,4 @@
-import * as StatusCode from 'sveltekit-zero-api/httpcodes'
+import * as StatusCode from '../httpcodes'
 const cache = {} as any;
 
 export interface QueryGet<T extends { query: Record<string, unknown> }> {
@@ -11,7 +11,7 @@ interface IOptions extends RequestInit {
 	baseData?: any;
 	format?: "text" | "json";
 	cacheTime?: number;
-	// baseUrl?: string;
+	baseUrl?: string;
 	// reduce?: (res: any) => Promise<any>;
 	onSuccess?: (res: any) => Promise<any>;
 	onError?: (res: any) => Promise<any>;
@@ -25,10 +25,8 @@ interface FetchProxy extends Partial<Promise<Response>> {
 export const baseApi = (url: string, obj?: any, opt: IOptions = {}) => {
 	let body: any = void 0;
 
-	const baseUrl = void 0;
-
 	body = obj && JSON.stringify(obj);
-	const realUrl = (baseUrl || "") + url;
+	const realUrl = (opt.baseUrl || "") + url;
 	const cacheKey = realUrl + body;
 
 	if (opt.cacheTime) {
