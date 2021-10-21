@@ -9,9 +9,13 @@ This means less coding for you, less potential errors to worry about — and an 
 **Todo**
 - Export API documentation
 
+# FAQ
+- Cannot read property 'success' of undefined
+
+
 ### **Requirements**
 - TypeScript in your SvelteKit project
-[![Before and After](./before_after.png)](https://youtu.be/u1sfchnI0Mo)
+[![Before and After](https://i.imgur.com/QWtxpyb.png)](https://youtu.be/u1sfchnI0Mo)
 
 ## Install
 Add to project → `npm i sveltekit-zero-api -D`
@@ -144,6 +148,11 @@ Frontend → `src/routes/login.svelte`
 <TextInput bind:value={password} this:bind={passwordElement}>
 <button on:click={login}>
 ```
+
+# Q&A
+
+- Cannot read property '*' of undefined
+> Happens if you run the API before component initialization. Read more about component life-cycle: https://svelte.dev/tutorial/onmount
 
 # Other
 
