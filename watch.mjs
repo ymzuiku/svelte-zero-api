@@ -44,14 +44,16 @@ function makeApiCode() {
 	import { createZeroApi } from 'sveltekit-zero-api'
 	import type onWatch from 'sveltekit-zero-api/onWatch'
 
-	const api = createZeroApi<typeof onWatch>({
+	const routes = createZeroApi<typeof onWatch>({
 		// GET/POST memo cache time(ms)
 		cacheTime: 0,
 		// Deal with Error
-		onError: async (err) => console.error('[API]', err);
+		onError: async (err) => console.error('[API]', err)
 	});
 
-	export default api.api
+	//   routes.api   is eqv. to   /src/routes/api
+	//   change it based on your api directory
+	export default routes.api
 	`;
 }
 

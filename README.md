@@ -24,13 +24,58 @@ if (process.env.NODE_ENV !== 'production') {
 **How does it work?**
 > It watches for changes in src/routes, and will write a __temp file that exports the types.
 
+### Pre-setup
+You'll be accessing `/src/api.ts` on the frontend. It's a **really** good idea to add it to Svelte and TS path:
+
+→ `svelte.config.js`
+```js
+import path from 'path'
+...
+const config = {
+	...,
+	kit: {
+		...,
+		vite: {
+			...,
+			resolve: {
+				...,
+				alias: {
+					...,
+					$src: path.resolve('src')
+				}
+			}
+		}
+	}
+}
+```
+
+→ `tsconfig.json`
+```ts
+{
+	...
+	"compilerOptions": {
+		...,
+		"paths": {
+			...,
+			"$src/*": ["src/*"],
+			"$src": ["src"],
+		}
+	}
+}
+```
+
 ## Usage
 This example is without comments. Here's a [Commented Example](./CommentedExample.md)
 
 Backend → `src/routes/api/core/user/login.ts`
 ```ts
 import { Ok, BadRequest, InternalError } from 'sveltekit-zero-api/http'
-import User from '$models/user'
+
+const User = ({email, password}) => (email === 'email' && password === 'password') ? {
+	jwtToken: 'jwtToken',
+	username: 'username',
+	refreshToken: 'refreshToken'
+} : null
 
 interface Put {
 	body: {
@@ -41,7 +86,7 @@ interface Put {
 
 export const put = async ({ body }: Put) => {
 	const { email, password } = body
-	const response = User.login({ email, password })
+	const response = User({ email, password })
 
 	if(!response)
 		return BadRequest({ error: 'Invalid e-mail or password', target: 'email' })
