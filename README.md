@@ -11,6 +11,7 @@ This means less coding for you, less potential errors to worry about — and an 
 
 ### **Requirements**
 - TypeScript in your SvelteKit project
+[![Before and After](./beforeafter.png)](https://youtu.be/u1sfchnI0Mo)
 
 ## Install
 Add to project → `npm i sveltekit-zero-api -D`
