@@ -36,16 +36,11 @@ import path from 'path'
 ...
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	...,
 	kit: {
-		...,
 		/** @type {import('vite').UserConfig} */
 		vite: {
-			...,
 			resolve: {
-				...,
 				alias: {
-					...,
 					$src: path.resolve('src')
 				}
 			}
@@ -57,11 +52,8 @@ const config = {
 → `tsconfig.json`
 ```ts
 {
-	...
 	"compilerOptions": {
-		...,
 		"paths": {
-			...,
 			"$src/*": ["src/*"],
 			"$src": ["src"],
 		}
@@ -121,6 +113,7 @@ Frontend → `src/routes/login.svelte`
 <script lang="ts">
 	import { TextInput } from '$components/inputs'
 	import { refreshtoken, user } from '$components/stores/user'
+	import api from '$src/api'
 	
 	let emailElement
 	let passwordElement

@@ -1,6 +1,6 @@
 {
   "name": "sveltekit-zero-api",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "main": "lib/index.ts",
   "types": "lib/index.ts",
   "exports": {
@@ -11,7 +11,7 @@
 	"./fetchapi": "./fetchapi.ts",
     ".": "./lib/index.ts"
   },
-  "private": true,
+  "private": false,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Refzlund/sveltekit-zero-api.git"
