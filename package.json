@@ -1,11 +1,11 @@
 {
   "name": "sveltekit-zero-api",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "main": "lib/index.ts",
   "types": "lib/index.ts",
   "exports": {
     "./watch": "./watch.mjs",
-    "./onWatch": "./onWach.ts",
+    "./onWatch": "./onWatch.ts",
 	"./http": "./http.ts",
 	"./httpcodes": "./httpcodes.ts",
 	"./fetchapi": "./fetchapi.ts",
