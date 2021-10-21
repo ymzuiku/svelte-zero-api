@@ -9,6 +9,9 @@ This means less coding for you, less potential errors to worry about — and an 
 **Todo**
 - Export API documentation
 
+### **Requirements**
+- TypeScript in your SvelteKit project
+
 ## Install
 Add to project → `npm i sveltekit-zero-api -D`
 
@@ -24,17 +27,19 @@ if (process.env.NODE_ENV !== 'production') {
 **How does it work?**
 > It watches for changes in src/routes, and will write a __temp file that exports the types.
 
-### Pre-setup
-You'll be accessing `/src/api.ts` on the frontend. It's a **really** good idea to add it to Svelte and TS path:
+### **Pre-usage**
+You'll be accessing `/src/api.ts` on the frontend. It's a **really** good idea to add it to Vite-alias and TS-path:
 
 → `svelte.config.js`
 ```js
 import path from 'path'
 ...
+/** @type {import('@sveltejs/kit').Config} */
 const config = {
 	...,
 	kit: {
 		...,
+		/** @type {import('vite').UserConfig} */
 		vite: {
 			...,
 			resolve: {
