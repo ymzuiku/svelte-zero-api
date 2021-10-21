@@ -14,9 +14,9 @@ Add to project → `npm i sveltekit-zero-api -D`
 
 Add to `svelte.config.js`
 ```js
-import watchSvelteKitAPI from 'sveltekit-zero-api/watch.mjs'
+import watchSvelteKitAPI from 'sveltekit-zero-api/watch'
 
-if (!process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV !== 'production') {
 	watchSvelteKitAPI();
 }
 ```
@@ -101,4 +101,4 @@ Frontend → `src/routes/login.svelte`
 
 # Other
 
-Concerned about perforamnce? See [performance benchmarks](./PerformanceBenchmarks.md)
+Concerned about performance? See [performance benchmarks](./PerformanceBenchmarks.md)

@@ -1,6 +1,3 @@
-import type { ObjectId } from 'mongoose';
-import type * as StatusCode from 'sveltekit-zero-api/httpcodes';
-
 /** SvelteKit Response */
 export interface Response {
 	status?: number,
