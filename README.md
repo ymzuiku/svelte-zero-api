@@ -1,101 +1,104 @@
-# svelte-zero-api
+# SvelteKit Zero API
+This project is a fork of [svelte-zero-api](https://github.com/ymzuiku/svelte-zero-api) by [ymzuiku](https://github.com/ymzuiku).
+It has two goals
+1. Two-way communication between front-end and back-end
+2. Self-documenting API that can be exported that includes examples based on in-line comments
 
-- [My broken english video](https://youtu.be/v2cYbPPfGNo)
-  - This video is svelte-zero-api@0.1.26; Now svelte-zero-api@0.2.0 is very sample.
+This means less coding for you, less potential errors to worry about — and an always up-to-date API Documentation.
 
-> Only 2kb size (not gzip)
-
-Easy change [Svelte Kit](https://kit.svelte.dev/) APIs to `Zero API`.
-
-Use [Svelte Kit](https://kit.svelte.dev/) APIs like call function, support Typescript.
-
-![](./zero-api.png)
+**Todo**
+- Export API documentation
 
 ## Install
+Add to project → `npm i sveltekit-zero-api -D`
 
-```bash
-npm install svelte-zero-api
+Add to `svelte.config.js`
+```js
+import watchSvelteKitAPI from 'sveltekit-zero-api/watch.mjs'
+
+if (!process.env.NODE_ENV === 'production') {
+	watchSvelteKitAPI();
+}
 ```
 
-## Getting started
+**How does it work?**
+> It watches for changes in src/routes, and will write a __temp file that exports the types.
 
-### 1. Edit `svelte.config.js`, example:
+## Usage
+This example is without comments. Here's a [Commented Example](./CommentedExample.md)
 
-```js
-import preprocess from "svelte-preprocess";
+Backend → `src/routes/api/core/user/login.ts`
+```ts
+import { Ok, BadRequest, InternalError } from 'sveltekit-zero-api/http'
+import User from '$models/user'
 
-// 1. import
-import zeroApiWatch from "svelte-zero-api/watch";
-
-// 2. add watch by change watchPath files, auto create api files:
-if (process.env.NODE_ENV !== "production") {
-  zeroApiWatch();
+interface Put {
+	body: {
+		email: string,
+		password: string
+	}
 }
 
-export default {
-  preprocess: [preprocess({ postcss: true })],
-  kit: { target: "#svelte" },
-};
+export const put = async ({ body }: Put) => {
+	const { email, password } = body
+	const response = User.login({ email, password })
+
+	if(!response)
+		return BadRequest({ error: 'Invalid e-mail or password', target: 'email' })
+	
+	const { jwtToken, username, refreshToken } = response
+
+	if(jwtToken) {
+		return Ok({
+			headers: {
+				'set-cookie': [ // this is a simplified login example, please encrypt your jwt token server side
+					`token=${jwtToken}; Path=/; HttpOnly;`,
+				],
+			},
+
+			body: {
+				refreshToken: refreshToken as string,
+				username
+			}
+		});
+	}
+
+	return InternalError({ error: 'JWT Token could not be retrieved' })
+}
 ```
-
-### 2. Use all api function in front-end pages, example:
-
-at `src/routes/index.svelte`
-
+Frontend → `src/routes/login.svelte`
 ```ts
 <script lang="ts">
-  import { zeroApi } from "../zeroApi";
+	import { TextInput } from '$components/inputs'
+	import { refreshtoken, user } from '$components/stores/user'
+	
+	let emailElement
+	let passwordElement
 
-  // We can use api before onMount, because api function only run in browser.
-  // like front end function, and have Typescrit point out.
-  let helloPost = zeroApi.api.hello.post({ body: { name: "Dog" } });
+	const email = ''
+	const password = ''
+	
+	const login = () => api.core.user.login.put({body: { email, password }})
+		.ok(response => {
+			$refreshtoken = response.body.refreshToken 
+			$user.username = response.body.username
+		}) 
+		.clientError(response => {
+			response.body.target == 'email' && emailElement.invalidate({response.body.error})
+			response.body.target == 'password' && passwordElement.invalidate({response.body.error})
+		})
+		.serverError(response => {
+			console.error('Something has happened with the servers. Oh-oh.')
+		})
+		
+
 </script>
 
-{#await helloPost}
-	<div>loading...</div>
-{:then res}
-	<div>{res.body.world}</div>
-{/await}
-
+<TextInput bind:value={email} this:bind={emailElement}>
+<TextInput bind:value={password} this:bind={passwordElement}>
+<button on:click={login}>
 ```
 
-## API Example
+# Other
 
-at `src/routes/api/hello.ts`
-
-```ts
-import type { QueryGet } from "svelte-zero-api";
-
-interface Get {
-  query: {
-    name: string;
-  };
-}
-
-interface Post {
-  body: {
-    name: string;
-  };
-}
-
-// Need return a Promise
-// use `Get & QueryGet<Get>` definition types add query.get(...);
-export const get = async ({ query }: Get & QueryGet<Get>) => {
-  return { body: { world: "I'm a " + query.get("name") } };
-};
-
-// Need return a Promise
-export const post = async ({ body }: Post) => {
-  return { body: { world: "I'm a " + body.name } };
-};
-```
-
-## Other
-
-- Svelte Zero API use `Proxy`, So it ignore IE.
-- [A simple Example](./example/README.md)
-- [How about dont't use style-zero-api/watch?](./README-not-watch.md)
-
----
-
-That's all, Thanks read my broken English.
+Concerned about perforamnce? See [performance benchmarks](./PerformanceBenchmarks.md)
