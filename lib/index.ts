@@ -402,25 +402,16 @@ const restFulKeys = {
 
 
 export const createZeroApi = <T>(opt: IOptions = {}): T => {
-
 	const createProxy = (target: any) => {
-			
+
 		const obj = new Proxy(target, {
-
 			get(target, name: string) {
-
 				if (!target[name]) {
-
 					if (!restFulKeys[name]) {
-
 						target[name] = createProxy({
 							___parent: target.___parent ? target.___parent + "/" + name : name,
-						});
-
-						
-						
+						});						
 					} else {
-
 						let method = name.toUpperCase();
 						if (method === "DEL") {
 							method = "DELETE";

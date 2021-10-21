@@ -121,6 +121,9 @@ Frontend → `src/routes/login.svelte`
 	const email = ''
 	const password = ''
 	
+	// Notice ­— this function is called. 
+	// Remember that fetching has to be done client-side with  onMount(() => )
+	// Read more: https://svelte.dev/tutorial/onmount
 	const login = () => api.core.user.login.put({body: { email, password }})
 		.ok(response => {
 			$refreshtoken = response.body.refreshToken 
