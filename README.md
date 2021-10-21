@@ -6,16 +6,18 @@ It has two goals
 
 This means less coding for you, less potential errors to worry about — and an always up-to-date API Documentation.
 
+Here's a video on [How to get started](https://youtu.be/bgNKaxIYuQ0) with SvelteKit Zero API
+
+[![Before and After](https://i.imgur.com/QWtxpyb.png)](https://youtu.be/u1sfchnI0Mo)
+
 **Todo**
 - Export API documentation
 
-# FAQ
-- Cannot read property 'success' of undefined
 
 
 ### **Requirements**
 - TypeScript in your SvelteKit project
-[![Before and After](https://i.imgur.com/QWtxpyb.png)](https://youtu.be/u1sfchnI0Mo)
+
 
 ## Install
 Add to project → `npm i sveltekit-zero-api -D`
