@@ -33,10 +33,12 @@ export const watch = (uri, event, timeout = 65) => {
 
 function fixName(p = "") {
 	p = p.replace(/\./g, "");
-	p = p.replace(/-/g, "_");
-	p = p.replace(/\//g, "_");
-	p = p.replace(/\[/g, "_");
-	p = p.replace(/]/g, "_");
+    p = p.replace(/-/g, "_");
+    p = p.replace(/\//g, "_");
+    p = p.replace(/\[/g, "_");
+    p = p.replace(/\\/g, "_");
+    p = p.replace(/:/g, "_");
+    p = p.replace(/]/g, "_");
 	return p;
 }
 
@@ -65,6 +67,7 @@ function makeApiCode() {
 
 const fixRealPath = (inPath = "") => {
 	inPath = inPath.slice(0, -3); // upload.json.ts → upload.json
+	inPath = inPath.replace(/\\/g, "\\\\");
 	// const out = inPath.replace(realPath, watchPath);
 	// console.log(inPath, realPath, watchPath, out);
 	return inPath;
