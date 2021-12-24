@@ -54,6 +54,8 @@ export const baseApi = (url: string, obj?: any, opt: IOptions = {}) => {
 		opt.headers["Cache-Control"] = "public, max-age=604800, immutable";
 	}
 
+	opt.headers['X-Requested-With'] = 'sveltekit-zero-api'
+
 	// Make FetchAPI to be proxified
 	const callbacks = {
 		// General
