@@ -69,6 +69,27 @@ const config = {
 ```
 
 ## Usage
+
+### Use inside SvelteKit load function
+
+SvelteKit has a module load function, which you can read more about in the [SvelteKit Documentation]([Commented Example](./CommentedExample.md)).
+
+Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a second argument, when making api calls.
+
+```ts
+<script context="module">
+	import api from '$src/api'
+	export async function load({ page, fetch, session, stuff }) {	
+		// Example 1
+		let response = await api.users.allUsers.get({}, fetch)
+		...
+		// Example 2
+		let response = await api.statistics.post({ body: { path: page.path } }, fetch)
+		...
+```
+
+### General use
+
 This example is without comments. Here's a [Commented Example](./CommentedExample.md)
 
 Backend → `src/routes/api/core/user/login.ts`
