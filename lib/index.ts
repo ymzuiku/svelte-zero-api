@@ -22,7 +22,7 @@ interface FetchProxy extends Partial<Promise<Response>> {
 	[s: string]: any
 }
 
-export const baseApi = (url: string, obj?: any, opt: IOptions = {}) => {
+export const baseApi = (url: string, obj?: any, opt: IOptions = {}, loadFetch: any = undefined) => {
 	let body: any = void 0;
 
 	body = obj && JSON.stringify(obj);
@@ -239,15 +239,22 @@ export const baseApi = (url: string, obj?: any, opt: IOptions = {}) => {
 	
 	fetchApi = {...fetchApi, ...userSetCallbacks}
 	fetchApi['_'] = userSetCallbacks
-
-	fetchApi.promise = fetch(realUrl, {
+	
+	var fetchOptions = {
 		body,
 		...opt,
 		headers: opt.headers
-	})
+	}
+
+	// fetch  used in   load({fetch})
+	if (loadFetch != undefined) {
+		fetchApi.promise = loadFetch(url, fetchOptions)
+	}
+	else { // traditional node fetch
+		fetchApi.promise = fetch(realUrl, fetchOptions)
+	}
 
 	awaitFetch(callbacks, fetchApi, opt, cacheKey)
-
 	return fetchApi
 };
 
@@ -380,7 +387,8 @@ const makeMethod = (
 	query: any,
 	body: any,
 	baseOptions: IOptions,
-	options: IOptions
+	options: IOptions,
+	loadFetch: any // loadFetch is SvelteKits module   load({fetch}), and is passed when calling from load
 ) => {
 	if (typeof window === "undefined") {
 		return;
@@ -391,7 +399,7 @@ const makeMethod = (
 		url += "?" + searchParams;
 	}
 
-	return baseApi(url, body, { ...baseOptions, ...options, method });
+	return baseApi(url, body, { ...baseOptions, ...options, method }, loadFetch);
 };
 
 const restFulKeys = {
@@ -403,6 +411,16 @@ const restFulKeys = {
 } as any;
 
 
+/* 
+	* How does it work?
+	createZeroApi creates a proxy based on the __temp routes
+	A proxy is an object which modifies the result. i.e.   proxy.addNumbers(1, 1) → proxy adds 1 -> = 3
+	
+	At // * Actual function call
+	is where the   api.user.register.post({})   takes place. Where prop is the parameters
+
+	This function should probably be split up in the future, to make a bit more sense for new readers.
+*/
 export const createZeroApi = <T>(opt: IOptions = {}): T => {
 	const createProxy = (target: any) => {
 
@@ -420,7 +438,8 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 						}
 						const url = target.___parent;
 
-						target[name] = (prop: any = {}) => {
+						// * Actual function call
+						target[name] = (prop: any = {}, loadFetch: any = undefined) => {
 
 							let { query, body } = prop
 							const { options } = prop
@@ -433,7 +452,7 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 								}
 							}
 							
-							return makeMethod(method, url, query, body, opt, options);
+							return makeMethod(method, url, query, body, opt, options, loadFetch);
 						};
 					}
 				}

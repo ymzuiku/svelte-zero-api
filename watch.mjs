@@ -118,7 +118,7 @@ function updateAPI(realPath = "", watchPath) {
 
 		// @ts-ignore
 		// Import module keys returns the actual Response. SvelteKit Zero API returns a "FetchAPI"
-		const f = <T>(importModule: T) => importModule as { [key in keyof T]: (obj: Parameters<T[key]>[0]) => FetchApi<ReturnType<T[key]>> }
+		const f = <T>(importModule: T) => importModule as { [key in keyof T]: (obj: Parameters<T[key]>[0], loadFetch?: any) => FetchApi<ReturnType<T[key]>> }
 		
 		export default ${dirText}
 		`,
