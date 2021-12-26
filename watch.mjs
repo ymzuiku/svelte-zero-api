@@ -117,7 +117,7 @@ import type { FetchApi, FetchApiPromise } from './fetchapi'
 ${importCode}
 
 // @ts-ignore
-type requestType<T> = { [key in keyof T]: (obj: Parameters<T[key]>[0]) => FetchApi<ReturnType<T[key]>> } | { [key in keyof T]: (obj: Parameters<T[key]>[0], loadFetch?: any) => FetchApiPromise<ReturnType<T[key]>> };
+type requestType<T> = { [key in keyof T]: ( (obj: Parameters<T[key]>[0]) => FetchApi<ReturnType<T[key]>> ) & ( (obj: Parameters<T[key]>[0], loadFetch: any) => FetchApiPromise<ReturnType<T[key]>> ) };
 
 // Import module keys returns the actual Response. SvelteKit Zero API returns a "FetchAPI"
 const f = <T extends unknown>(importModule: T) => importModule as requestType<T>
