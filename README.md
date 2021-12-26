@@ -72,7 +72,7 @@ const config = {
 
 ### Use inside SvelteKit load function
 
-SvelteKit has a module load function, which you can read more about in the [SvelteKit Documentation]([Commented Example](./CommentedExample.md)).
+SvelteKit has a module load function, which you can read more about in the ([SvelteKit Documentation](https://kit.svelte.dev/docs#loading)).
 
 Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a second argument, when making api calls.
 
