@@ -12,6 +12,7 @@ Here's a video on [How to get started](https://youtu.be/bgNKaxIYuQ0) with Svelte
 
 **Todo**
 - Export API documentation
+  - Typescript types are not "exportable" — I'm thinking of line comments as the most plausible solution.
 
 
 
