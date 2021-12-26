@@ -175,7 +175,7 @@ Frontend → `src/routes/login.svelte`
 # Q&A
 
 - Cannot read property '*' of undefined
-> Happens if you run the API before component initialization. Read more about component life-cycle: https://svelte.dev/tutorial/onmount
+> Happens if you run the API on the server-side. Use onMount, or any other client-side called functions (on:click etc.). Read more about component life-cycle: https://svelte.dev/tutorial/onmount
 
 # Other
 
