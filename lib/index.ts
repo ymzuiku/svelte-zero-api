@@ -248,7 +248,7 @@ export const baseApi = (url: string, obj?: any, opt: IOptions = {}, loadFetch: a
 
 	// fetch  used in   load({fetch})
 	if (loadFetch != undefined) {
-		fetchApi.promise = loadFetch(url, fetchOptions)
+		fetchApi.promise = loadFetch('/' + url, fetchOptions)
 	}
 	else { // traditional node fetch
 		fetchApi.promise = fetch(realUrl, fetchOptions)
