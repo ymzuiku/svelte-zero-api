@@ -77,6 +77,8 @@ SvelteKit has a module load function, which you can read more about in the ([Sve
 
 Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a second argument, when making api calls.
 
+OBS — Currently due to a known issue, these calls cannot be supplied with .success(), .clientError() callbacks. You can only await them and get response.
+
 ```ts
 <script context="module">
 	import api from '$src/api'

@@ -140,19 +140,9 @@ export const baseApi = (url: string, obj?: any, opt: IOptions = {}, loadFetch: a
 
 	let fetchApi = {
 		promise: null,
-		then: function (resolve) {
-			fetchApi.promise.then(res => resolve(res))
-			return this
-		},
-		catch: function (reject) {
-			fetchApi.promise.catch(err => reject(err))
-			return this
-		},
-		finally: async function (resolve) {
-			await fetchApi.promise
-			resolve()
-			return this
-		}
+		then: null,
+		catch: null,
+		finally: null
 	}
 	
 	const userSetCallbacks = {
@@ -246,13 +236,21 @@ export const baseApi = (url: string, obj?: any, opt: IOptions = {}, loadFetch: a
 		headers: opt.headers
 	}
 
+	console.log('realurl', realUrl);
+	console.log('url', url);
+	
+
 	// fetch  used in   load({fetch})
 	if (loadFetch != undefined) {
-		fetchApi.promise = loadFetch('/' + url, fetchOptions)
+		fetchApi.promise = loadFetch(realUrl, fetchOptions)
 	}
 	else { // traditional node fetch
 		fetchApi.promise = fetch(realUrl, fetchOptions)
 	}
+
+	fetchApi.then = (resolve, reject) => fetchApi.promise.then(resolve, reject)
+	fetchApi.catch = (reject) => fetchApi.promise.catch(reject)
+	fetchApi.finally = () => fetchApi.promise.finally()
 
 	awaitFetch(callbacks, fetchApi, opt, cacheKey)
 	return fetchApi
@@ -418,8 +416,6 @@ const restFulKeys = {
 	
 	At // * Actual function call
 	is where the   api.user.register.post({})   takes place. Where prop is the parameters
-
-	This function should probably be split up in the future, to make a bit more sense for new readers.
 */
 export const createZeroApi = <T>(opt: IOptions = {}): T => {
 	const createProxy = (target: any) => {
@@ -430,7 +426,7 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 					if (!restFulKeys[name]) {
 						target[name] = createProxy({
 							___parent: target.___parent ? target.___parent + "/" + name : name,
-						});						
+						});
 					} else {
 						let method = name.toUpperCase();
 						if (method === "DEL") {
@@ -440,7 +436,6 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 
 						// * Actual function call
 						target[name] = (prop: any = {}, loadFetch: any = undefined) => {
-
 							let { query, body } = prop
 							const { options } = prop
 							
@@ -451,7 +446,6 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 									body = prop;
 								}
 							}
-							
 							return makeMethod(method, url, query, body, opt, options, loadFetch);
 						};
 					}
