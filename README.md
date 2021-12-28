@@ -13,11 +13,12 @@ Here's a video on [How to get started](https://youtu.be/bgNKaxIYuQ0) with Svelte
 **Todo**
 - Export API documentation
   - Typescript types are not "exportable" — I'm thinking of line comments as the most plausible solution.
-
+- Run response functions in the order, that they are written 
 
 
 ### **Requirements**
 - TypeScript in your SvelteKit project
+- There's a bug — so to update — you have to delete node_modules, and install using `npm i sveltekit-zero-api -D` again. I'll look into it eventually.
 
 
 ## Install
@@ -73,11 +74,9 @@ const config = {
 
 ### Use inside SvelteKit load function
 
-SvelteKit has a module load function, which you can read more about in the ([SvelteKit Documentation](https://kit.svelte.dev/docs#loading)).
+SvelteKit has a module load function, which you can read more about at [SvelteKit Documentation](https://kit.svelte.dev/docs#loading).
 
-Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a second argument, when making api calls.
-
-OBS — Currently due to a known issue, these calls cannot be supplied with .success(), .clientError() callbacks. You can only await them and get response.
+Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a second argument, when making api calls. Other than that, it is just like normal.
 
 ```ts
 <script context="module">
@@ -87,7 +86,11 @@ OBS — Currently due to a known issue, these calls cannot be supplied with .suc
 		let response = await api.users.allUsers.get({}, fetch)
 		...
 		// Example 2
-		let response = await api.statistics.post({ body: { path: page.path } }, fetch)
+		api.statistics.post({ body: { path: page.path } }, fetch)
+			.success(response => console.log(response))
+			.error(r => console.log('Error occured:'))
+			.clientError(response => console.warn(response))
+			.serverError(response => console.error(response))
 		...
 ```
 
@@ -117,7 +120,7 @@ export const put = async ({ body }: Put) => {
 	const response = User({ email, password })
 
 	if(!response)
-		return BadRequest({ error: 'Invalid e-mail or password', target: 'email' })
+		return BadRequest({ error: 'Invalid e-mail or password', body: { target: 'email' } })
 	
 	const { jwtToken, username, refreshToken } = response
 
@@ -136,7 +139,7 @@ export const put = async ({ body }: Put) => {
 		});
 	}
 
-	return InternalError({ error: 'JWT Token could not be retrieved' })
+	return InternalError({ error: 'Access-token could not be retrieved' })
 }
 ```
 Frontend → `src/routes/login.svelte`
@@ -178,8 +181,8 @@ Frontend → `src/routes/login.svelte`
 # Q&A
 
 - Cannot read property '*' of undefined
-> Happens if you run the API on the server-side. Use onMount, or any other client-side called functions (on:click etc.). Read more about component life-cycle: https://svelte.dev/tutorial/onmount
+> Happens if you run the API on [SSR](https://kit.svelte.dev/docs#ssr-and-javascript). Use onMount, or any other client-side called functions (on:click etc.). Read more about component life-cycle: https://svelte.dev/tutorial/onmount
 
 # Other
 
-Concerned about performance? See [performance benchmarks](./PerformanceBenchmarks.md)
+Concerned about performance? See [performance benchmarks](./PerformanceBenchmarks.md). There's no real noticable impact overall, but I wanted to include this anyways.

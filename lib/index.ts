@@ -22,7 +22,7 @@ interface FetchProxy extends Partial<Promise<Response>> {
 	[s: string]: any
 }
 
-export const baseApi = (url: string, obj?: any, opt: IOptions = {}, loadFetch: any = undefined) => {
+export function baseApi(url: string, obj?: any, opt: IOptions = {}, loadFetch: any = undefined) {
 	let body: any = void 0;
 
 	body = obj && JSON.stringify(obj);
@@ -225,7 +225,6 @@ export const baseApi = (url: string, obj?: any, opt: IOptions = {}, loadFetch: a
 		notExtended:                   function (cb) { callbacks.notExtended.push(cb);                    return fetchApi },
 		networkAuthenticationRequired: function (cb) { callbacks.networkAuthenticationRequired.push(cb);  return fetchApi }
 	}
-
 	
 	fetchApi = {...fetchApi, ...userSetCallbacks}
 	fetchApi['_'] = userSetCallbacks
@@ -236,13 +235,9 @@ export const baseApi = (url: string, obj?: any, opt: IOptions = {}, loadFetch: a
 		headers: opt.headers
 	}
 
-	console.log('realurl', realUrl);
-	console.log('url', url);
-	
-
-	// fetch  used in   load({fetch})
+	// fetch  used in   load({fetch}) => api.something.post({ body...}, fetch)
 	if (loadFetch != undefined) {
-		fetchApi.promise = loadFetch(realUrl, fetchOptions)
+		fetchApi.promise = loadFetch(url, fetchOptions)
 	}
 	else { // traditional node fetch
 		fetchApi.promise = fetch(realUrl, fetchOptions)
@@ -379,7 +374,7 @@ const awaitFetch = async (callbacks, fetchApi: FetchProxy, opt, cacheKey) => {
 	}
 }
 
-const makeMethod = (
+function makeMethod (
 	method: string,
 	name: any,
 	query: any,
@@ -387,10 +382,7 @@ const makeMethod = (
 	baseOptions: IOptions,
 	options: IOptions,
 	loadFetch: any // loadFetch is SvelteKits module   load({fetch}), and is passed when calling from load
-) => {
-	if (typeof window === "undefined") {
-		return;
-	}
+) {
 	let url = "/" + name;
 	if (query) {
 		const searchParams = new URLSearchParams(query)
@@ -435,7 +427,7 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 						const url = target.___parent;
 
 						// * Actual function call
-						target[name] = (prop: any = {}, loadFetch: any = undefined) => {
+						target[name] = function apiFunction (prop: any = {}, loadFetch: any = undefined) {
 							let { query, body } = prop
 							const { options } = prop
 							

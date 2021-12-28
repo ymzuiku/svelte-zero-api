@@ -3,10 +3,7 @@ type Callback<T, U> = (response: Extract<FixedAwaited<T>, U>) => void
 import type * as StatusCode from './httpcodes'
 import type { Response } from './http'
 
-
-export interface ResponseType<T extends Promise<Record<string, unknown>>> extends Partial<Promise<T>> {}
-
-export interface ResponseTypeExtended<T extends Promise<Record<string, unknown>>> extends Partial<Promise<T>> {
+export interface ResponseType<T extends Promise<Record<string, unknown>>> extends Partial<Promise<T>> {
 	/** You don't return a ClientError, but still want to check for it (ex. 404)? Underscore at the rescue! */
 	_:
 		// General
@@ -371,10 +368,8 @@ export interface NetworkAuthenticationRequiredType<T extends Promise<object>, S 
 	networkAuthenticationRequired: (callback: Callback<T, S>) => this
 }
 
-export type FetchApiPromise<T extends Promise<Record<string, unknown>>> = ResponseType<T>
-
 export type FetchApi<T extends Promise<Record<string, unknown>>> =
-	ResponseTypeExtended<T> &	
+	ResponseType<T> &	
 
 	// General
 	// Callback extracts paramter callback type, that has status: number — if it doesn't have number, return {} : return Type associated with number
