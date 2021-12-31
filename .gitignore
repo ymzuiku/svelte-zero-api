@@ -102,3 +102,5 @@ dist/v*/*
 android/app/release/
 
 .eslintcache
+
+./sveltekit-zero-api-*
