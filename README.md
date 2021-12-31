@@ -14,12 +14,12 @@ Here's a video on [How to get started](https://youtu.be/bgNKaxIYuQ0) with Svelte
 - Export API documentation
   - Typescript types are not "exportable" — I'm thinking of line comments as the most plausible solution.
 - Run response functions in the order, that they are written 
-
+- Better examples
+- Fix error when index
+  - **Currently shows error**  users/index.ts  →  api.users.post({})
 
 ### **Requirements**
 - TypeScript in your SvelteKit project
-- There's a bug — so to update — you have to delete node_modules, and install using `npm i sveltekit-zero-api -D` again. I'll look into it eventually.
-
 
 ## Install
 Add to project → `npm i sveltekit-zero-api -D`
@@ -32,6 +32,11 @@ if (process.env.NODE_ENV !== 'production') {
 	watchSvelteKitAPI();
 }
 ```
+
+### Updating
+
+Currently, you have to delete node_modules and restart VSCode — then install using `npm i sveltekit-zero-api -D` again.
+> This is due to my suspicion, that there's no way to 'stop/close' chokidor which watches the files, when `svelte-kit dev` is exited.
 
 **How does it work?**
 > It watches for changes in src/routes, and will write a __temp file that exports the types.
@@ -88,11 +93,67 @@ Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a s
 		// Example 2
 		api.statistics.post({ body: { path: page.path } }, fetch)
 			.success(response => console.log(response))
-			.error(r => console.log('Error occured:'))
-			.clientError(response => console.warn(response))
-			.serverError(response => console.error(response))
+			.error(response => console.error('response.body.error'))
 		...
 ```
+
+### Tokens
+
+At some point you'll want to pass tokens. Simply use brackets, and pass path as a string:
+
+```ts
+export async function load({ url, params, fetch, session, stuff }) {
+	const token = params.token
+	// routes/api/user/confirmemail.[token].ts
+	const response = await api.user.confirmemail[token].post({}, fetch)
+```
+
+### Queries
+
+Using queries (aka url.searchParams) are simple!
+
+`Backend`
+```ts
+import { QueryGet, Created } from 'sveltekit-zero-api'
+
+interface Query {
+	query: {
+		name: string,
+		age: number
+	},
+	body: {
+		letter: string
+	}
+}
+
+// * note that QueryGet<Query> will include all properties
+// so no need for   Query & QueryGet<Query>
+export const post({ body, url }: QueryGet<Query>) => {
+	const name = url.searchParams.get('name')
+	const age = url.searchParams.get('age')
+	const { letter } = body
+	...
+	return Created({ body: { message: 'Your letter has been sent!' } })
+}
+```
+
+`Frontend`
+```ts
+<script lang="ts">
+	let apiSendLetter
+	onMount(() => {
+		apiSendLetter = await api.user.letter.post({ 
+			query: { name: 'George', age: 52 }, 
+			body: { letter: 'HOI' } 
+		})
+	})
+</script>
+
+{#await apiSendLetter then response}
+	<div class="message">{response.body.message}</div>
+{/await}
+```
+
 
 ### General use
 
