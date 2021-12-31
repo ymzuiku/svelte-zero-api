@@ -6,7 +6,7 @@ export type QueryGet<T extends { query: Record<string, unknown> }> = QueryGetter
 interface QueryGetter<T extends { query: Record<string, unknown> }> {
 	url: {
 		searchParams: {
-			get?: <K extends keyof T["query"]>(key: K) => T[K];
+			get?: <K extends keyof T["query"]>(key: K) => T['query'][K];
 		}
 	};
 }

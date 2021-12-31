@@ -104,8 +104,8 @@ At some point you'll want to pass tokens. Simply use brackets, and pass path as 
 ```ts
 export async function load({ url, params, fetch, session, stuff }) {
 	const token = params.token
-	// routes/api/user/confirmemail.[token].ts
-	const response = await api.user.confirmemail[token].post({}, fetch)
+	// routes/api/users/confirmemail/[token].ts
+	const response = await api.users.confirmemail[token].post({}, fetch)
 ```
 
 ### Queries
