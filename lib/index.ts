@@ -243,116 +243,128 @@ export function baseApi(url: string, obj?: any, opt: IOptions = {}, loadFetch: a
 		fetchApi.promise = fetch(realUrl, fetchOptions)
 	}
 
-	fetchApi.then = (resolve, reject) => fetchApi.promise.then(resolve, reject)
-	fetchApi.catch = (reject) => fetchApi.promise.catch(reject)
-	fetchApi.finally = () => fetchApi.promise.finally()
+	const promise = new Promise(resolve => {
+		fetchApi.promise.then(async (res) => {
+			const response = {
+				body: await res[opt.format || "json"](),
+				bodyUsed: res.bodyUsed,
+				headers: res.headers,
+				ok: res.ok,
+				redirected: res.redirected,
+				status: res.status,
+				statusText: res.statusText,
+				type: res.type,
+				url: res.url
+			}
 
-	awaitFetch(callbacks, fetchApi, opt, cacheKey)
-	return fetchApi
+			awaitFetch(callbacks, response, opt, cacheKey)
+			resolve(response)
+		})
+	})	
+	
+	const proxy = new Proxy(fetchApi, {
+		get(target, prop: string) {
+			if (prop === 'then')
+				return promise.then.bind(promise);
+			if (prop === 'catch')
+				return promise.catch.bind(promise);
+			if (prop === 'finally')
+				return promise.finally.bind(promise);
+			return target[prop]
+		}
+	})
+
+	return proxy
 };
 
-const awaitFetch = async (callbacks, fetchApi: FetchProxy, opt, cacheKey) => {
-	let res: Response
+const awaitFetch = async (callbacks, res, opt, cacheKey) => {
 	try {
-		res = await fetchApi.promise
-		const obj = {
-			body: await res.json(),
-			bodyUsed: res.bodyUsed,
-			headers: res.headers,
-			ok: res.ok,
-			redirected: res.redirected,
-			status: res.status,
-			statusText: res.statusText,
-			type: res.type,
-			url: res.url
-		}
-
-		const call = (cbArr, ob, condition = true) => {
+		const call = (cbArr, res, condition = true) => {
 			if (condition)
-				cbArr.forEach(x => x(ob))
+				cbArr.forEach(x => x(res))
 		}
 		
 		// General
-		call(callbacks.informational, obj, res.status in StatusCode.Informational)
-		call(callbacks.success,       obj, res.status in StatusCode.Success)
-		call(callbacks.redirection,   obj, res.status in StatusCode.Redirection)
-		call(callbacks.clientError,   obj, res.status in StatusCode.ClientError)
-		call(callbacks.serverError,   obj, res.status in StatusCode.ServerError)
-		call(callbacks.error,         obj, (res.status in StatusCode.ClientError || res.status in StatusCode.ServerError))
+		call(callbacks.informational, res, res.status in StatusCode.Informational)
+		call(callbacks.success,       res, res.status in StatusCode.Success)
+		call(callbacks.redirection,   res, res.status in StatusCode.Redirection)
+		call(callbacks.clientError,   res, res.status in StatusCode.ClientError)
+		call(callbacks.serverError,   res, res.status in StatusCode.ServerError)
+		call(callbacks.error,         res, (res.status in StatusCode.ClientError || res.status in StatusCode.ServerError))
 
 		// Switch statement didn't work for whatever reason
 		const status = (s: number) => res.status === s
 
 		// 1××
-		call(callbacks.continue,                      obj, status(100))
-		call(callbacks.switchingProtocols,            obj, status(101))
-		call(callbacks.processing,                    obj, status(102))         		  
+		call(callbacks.continue,                      res, status(100))
+		call(callbacks.switchingProtocols,            res, status(101))
+		call(callbacks.processing,                    res, status(102))         		  
 		
 		// 2××
-		call(callbacks.ok,                            obj, status(200))                         
-		call(callbacks.created,                       obj, status(201))                    
-		call(callbacks.accepted,                      obj, status(202))                   
-		call(callbacks.nonAuthoritativeInformation,   obj, status(203))
-		call(callbacks.noContent,                     obj, status(204))
-		call(callbacks.resetContent,                  obj, status(205))
-		call(callbacks.partialContent,                obj, status(206))
-		call(callbacks.multiStatus,                   obj, status(207))
-		call(callbacks.alreadyReported,               obj, status(208))
-		call(callbacks.IMUsed,                        obj, status(226))
+		call(callbacks.ok,                            res, status(200))                         
+		call(callbacks.created,                       res, status(201))                    
+		call(callbacks.accepted,                      res, status(202))                   
+		call(callbacks.nonAuthoritativeInformation,   res, status(203))
+		call(callbacks.noContent,                     res, status(204))
+		call(callbacks.resetContent,                  res, status(205))
+		call(callbacks.partialContent,                res, status(206))
+		call(callbacks.multiStatus,                   res, status(207))
+		call(callbacks.alreadyReported,               res, status(208))
+		call(callbacks.IMUsed,                        res, status(226))
 
 		// 3××
-		call(callbacks.multipleChoices,               obj, status(300))     		  
-		call(callbacks.movedPermanently,              obj, status(301))
-		call(callbacks.found,                         obj, status(302))
-		call(callbacks.checkOther,                    obj, status(303))
-		call(callbacks.notModified,                   obj, status(304))
-		call(callbacks.useProxy,                      obj, status(305))
-		call(callbacks.switchProxy,                   obj, status(306))
-		call(callbacks.temporaryRedirect,             obj, status(307))
-		call(callbacks.permanentRedirect,             obj, status(308))
+		call(callbacks.multipleChoices,               res, status(300))     		  
+		call(callbacks.movedPermanently,              res, status(301))
+		call(callbacks.found,                         res, status(302))
+		call(callbacks.checkOther,                    res, status(303))
+		call(callbacks.notModified,                   res, status(304))
+		call(callbacks.useProxy,                      res, status(305))
+		call(callbacks.switchProxy,                   res, status(306))
+		call(callbacks.temporaryRedirect,             res, status(307))
+		call(callbacks.permanentRedirect,             res, status(308))
 
 		// 4××
-		call(callbacks.badRequest,                    obj, status(400))
-		call(callbacks.unauthorized,                  obj, status(401))
-		call(callbacks.paymentRequired,               obj, status(402))
-		call(callbacks.forbidden,                     obj, status(403))
-		call(callbacks.notFound,                      obj, status(404))
-		call(callbacks.methodNotAllowed,              obj, status(405))
-		call(callbacks.notAcceptable,                 obj, status(406))
-		call(callbacks.proxyAuthenticationRequired,   obj, status(407))
-		call(callbacks.requestTimeout,                obj, status(408))
-		call(callbacks.conflict,                      obj, status(409))
-		call(callbacks.gone,                          obj, status(410))
-		call(callbacks.lengthRequired,                obj, status(411))
-		call(callbacks.preconditionFailed,            obj, status(412))
-		call(callbacks.payloadTooLarge,               obj, status(413))
-		call(callbacks.URITooLong,                    obj, status(414))
-		call(callbacks.unsupportedMediaType,          obj, status(415))
-		call(callbacks.rangeNotSatisfiable,           obj, status(416))
-		call(callbacks.expectationFailed,             obj, status(417))
-		call(callbacks.imATeapot,                     obj, status(418))
-		call(callbacks.misdirectedRequest,            obj, status(21))
-		call(callbacks.unprocessableEntity,           obj, status(422))
-		call(callbacks.locked,                        obj, status(423))
-		call(callbacks.failedDependency,              obj, status(424))
-		call(callbacks.upgradeRequired,               obj, status(426))
-		call(callbacks.preconditionRequired,          obj, status(428))
-		call(callbacks.tooManyRequests,               obj, status(429))
-		call(callbacks.requestHeaderFieldsTooLarge,   obj, status(431))
-		call(callbacks.unavailableForLegalReasons,    obj, status(451))
+		call(callbacks.badRequest,                    res, status(400))
+		call(callbacks.unauthorized,                  res, status(401))
+		call(callbacks.paymentRequired,               res, status(402))
+		call(callbacks.forbidden,                     res, status(403))
+		call(callbacks.notFound,                      res, status(404))
+		call(callbacks.methodNotAllowed,              res, status(405))
+		call(callbacks.notAcceptable,                 res, status(406))
+		call(callbacks.proxyAuthenticationRequired,   res, status(407))
+		call(callbacks.requestTimeout,                res, status(408))
+		call(callbacks.conflict,                      res, status(409))
+		call(callbacks.gone,                          res, status(410))
+		call(callbacks.lengthRequired,                res, status(411))
+		call(callbacks.preconditionFailed,            res, status(412))
+		call(callbacks.payloadTooLarge,               res, status(413))
+		call(callbacks.URITooLong,                    res, status(414))
+		call(callbacks.unsupportedMediaType,          res, status(415))
+		call(callbacks.rangeNotSatisfiable,           res, status(416))
+		call(callbacks.expectationFailed,             res, status(417))
+		call(callbacks.imATeapot,                     res, status(418))
+		call(callbacks.misdirectedRequest,            res, status(21))
+		call(callbacks.unprocessableEntity,           res, status(422))
+		call(callbacks.locked,                        res, status(423))
+		call(callbacks.failedDependency,              res, status(424))
+		call(callbacks.upgradeRequired,               res, status(426))
+		call(callbacks.preconditionRequired,          res, status(428))
+		call(callbacks.tooManyRequests,               res, status(429))
+		call(callbacks.requestHeaderFieldsTooLarge,   res, status(431))
+		call(callbacks.unavailableForLegalReasons,    res, status(451))
 
 		// 5××
-		call(callbacks.internalServerError,           obj, status(500))
-		call(callbacks.notImplemented,                obj, status(501))
-		call(callbacks.badGateaway,                   obj, status(502))
-		call(callbacks.serviceUnavailable,            obj, status(503))
-		call(callbacks.gatewayTimeout,                obj, status(504))
-		call(callbacks.HTTPVersionNotSupported,       obj, status(505))
-		call(callbacks.variantAlsoNegotiates,         obj, status(506))
-		call(callbacks.insufficientStorage,           obj, status(507))
-		call(callbacks.loopDetected,                  obj, status(508))
-		call(callbacks.notExtended,                   obj, status(510))
-		call(callbacks.networkAuthenticationRequired, obj, status(511))
+		call(callbacks.internalServerError,           res, status(500))
+		call(callbacks.notImplemented,                res, status(501))
+		call(callbacks.badGateaway,                   res, status(502))
+		call(callbacks.serviceUnavailable,            res, status(503))
+		call(callbacks.gatewayTimeout,                res, status(504))
+		call(callbacks.HTTPVersionNotSupported,       res, status(505))
+		call(callbacks.variantAlsoNegotiates,         res, status(506))
+		call(callbacks.insufficientStorage,           res, status(507))
+		call(callbacks.loopDetected,                  res, status(508))
+		call(callbacks.notExtended,                   res, status(510))
+		call(callbacks.networkAuthenticationRequired, res, status(511))
 
 	} catch (error) {
 		if (opt.onError) {
