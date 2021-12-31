@@ -86,12 +86,12 @@ Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a s
 ```ts
 <script context="module">
 	import api from '$src/api'
-	export async function load({ page, fetch, session, stuff }) {	
+	export async function load({ url, params, fetch, session, stuff }) {	
 		// Example 1
 		let response = await api.users.allUsers.get({}, fetch)
 		...
 		// Example 2
-		api.statistics.post({ body: { path: page.path } }, fetch)
+		api.statistics.post({ body: { path: url.path } }, fetch)
 			.success(response => console.log(response))
 			.error(response => console.error('response.body.error'))
 		...
