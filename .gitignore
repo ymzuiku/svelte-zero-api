@@ -103,4 +103,4 @@ android/app/release/
 
 .eslintcache
 
-./sveltekit-zero-api-*
+sveltekit-zero-api-*
