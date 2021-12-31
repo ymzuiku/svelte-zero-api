@@ -1,9 +1,13 @@
 import * as StatusCode from '../httpcodes'
 const cache = {} as any;
 
-export interface QueryGet<T extends { query: Record<string, unknown> }> {
-	query: {
-		get?: <K extends keyof T["query"]>(key: K) => T[K];
+export type QueryGet<T extends { query: Record<string, unknown> }> = QueryGetter<T> & Omit<T, 'query'>
+
+interface QueryGetter<T extends { query: Record<string, unknown> }> {
+	url: {
+		searchParams: {
+			get?: <K extends keyof T["query"]>(key: K) => T[K];
+		}
 	};
 }
 

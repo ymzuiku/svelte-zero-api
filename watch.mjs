@@ -118,7 +118,7 @@ ${importCode}
 
 // Import module keys returns the actual Response. SvelteKit Zero API returns a "FetchAPI"
 // @ts-ignore
-const f = <T extends unknown>(importModule: T) => importModule as { [key in keyof T]: ((obj: Parameters<T[key]>[0]) => FetchApi<ReturnType<T[key]>>) & ((obj: Parameters<T[key]>[0], loadFetch: any) => FetchApi<ReturnType<T[key]>>) }
+const f = <T extends unknown>(importModule: T) => importModule as { [key in keyof T]: ((obj: Omit<Parameters<T[key]>[0], 'url'>) => FetchApi<ReturnType<T[key]>>) & ((obj: Omit<Parameters<T[key]>[0], 'url'>, loadFetch: any) => FetchApi<ReturnType<T[key]>>) }
 		
 export default ${dirText}`,
 		(err) => err && console.error(err)
