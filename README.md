@@ -13,10 +13,7 @@ Here's a video on [How to get started](https://youtu.be/bgNKaxIYuQ0) with Svelte
 **Todo**
 - Export API documentation
   - Typescript types are not "exportable" — I'm thinking of line comments as the most plausible solution.
-- Run response functions in the order, that they are written 
 - Better examples
-- Fix error when index
-  - **Currently shows error**  users/index.ts  →  api.users.post({})
 
 ### **Requirements**
 - TypeScript in your SvelteKit project
@@ -97,15 +94,25 @@ Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a s
 		...
 ```
 
-### Tokens
+### Slugs
 
-At some point you'll want to pass tokens. Simply use brackets, and pass path as a string:
+At some point you'll want to pass slugs.
 
 ```ts
+// we're accessing routes/api/users/confirmemail/[token].ts
 export async function load({ url, params, fetch, session, stuff }) {
 	const token = params.token
-	// routes/api/users/confirmemail/[token].ts
+	
+	// You can either do this (no typesafety):	
 	const response = await api.users.confirmemail[token].post({}, fetch)
+
+	// Or this (with typesafety):
+	const response = await api.users.confirmemail.token$(token).post({}, fetch)
+
+	// If you have multiple slugs like  routes/api/users/confirmemail/[token].[userid].ts  you have to do
+	const response = await api.users.confirmemail[`${token}.${id}`].post({}, fetch)
+	
+	// ${}  are template literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
 ```
 
 ### Queries

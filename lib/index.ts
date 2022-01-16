@@ -300,17 +300,31 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 
 		const obj = new Proxy(target, {
 			get(target, name: string) {
-				if (!target[name]) {
+				if (!target[name]) {				
 					if (!restFulKeys[name]) {
+						// Then it's a slug, i.e.   id$('someidinherewhere').get()
+						if (name.match(/\$$/g)) {
+							// Make it into a function that returns proxy children
+							target[name] = function slugFunction(slug) {
+								return createProxy({
+									___parent: target.___parent ? target.___parent + "/" + name : name,
+									_____slug: target._____slug ? target._____slug + "/" + slug : slug
+								});
+							}
+							return target[name]
+						}
+						
 						target[name] = createProxy({
 							___parent: target.___parent ? target.___parent + "/" + name : name,
-						});
-					} else {
-						let method = name.toUpperCase();
+							_____slug: target._____slug ? target._____slug + "/" + name : name
+						})
+					}
+					else {
+						let method = name.toUpperCase()
 						if (method === "DEL") {
-							method = "DELETE";
+							method = "DELETE"
 						}
-						const url = target.___parent;
+						const url = target._____slug;
 
 						// * Actual function call
 						target[name] = function apiFunction (prop: any = {}, loadFetch: any = undefined) {
@@ -319,13 +333,13 @@ export const createZeroApi = <T>(opt: IOptions = {}): T => {
 							
 							if (!query && !body && !options) {
 								if (method === "GET") {
-									query = prop;
+									query = prop
 								} else {
-									body = prop;
+									body = prop
 								}
 							}
 							return makeMethod(method, url, query, body, opt, options, loadFetch);
-						};
+						}
 					}
 				}
 				
