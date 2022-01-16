@@ -77,38 +77,32 @@ function updateAPI(realPath = "", watchPath) {
 	let apiDir = {};
 	let docDir = {};
 	let importCode = "";
+
+	// Load contents
 	const loadDir = (thePath, obj) => {
-
 		const files = fs.readdirSync(thePath);
-		
 		files.forEach((file) => {
-
 			const p = resolve(thePath, file);
 			const stat = fs.statSync(p);
 			const key = "'" + file.replace(/\.(ts|js)/, "") + "'";
 
 			if (stat.isDirectory()) {
-
 				if (!obj[key]) {
 					obj[key] = {};
 				}
 				loadDir(p, obj[key]);
-
 			} else if (/\.(ts|js)$/.test(file) && !/\.d\.ts$/.test(file)) {
-
 				const importName = fixRealPath(p);
 				const name = fixName(importName);
 				importCode += `import * as ${name} from "${importName}";\n`;
 				obj[key] = `f(${name})`;
-
 			}
-
 		});
-
 	};
 
-	loadDir(realPath, apiDir);
-	const dirText = JSON.stringify(apiDir).replace(/"/g, "");
+	loadDir(realPath, apiDir)
+	const dirText = JSON.stringify(apiDir).replace(/"/g, "").replace(/'index':f\(/g, '...f(')
+	console.log(dirText)
 
 	fs.writeFile(
 		resolve(cwd, "node_modules", "sveltekit-zero-api", "__temp.ts"),
