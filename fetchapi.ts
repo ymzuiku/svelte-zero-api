@@ -4,6 +4,8 @@ import type * as StatusCode from './httpcodes'
 import type { Response } from './http'
 
 export interface ResponseType<T extends Promise<Record<string, unknown>>> extends Partial<Promise<T>> {
+	any: (callback: Callback<Promise<Response>, {}>) => this
+	
 	/** You don't return a ClientError, but still want to check for it (ex. 404)? Underscore at the rescue! */
 	_:
 		// General
