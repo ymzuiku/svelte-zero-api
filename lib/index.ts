@@ -1,10 +1,10 @@
 import * as StatusCode from '../httpcodes'
 const cache = {} as any;
 
-export type QueryGet<T extends { query: Record<string, unknown> }> = QueryGetter<T> & Omit<T, 'query'>
+export type QueryGet<T extends { query?: Record<string, unknown> }> = QueryGetter<T> & Omit<T, 'query'>
 export type ExtractGenericQueryGet<Type> = Type extends QueryGet<infer X> ? Pick<X, 'query'> : {}
 
-interface QueryGetter<T extends { query: Record<string, unknown> }> {
+interface QueryGetter<T extends { query?: Record<string, unknown> }> {
 	url: {
 		searchParams: {
 			get?: <K extends keyof T["query"]>(key: K) => string;
