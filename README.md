@@ -91,7 +91,7 @@ interface Post {
 	}
 }
 
-export async const post({ url, request }: Post) => {
+export async const post({ url, request }: API<Post>) => {
 	// Deconstruct json request-body
 	const { some, another, brain } = request.json()
 	...
