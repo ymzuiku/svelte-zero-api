@@ -1,15 +1,48 @@
 import * as StatusCode from '../httpcodes'
 const cache = {} as any;
 
-export type QueryGet<T extends { query?: Record<string, unknown> }> = QueryGetter<T> & Omit<T, 'query'>
+type QueryGet<T extends Record<any, any>> = QueryGetter<T> & Omit<T, 'query'>
+
+declare namespace App {
+	interface Locals { }
+	interface Platform { }
+	interface Session { }
+	interface Stuff { }
+}
+
+interface RequestEvent {
+	request: Request;
+	url: URL;
+	params: Record<string, string>;
+	locals: App.Locals;
+	platform: Readonly<App.Platform>;
+}
+
+export interface API<T extends Record<any, any>> extends RequestEvent {
+	request: {
+		json: () => Promise<T['body']>
+	} & RequestEvent['request'],
+	url: QueryGet<T>['url'] & RequestEvent['url']
+}
+
+interface Test {
+	query: {
+		some: string,
+		another: number
+	},
+	body: {
+		yes: string
+	}
+}
+
 export type ExtractGenericQueryGet<Type> = Type extends QueryGet<infer X> ? Pick<X, 'query'> : {}
 
-interface QueryGetter<T extends { query?: Record<string, unknown> }> {
+interface QueryGetter<T extends Record<any, any>> {
 	url: {
 		searchParams: {
 			get?: <K extends keyof T["query"]>(key: K) => string;
 		}
-	};
+	}
 }
 
 interface IOptions extends RequestInit {
