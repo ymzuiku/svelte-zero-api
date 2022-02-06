@@ -108,7 +108,7 @@ export async const post({ url, request }: Post) => {
 /*
  * Front-end
 **/
-<script lang="ts>
+<script lang="ts">
 	import { onMount } from 'svelte'
 	import api from '$src/api'
 	
