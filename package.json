@@ -1,6 +1,6 @@
 {
   "name": "sveltekit-zero-api",
-  "version": "0.9.2",
+  "version": "0.9.2b",
   "main": "lib/index.ts",
   "types": "lib/index.ts",
   "exports": {

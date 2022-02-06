@@ -1,7 +1,6 @@
 import * as StatusCode from '../httpcodes'
+import { FetchApi } from '../fetchapi'
 const cache = {} as any;
-
-type QueryGet<T extends Record<any, any>> = QueryGetter<T> & Omit<T, 'query'>
 
 declare namespace App {
 	interface Locals { }
@@ -18,30 +17,28 @@ interface RequestEvent {
 	platform: Readonly<App.Platform>;
 }
 
+type ExtractAPIQuery<Type> = Type extends API<infer X> ? Pick<X, 'query'> : {}
 export interface API<T extends Record<any, any>> extends RequestEvent {
 	request: {
 		json: () => Promise<T['body']>
-	} & RequestEvent['request'],
-	url: QueryGet<T>['url'] & RequestEvent['url']
+	} & Omit<RequestEvent['request'], 'json'>,
+	url: QueryGetter<T> & RequestEvent['url']
 }
 
-interface Test {
-	query: {
-		some: string,
-		another: number
-	},
-	body: {
-		yes: string
+type Frontend<T extends Record<any, any>> = {
+	body: Awaited<ReturnType<T['request']['json']>>
+}
+
+// Import module keys returns the actual Response. SvelteKit Zero API returns a "FetchAPI"
+export const f = <T extends Record<any, any>>(importModule: T) =>
+	importModule as {
+		[key in keyof T]: ((obj: Frontend<Parameters<T[key]>[0]> & ExtractAPIQuery<T>) => FetchApi<ReturnType<T[key]>>) &
+		((obj: Frontend<Parameters<T[key]>[0]> & ExtractAPIQuery<T>, loadFetch: any) => FetchApi<ReturnType<T[key]>>)
 	}
-}
-
-export type ExtractGenericQueryGet<Type> = Type extends QueryGet<infer X> ? Pick<X, 'query'> : {}
 
 interface QueryGetter<T extends Record<any, any>> {
-	url: {
-		searchParams: {
-			get?: <K extends keyof T["query"]>(key: K) => string;
-		}
+	searchParams: {
+		get?: <K extends keyof T["query"]>(key: K) => string;
 	}
 }
 
