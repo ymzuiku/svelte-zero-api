@@ -1,5 +1,5 @@
 import * as StatusCode from '../httpcodes'
-import { FetchApi } from '../fetchapi'
+import type { FetchApi } from '../fetchapi'
 const cache = {} as any;
 
 declare namespace App {
@@ -17,7 +17,9 @@ interface RequestEvent {
 	platform: Readonly<App.Platform>;
 }
 
-type ExtractAPIQuery<Type> = Type extends API<infer X> ? Pick<X, 'query'> : {}
+type ExtractAPIQuery<Type> = Type extends API<infer X> ? X extends { query } ? Pick<X, 'query'> : {} : {}
+type ExtractAPIBody<Type> = Type extends API<infer X> ? X extends { body } ? Pick<X, 'body'> : {} : {}
+
 export interface API<T extends Record<any, any>> extends RequestEvent {
 	request: {
 		json: () => Promise<T['body']>
@@ -25,15 +27,11 @@ export interface API<T extends Record<any, any>> extends RequestEvent {
 	url: QueryGetter<T> & RequestEvent['url']
 }
 
-type Frontend<T extends Record<any, any>> = {
-	body: Awaited<ReturnType<T['request']['json']>>
-}
-
 // Import module keys returns the actual Response. SvelteKit Zero API returns a "FetchAPI"
 export const f = <T extends Record<any, any>>(importModule: T) =>
 	importModule as {
-		[key in keyof T]: ((obj: Frontend<Parameters<T[key]>[0]> & ExtractAPIQuery<T>) => FetchApi<ReturnType<T[key]>>) &
-		((obj: Frontend<Parameters<T[key]>[0]> & ExtractAPIQuery<T>, loadFetch: any) => FetchApi<ReturnType<T[key]>>)
+		[key in keyof T]: ((obj: ExtractAPIBody<Parameters<T[key]>[0]> & ExtractAPIQuery<Parameters<T[key]>[0]>) => FetchApi<ReturnType<T[key]>>) &
+		((obj: ExtractAPIBody<Parameters<T[key]>[0]> & ExtractAPIQuery<Parameters<T[key]>[0]>, loadFetch: any) => FetchApi<ReturnType<T[key]>>)
 	}
 
 interface QueryGetter<T extends Record<any, any>> {
