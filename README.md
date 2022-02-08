@@ -13,7 +13,6 @@ Here's a video on [How to get started](https://youtu.be/bgNKaxIYuQ0) with Svelte
 **Todo**
 - Export API documentation
   - Typescript types are not "exportable" — I'm thinking of line comments as the most plausible solution.
-- Better examples
 
 ### **Requirements**
 - TypeScript in your SvelteKit project
@@ -74,6 +73,63 @@ const config = {
 
 ## Usage
 
+```ts
+// routes/api/user/[id]/message
+
+// Import generic interface
+import type { API } from 'sveltekit-zero-api'
+// Import any HTTP response-codes
+import { Ok, Created, BadRequest, NotFound } from 'svelteit-zero-api/http'
+
+interface Post {
+	body: {
+		some: string,
+		another: number[],
+		brain: {
+			empty: boolean
+		}
+	}
+}
+
+export async const post({ url, request }: API<Post>) => {
+	// Deconstruct json request-body
+	const { some, another, brain } = request.json()
+	...
+	if(doesntWork)
+		return BadRequest()
+	if(notfound)
+		return NotFound()
+	if(alreadyExists)
+		return Ok()
+	return Created()
+}
+
+
+/*
+ * Front-end
+**/
+<script lang="ts">
+	import { onMount } from 'svelte'
+	import api from '$src/api'
+	
+	onMount(() => {
+		// #1 - One way to do it
+		api.user.$id('@Refzlund').message.post({ body: { some: 'one', another: [1,2,3], brain: { empty: true } } })
+			.success(response => console.log(response)) // Any 2⨯⨯-code
+			.ok(r => console.log('Message already exists')) // Only 200-code
+			.created(r => console.log('Your message has been created')) // Only 201-code
+			.clientError(response => console.warn(response)) // Any 4⨯⨯-code
+			.serverError(response => console.error(response)) // Any 5⨯⨯-code
+			
+		// #2 - Another way to do it       * Useful for {#await}-blocks
+		let messagePromise = api.user.$id('@Refzlund').message.post({ body: { some: 'one', another: [1,2,3], brain: { empty: true } } })
+		let response = await messagePromise // Is a response just like you'd expect
+	})
+</script>
+
+```
+
+
 ### Use inside SvelteKit load function
 
 SvelteKit has a module load function, which you can read more about at [SvelteKit Documentation](https://kit.svelte.dev/docs#loading).
@@ -82,16 +138,13 @@ Here, you are given a SvelteKit specific 'fetch' method. Simply pass this as a s
 
 ```ts
 <script context="module">
-    import api from '$src/api'
-    export async function load({ url, params, fetch, session, stuff }) {	
-        // Example 1
-        let response = await api.users.allUsers.get({}, fetch)
-        ...
-        // Example 2
-        api.statistics.post({ body: { path: url.path } }, fetch)
-            .success(response => console.log(response))
-            .error(response => console.error('response.body.error'))
-            ...
+	import api from '$src/api'
+	export async function load({ url, params, fetch, session, stuff }) {	
+		// Example 1
+		let response = await api.users.allUsers.get({}, fetch)
+
+		// Example 2
+		api.statistics.post({ body: { path: url.path } }, fetch)
 ```
 
 ### Slugs
@@ -101,18 +154,18 @@ At some point you'll want to pass slugs.
 ```ts
 // we're accessing routes/api/users/confirmemail/[token].ts
 export async function load({ url, params, fetch, session, stuff }) {
-    const token = params.token
+	const token = params.token
 	
-    // You can either do this (no typesafety):	
-    const response = await api.users.confirmemail[token].post({}, fetch)
+	// You can either do this (no typesafety):	
+	const response = await api.users.confirmemail[token].post({}, fetch)
 
-    // Or this (with typesafety):
-    const response = await api.users.confirmemail.token$(token).post({}, fetch)
+	// Or this (with typesafety):
+	const response = await api.users.confirmemail.token$(token).post({}, fetch)
 
-    // If you have multiple slugs like  routes/api/users/confirmemail/[token].[userid].ts  you have to do
-    const response = await api.users.confirmemail[`${token}.${id}`].post({}, fetch)
+	// If you have multiple slugs like  routes/api/users/confirmemail/[token].[userid].ts  you have to do
+	const response = await api.users.confirmemail[`${token}.${id}`].post({}, fetch)
 	
-    // ${}  are template literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
+	// ${}  are template literals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals
 ```
 
 ### Queries
@@ -121,126 +174,43 @@ Using queries (aka url.searchParams) are simple!
 
 `Backend`
 ```ts
-import { API, Created } from 'sveltekit-zero-api'
+import type { API } from 'sveltekit-zero-api'
+import { Created } from 'svelteit-zero-api/http'
 
 interface Query {
-    query: {
-        name: string,
-        age: number
-    },
-    body: {
-        letter: string
-    }
+	query: {
+		name: string,
+		age: number
+	},
+	body: {
+		letter: string
+	}
 }
 
-export const post({ body, url }: API<Query>) => {
-    const name = url.searchParams.get('name')
-    const age = url.searchParams.get('age')
-    const { letter } = body
-    ...
-    return Created({ body: { message: 'Your letter has been sent!' } })
+export const post({ request, url }: API<Query>) => {
+	const name = url.searchParams.get('name')
+	const age = url.searchParams.get('age')
+	const { letter } = request.json()
+	...
+	return Created({ body: { message: 'Your letter has been sent!', letter } })
 }
 ```
 
 `Frontend`
 ```ts
 <script lang="ts">
-    let apiSendLetter
-    onMount(() => {
-        apiSendLetter = await api.user.letter.post({ 
-            query: { name: 'George', age: 52 }, 
-            body: { letter: 'HOI' } 
-        })
-    })
+	let apiSendLetter
+	onMount(() => {
+		apiSendLetter = await api.user.letter.post({ 
+			query: { name: 'George', age: 52 }, 
+			body: { letter: 'HOI' } 
+		})
+	})
 </script>
 
 {#await apiSendLetter then response}
-    <div class="message">{response.body.message}</div>
+	<div class="message">{response.body.message}</div>
 {/await}
-```
-
-
-### General use
-
-This example is without comments. Here's a [Commented Example](./CommentedExample.md)
-
-Backend → `src/routes/api/core/user/login.ts`
-```ts
-import { API, Ok, BadRequest, InternalError } from 'sveltekit-zero-api/http'
-
-const User = ({email, password}) => (email === 'email' && password === 'password') ? {
-    jwtToken: 'jwtToken',
-    username: 'username',
-    refreshToken: 'refreshToken'
-} : null
-
-interface Put {
-    body: {
-        email: string,
-        password: string
-    }
-}
-
-export const put = async ({ body }: API<Put>) => {
-    const { email, password } = body
-    const response = User({ email, password })
-
-    if(!response)
-        return BadRequest({ error: 'Invalid e-mail or password', body: { target: 'email' } })
-	
-    const { jwtToken, username, refreshToken } = response
-
-    if(jwtToken) {
-        return Ok({
-            headers: {
-                'set-cookie': [ // this is a simplified login example, please encrypt your jwt token server side
-                    `token=${jwtToken}; Path=/; HttpOnly;`,
-                ],
-            },
-
-        body: {
-            refreshToken: refreshToken as string,
-                username
-            }
-        });
-    }
-
-    return InternalError({ error: 'Access-token could not be retrieved' })
-}
-```
-Frontend → `src/routes/login.svelte`
-```ts
-<script lang="ts">
-    import { TextInput } from '$components/inputs'
-    import { refreshtoken, user } from '$components/stores/user'
-    import api from '$src/api'
-	
-    let emailElement
-    let passwordElement
-
-    const email = ''
-    const password = ''
-	
-    // Notice ­— Remember that the HTTP requests are to be done after component onMount()
-    // Read more about component life-cycle: https://svelte.dev/tutorial/onmount
-    const login = () => api.core.user.login.put({body: { email, password }})
-        .ok(response => {
-            $refreshtoken = response.body.refreshToken 
-            $user.username = response.body.username
-        }) 
-        .clientError(response => {
-            response.body.target == 'email' && emailElement.invalidate({response.body.error})
-            response.body.target == 'password' && passwordElement.invalidate({response.body.error})
-        })
-        .serverError(response => {
-            console.error('Something has happened with the servers. Oh-oh.')
-        })
-
-</script>
-
-<TextInput bind:value={email} this:bind={emailElement}>
-<TextInput bind:value={password} this:bind={passwordElement}>
-<button on:click={login}>
 ```
 
 # Q&A
