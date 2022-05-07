@@ -40,7 +40,7 @@ And run
 
 ## Install
 1. Add to project: `npm i sveltekit-zero-api -D`
-2. Watch your folders:
+2. Add watchAPI at the top of `svelte.config.js`:
    ```ts
    import watchAPI from 'sveltekit-zero-api/watch'
 
