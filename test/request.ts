@@ -70,11 +70,22 @@ const get = async (requestEvent: API<Get>) => {
 	return BadRequest({ error: 'Your message did not go through.' })
 }
 
-// * 2. API created for Endpoint
+// * 2. Generated stuff
 
-const api = {
+const _api = {
 	products: f({ get })
 }
+
+import { createZeroApi } from '..'
+// Creating API entry-point to routes and exporting it below
+const api = createZeroApi<typeof _api>({
+	// Deal with Error
+	onError: async (err) => console.error('[API]', err),
+
+	prependCallbacks: (prepend) => prepend.serverError(res => console.error(res.body))
+});
+
+
 
 // * 3. Usage
 

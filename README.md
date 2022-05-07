@@ -87,6 +87,7 @@ Will be generated at `npm run dev` at ↑ outputDir
 | onError | Function to be called on error | `undefined`
 | onSuccess | Function to be called on success | `undefined`
 | stringifyQueryObjects | If a query value in a key-value pair is an object, it will be stringified automatically  | `true`
+| prependCallbacks | Prepends callbacks. Ex.: `(method) => method.serverError(errorHandler)` <sup>[tip](https://github.com/Refzlund/sveltekit-zero-api#error-handling-component)</sup> | `undefined`
 
 <br><br><br><br>
 
@@ -418,20 +419,40 @@ export const get = async (event: API<Post>) => {
 Here's the formatting determination:
 ```ts
 "abc"        => "abc"
-"123.12"     => 123.12     // Only contains numbers
+"123.12"     => 123.12      // Only contains numbers
 "$123.123"   => "$123.123"  // NaN
 "123.12.12"  => "123.12.12" // NaN
 "true"       => true
-"TRUE"       => "TRUE"     // Booleans has to be lowercase
+"TRUE"       => "TRUE"      // Booleans has to be lowercase
 "false"      => false
 "undefined"  => undefined
 "null"       => null
-"NULL"       => "NULL"     // `null` and `undefined` has to be lowercase
+"NULL"       => "NULL"      // `null` and `undefined` has to be lowercase
 "{...}":     => {...}
 "[...]"      => [...]
 "2022-05-06T22:15:11.244Z"   => new Date("2022-05-06T22:15:11.244Z") // Only accepts ISO-date strings (i.e. `new Date().toISOString()`) 
 '"2022-05-06T22:15:11.244Z"' => new Date("2022-05-06T22:15:11.244Z") // Has quotes around the ISO-string (from `new Date()`)
 ```
+ 
+> <br>**Note:** Query objects will be stringified by [default](https://github.com/Refzlund/sveltekit-zero-api#apits-default-name-config):
+> ```ts
+> post({ query: { 
+>    num: 123, 
+>    obj: { message: 'Hi' }, 
+>    arr: ['there']
+> }})
+> ```
+> will be sent as
+> ```ts
+> post({ query: { 
+>    num: 123, 
+>    obj: JSON.stringify({ message: 'Hi' }), 
+>    arr: JSON.stringify(['there'])
+> }})
+> ```
+> Which is parsed into JSON again by [`querySpread`](https://github.com/Refzlund/sveltekit-zero-api/blob/master/lib/utility.ts#L74)
+> <br><br>
+
 
 <br>
 <br>
@@ -480,7 +501,7 @@ export let api = undefined
 let response
 
 export function handleAPI() {
-   response = api()
+   response = await api()
       .ok(response => {
          success = true
          dispatch('success', response)
@@ -488,7 +509,6 @@ export function handleAPI() {
       .error(response => {
          error = true
       })
-      .$.any(r => r)
 }
 ```
 

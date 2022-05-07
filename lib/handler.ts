@@ -62,98 +62,17 @@ export default function handler(options: IOptions, api: APIContent) {
 		resolve: undefined,
 	 }
 
-	function callbackHandler(handleCallback: (statusCode, callback) => any) {
-		return {
-			// "Any response"
-			any:           function (cb) { return handleCallback(0, cb) },
-
-			// general
-			informational: function (cb) { return handleCallback(1, cb) },
-			success:       function (cb) { return handleCallback(2, cb) },
-			redirection:   function (cb) { return handleCallback(3, cb) },
-			error:         function (cb) { return handleCallback(45, cb) },
-			clientError:   function (cb) { return handleCallback(4, cb) },
-			serverError:   function (cb) { return handleCallback(5, cb) },
-
-			// 1××
-			continue:           function (cb) { return handleCallback(100, cb) },
-			switchingProtocols: function (cb) { return handleCallback(101, cb) },
-			processing:         function (cb) { return handleCallback(102, cb) },
-
-			// 2××
-			ok:                          function (cb) { return handleCallback(200, cb) },
-			created:                     function (cb) { return handleCallback(201, cb) },
-			accepted:                    function (cb) { return handleCallback(202, cb) },
-			nonAuthoritativeInformation: function (cb) { return handleCallback(203, cb) },
-			noContent:                   function (cb) { return handleCallback(204, cb) },
-			resetContent:                function (cb) { return handleCallback(205, cb) },
-			partialContent:              function (cb) { return handleCallback(206, cb) },
-			multiStatus:                 function (cb) { return handleCallback(207, cb) },
-			alreadyReported:             function (cb) { return handleCallback(208, cb) },
-			IMUsed:                      function (cb) { return handleCallback(226, cb) },
-
-			// 3××
-			multipleChoices:   function (cb) { return handleCallback(300, cb) },
-			movedPermanently:  function (cb) { return handleCallback(301, cb) },
-			found:             function (cb) { return handleCallback(302, cb) },
-			checkOther:        function (cb) { return handleCallback(303, cb) },
-			notModified:       function (cb) { return handleCallback(304, cb) },
-			useProxy:          function (cb) { return handleCallback(305, cb) },
-			switchProxy:       function (cb) { return handleCallback(306, cb) },
-			temporaryRedirect: function (cb) { return handleCallback(307, cb) },
-			permanentRedirect: function (cb) { return handleCallback(308, cb) },
-
-			// 4××
-			badRequest:                  function (cb) { return handleCallback(400, cb) },
-			unauthorized:                function (cb) { return handleCallback(401, cb) },
-			paymentRequired:             function (cb) { return handleCallback(402, cb) },
-			forbidden:                   function (cb) { return handleCallback(403, cb) },
-			notFound:                    function (cb) { return handleCallback(404, cb) },
-			methodNotAllowed:            function (cb) { return handleCallback(405, cb) },
-			notAcceptable:               function (cb) { return handleCallback(406, cb) },
-			proxyAuthenticationRequired: function (cb) { return handleCallback(407, cb) },
-			requestTimeout:              function (cb) { return handleCallback(408, cb) },
-			conflict:                    function (cb) { return handleCallback(409, cb) },
-			gone:                        function (cb) { return handleCallback(410, cb) },
-			lengthRequired:              function (cb) { return handleCallback(411, cb) },
-			preconditionFailed:          function (cb) { return handleCallback(412, cb) },
-			payloadTooLarge:             function (cb) { return handleCallback(413, cb) },
-			URITooLong:                  function (cb) { return handleCallback(414, cb) },
-			unsupportedMediaType:        function (cb) { return handleCallback(415, cb) },
-			rangeNotSatisfiable:         function (cb) { return handleCallback(416, cb) },
-			expectationFailed:           function (cb) { return handleCallback(417, cb) },
-			imATeapot:                   function (cb) { return handleCallback(418, cb) },
-			misdirectedRequest:          function (cb) { return handleCallback(421, cb) },
-			unprocessableEntity:         function (cb) { return handleCallback(422, cb) },
-			locked:                      function (cb) { return handleCallback(423, cb) },
-			failedDependency:            function (cb) { return handleCallback(424, cb) },
-			upgradeRequired:             function (cb) { return handleCallback(426, cb) },
-			preconditionRequired:        function (cb) { return handleCallback(428, cb) },
-			tooManyRequests:             function (cb) { return handleCallback(429, cb) },
-			requestHeaderFieldsTooLarge: function (cb) { return handleCallback(431, cb) },
-			unavailableForLegalReasons:  function (cb) { return handleCallback(451, cb) },
-
-			// 5××
-			internalServerError:           function (cb) { return handleCallback(500, cb) },
-			notImplemented:                function (cb) { return handleCallback(501, cb) },
-			badGateaway:                   function (cb) { return handleCallback(502, cb) },
-			serviceUnavailable:            function (cb) { return handleCallback(503, cb) },
-			gatewayTimeout:                function (cb) { return handleCallback(504, cb) },
-			HTTPVersionNotSupported:       function (cb) { return handleCallback(505, cb) },
-			variantAlsoNegotiates:         function (cb) { return handleCallback(506, cb) },
-			insufficientStorage:           function (cb) { return handleCallback(507, cb) },
-			loopDetected:                  function (cb) { return handleCallback(508, cb) },
-			notExtended:                   function (cb) { return handleCallback(510, cb) },
-			networkAuthenticationRequired: function (cb) { return handleCallback(511, cb) }
-		}
-	}
-
 	// Resolves the whole request
 	let resolver: (value: any) => void
 	let promiser = new Promise(resolve => resolver = resolve)
 
-
-	let fetchAPI: Record<any, any> = { ...callbackHandler((s, cb) => { callbacks.push([s, cb]); return proxy}), ...promiser }
+	let fetchAPI: Record<any, any> = {
+		...callbackHandler((s, cb) => {
+			callbacks.push([s, cb]); return proxy
+		}),
+		...promiser
+	}
+	
 	fetchAPI['_'] = fetchAPI
 	fetchAPI['$'] = callbackHandler((s, cb) => {
 		$.callback = [s, cb]
@@ -206,6 +125,17 @@ function respond(callbacks: Callback[], res, options: IOptions, $: $) {
 	const validStatus
 		= (code: number) => code === 0 || code === statusRange || code === res.status || (responseError && code === 45)
 
+	const { prependCallbacks } = options.config
+	if (prependCallbacks) {
+		let cbs: Callback[] = []
+		let prepender = callbackHandler((s, cb) => {
+			cbs.push([s, cb])
+			return prepender
+		})
+		prependCallbacks(prepender)
+		callbacks = [...cbs, ...callbacks]
+	}
+	
 	callbacks
 		.filter(([code]) => validStatus(code))
 		.forEach(([code, cb]) => { cb(res) })
@@ -219,4 +149,90 @@ function respond(callbacks: Callback[], res, options: IOptions, $: $) {
 	
 	if ('onSuccess' in options.config)
 		options.config.onSuccess(res)
+}
+
+function callbackHandler(handleCallback: (statusCode, callback) => any) {
+	return {
+		// "Any response"
+		any:                           function (cb) { return handleCallback(0,   cb) },
+
+		// general
+		informational:                 function (cb) { return handleCallback(1,   cb) },
+		success:                       function (cb) { return handleCallback(2,   cb) },
+		redirection:                   function (cb) { return handleCallback(3,   cb) },
+		error:                         function (cb) { return handleCallback(45,  cb) },
+		clientError:                   function (cb) { return handleCallback(4,   cb) },
+		serverError:                   function (cb) { return handleCallback(5,   cb) },
+
+		// 1××
+		continue:                      function (cb) { return handleCallback(100, cb) },
+		switchingProtocols:            function (cb) { return handleCallback(101, cb) },
+		processing:                    function (cb) { return handleCallback(102, cb) },
+
+		// 2××
+		ok:                            function (cb) { return handleCallback(200, cb) },
+		created:                       function (cb) { return handleCallback(201, cb) },
+		accepted:                      function (cb) { return handleCallback(202, cb) },
+		nonAuthoritativeInformation:   function (cb) { return handleCallback(203, cb) },
+		noContent:                     function (cb) { return handleCallback(204, cb) },
+		resetContent:                  function (cb) { return handleCallback(205, cb) },
+		partialContent:                function (cb) { return handleCallback(206, cb) },
+		multiStatus:                   function (cb) { return handleCallback(207, cb) },
+		alreadyReported:               function (cb) { return handleCallback(208, cb) },
+		IMUsed:                        function (cb) { return handleCallback(226, cb) },
+
+		// 3××
+		multipleChoices:               function (cb) { return handleCallback(300, cb) },
+		movedPermanently:              function (cb) { return handleCallback(301, cb) },
+		found:                         function (cb) { return handleCallback(302, cb) },
+		checkOther:                    function (cb) { return handleCallback(303, cb) },
+		notModified:                   function (cb) { return handleCallback(304, cb) },
+		useProxy:                      function (cb) { return handleCallback(305, cb) },
+		switchProxy:                   function (cb) { return handleCallback(306, cb) },
+		temporaryRedirect:             function (cb) { return handleCallback(307, cb) },
+		permanentRedirect:             function (cb) { return handleCallback(308, cb) },
+
+		// 4××
+		badRequest:                    function (cb) { return handleCallback(400, cb) },
+		unauthorized:                  function (cb) { return handleCallback(401, cb) },
+		paymentRequired:               function (cb) { return handleCallback(402, cb) },
+		forbidden:                     function (cb) { return handleCallback(403, cb) },
+		notFound:                      function (cb) { return handleCallback(404, cb) },
+		methodNotAllowed:              function (cb) { return handleCallback(405, cb) },
+		notAcceptable:                 function (cb) { return handleCallback(406, cb) },
+		proxyAuthenticationRequired:   function (cb) { return handleCallback(407, cb) },
+		requestTimeout:                function (cb) { return handleCallback(408, cb) },
+		conflict:                      function (cb) { return handleCallback(409, cb) },
+		gone:                          function (cb) { return handleCallback(410, cb) },
+		lengthRequired:                function (cb) { return handleCallback(411, cb) },
+		preconditionFailed:            function (cb) { return handleCallback(412, cb) },
+		payloadTooLarge:               function (cb) { return handleCallback(413, cb) },
+		URITooLong:                    function (cb) { return handleCallback(414, cb) },
+		unsupportedMediaType:          function (cb) { return handleCallback(415, cb) },
+		rangeNotSatisfiable:           function (cb) { return handleCallback(416, cb) },
+		expectationFailed:             function (cb) { return handleCallback(417, cb) },
+		imATeapot:                     function (cb) { return handleCallback(418, cb) },
+		misdirectedRequest:            function (cb) { return handleCallback(421, cb) },
+		unprocessableEntity:           function (cb) { return handleCallback(422, cb) },
+		locked:                        function (cb) { return handleCallback(423, cb) },
+		failedDependency:              function (cb) { return handleCallback(424, cb) },
+		upgradeRequired:               function (cb) { return handleCallback(426, cb) },
+		preconditionRequired:          function (cb) { return handleCallback(428, cb) },
+		tooManyRequests:               function (cb) { return handleCallback(429, cb) },
+		requestHeaderFieldsTooLarge:   function (cb) { return handleCallback(431, cb) },
+		unavailableForLegalReasons:    function (cb) { return handleCallback(451, cb) },
+
+		// 5××
+		internalServerError:           function (cb) { return handleCallback(500, cb) },
+		notImplemented:                function (cb) { return handleCallback(501, cb) },
+		badGateaway:                   function (cb) { return handleCallback(502, cb) },
+		serviceUnavailable:            function (cb) { return handleCallback(503, cb) },
+		gatewayTimeout:                function (cb) { return handleCallback(504, cb) },
+		HTTPVersionNotSupported:       function (cb) { return handleCallback(505, cb) },
+		variantAlsoNegotiates:         function (cb) { return handleCallback(506, cb) },
+		insufficientStorage:           function (cb) { return handleCallback(507, cb) },
+		loopDetected:                  function (cb) { return handleCallback(508, cb) },
+		notExtended:                   function (cb) { return handleCallback(510, cb) },
+		networkAuthenticationRequired: function (cb) { return handleCallback(511, cb) }
+	}
 }
