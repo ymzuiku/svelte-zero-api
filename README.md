@@ -254,7 +254,7 @@ internalError: 500 // .internalError(response => )
 And some callbacks cover more:
 ```ts
 any: xxx           // .any(r => )
-informational: 3xx // .informational(r => )
+informational: 1xx // .informational(r => )
 success: 2xx       // .success(r => )
 redirection: 3xx   // .redirection(r => )
 clientError: 4xx   // .clientError(r => )
