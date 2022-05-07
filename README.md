@@ -65,9 +65,6 @@ And run
 <br>
 
 ### Configuration
-
-<br>
-
 #### **watchAPI**
 | Property | Description | Default
 | --- | --- | ---
@@ -250,19 +247,19 @@ api.product.get().ok(response => { console.log(response.body.message) })
 
 Every response-code has their own callback
 ```ts
-ok: 200          // .ok(response => )
+ok: 200            // .ok(response => )
 badRequest: 400    // .badRequest(response => ) 
-internalError: 500  // .internalError(response => )
+internalError: 500 // .internalError(response => )
 ```
 And some callbacks cover more:
 ```ts
-any: xxx         // .any(r => )
-informational: 3xx  // .informational(r => )
-success: 2xx      // .success(r => )
+any: xxx           // .any(r => )
+informational: 3xx // .informational(r => )
+success: 2xx       // .success(r => )
 redirection: 3xx   // .redirection(r => )
 clientError: 4xx   // .clientError(r => )
 serverError: 5xx   // .serverError(r => )
-error: 4xx or 5xx   // .error(r => )
+error: 4xx or 5xx  // .error(r => )
 ```
 
 <br><br>
@@ -326,7 +323,7 @@ or
 1. created
 2. success
 
-Depending on the response from the endpoint
+In case of 200 (Ok) or 201 (Created)
 
 <br><br>
 
