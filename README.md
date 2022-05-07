@@ -417,19 +417,19 @@ export const get = async (event: API<Post>) => {
 
 Here's the formatting determination:
 ```ts
-"abc"      => "abc"
-"123.12"   => 123.12     // Only contains numbers
-"$123.123"  => "$123.123"  // NaN
-"123.12.12" => "123.12.12" // NaN
-"true"     => true
-"TRUE"     => "TRUE"     // Booleans has to be lowercase
-"false"    => false
-"undefined" => undefined
-"null"     => null
-"NULL"     => "NULL"     // `null` and `undefined` has to be lowercase
-"{...}":   => {...}
-"[...]"    => [...]
-"2022-05-06T22:15:11.244Z" => new Date("2022-05-06T22:15:11.244Z") // Only accepts ISO-date strings (i.e. `new Date().toISOString()`) 
+"abc"        => "abc"
+"123.12"     => 123.12     // Only contains numbers
+"$123.123"   => "$123.123"  // NaN
+"123.12.12"  => "123.12.12" // NaN
+"true"       => true
+"TRUE"       => "TRUE"     // Booleans has to be lowercase
+"false"      => false
+"undefined"  => undefined
+"null"       => null
+"NULL"       => "NULL"     // `null` and `undefined` has to be lowercase
+"{...}":     => {...}
+"[...]"      => [...]
+"2022-05-06T22:15:11.244Z"   => new Date("2022-05-06T22:15:11.244Z") // Only accepts ISO-date strings (i.e. `new Date().toISOString()`) 
 '"2022-05-06T22:15:11.244Z"' => new Date("2022-05-06T22:15:11.244Z") // Has quotes around the ISO-string (from `new Date()`)
 ```
 
@@ -477,19 +477,18 @@ import { createEventDispatcher } from 'svelte'
 const dispatch = createEventDispatcher()
 
 export let api = undefined
+let response
 
 export function handleAPI() {
-   let zeroapi = api()
-   zeroapi
+   response = api()
       .ok(response => {
          success = true
+         dispatch('success', response)
       })
       .error(response => {
          error = true
       })
-      .any(r => {
-         console.log('API handled')
-      })
+      .$.any(r => r)
 }
 ```
 
@@ -497,7 +496,7 @@ export function handleAPI() {
 import APIComponent from '...'
 ...
 
-<APIComponent api={() => api.products.post(params)} let:success let:error>
+<APIComponent api={() => api.products.post(params)} let:success let:response on:success={...}>
    {#if success}
       <div>
          Hi mom
