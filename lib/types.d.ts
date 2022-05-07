@@ -4,12 +4,8 @@ import type { MaybePromise } from './types/helpers'
 
 // * Used for accessing Endpoint info such as paramters and return type
 type Endpoint = (content: any) => MaybePromise<Record<any, any>>
-type EndpointParams<T extends Endpoint> = Normalize<ExtractAPI<Parameters<T>[0]>>
+type EndpointParams<T extends Endpoint> = ExtractAPI<Parameters<T>[0]>
 type EndpointReturnType<T extends Endpoint> = FetchApi<ReturnType<T>>
-
-export type Normalize<T> =
-	T extends (...args: infer A) => infer R ? (...args: Normalize<A>) => Normalize<R>
-	: [T] extends [any] ? { [K in keyof T]: Normalize<T[K]> } : never 
 
 // * The FetchAPI on each endpoint method
 /** @internal */
