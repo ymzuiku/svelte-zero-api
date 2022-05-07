@@ -41,25 +41,25 @@ And run
 ## Install
 1. Add to project: `npm i sveltekit-zero-api -D`
 2. Watch your folders:
-	```ts
-	import watchAPI from 'sveltekit-zero-api/watch'
+   ```ts
+   import watchAPI from 'sveltekit-zero-api/watch'
 
-	if (process.env.NODE_ENV !== 'production') {
-		watchAPI()
-	}
-	```
+   if (process.env.NODE_ENV !== 'production') {
+      watchAPI()
+   }
+   ```
 3. In `tsconfig.json` make sure to follow these configuration options: 
-	```ts
-	{ 
-		compilerOptions: { 
-			"strict": false,
-			"lib": ["esnext", "DOM"],
-			"module": "esnext",
-			"target": "esnext"
-		 },
-		 "include": ["node_modules/sveltekit-zero-api/__temp.ts"]
-	}
-	``` 
+   ```ts
+   { 
+      compilerOptions: { 
+         "strict": false,
+         "lib": ["esnext", "DOM"],
+         "module": "esnext",
+         "target": "esnext"
+       },
+       "include": ["node_modules/sveltekit-zero-api/__temp.ts"]
+   }
+   ``` 
 4. (optional) [Add aliases](./AddAliases.md) to make your life easier
 
 <br>
@@ -103,12 +103,12 @@ These *can* take a **body** or a **query**. Let's define our endpoint inputs:
 
 ```ts
 interface Post {
-	body: {
-		productName: string
-	},
-	query?: {
-		value?: number
-	}
+   body: {
+      productName: string
+   },
+   query?: {
+      value?: number
+   }
 }
 ```
 
@@ -131,36 +131,33 @@ import type { API } from 'sveltekit-zero-api'
 import { Ok, BadRequest, InternalError } from 'sveltekit-zero-api/http'
 
 interface Post {
-	body: {
-		productName: string
-	},
-	query?: {
-		value?: number
-	}
+   body: {
+      productName: string
+   },
+   query?: {
+      value?: number
+   }
 }
 
 export const post = async (event: API<Post>) => {
-	// You can include headers etc, as you would per a normal response - nothing new there
-	let headers = new Header()
-	// headers may be a key-value or whatever you like
-	let headers = {}
+   // You can include headers etc, as you would per a normal response - nothing new there
+   let headers = new Header()
+   // headers may be a key-value or whatever you like
+   let headers = {}
 
-	// We get our typed body:
-	const { productName } = await event.request.json()
+   // We get our typed body:
+   const { productName } = await event.request.json()
 
-	// *sometimes I forget about the await statement. Since this is typed,
-	// productName will show an error, if not awaited, since .json() returns a promise.
+   // *sometimes I forget about the await statement. Since this is typed,
+   // productName will show an error, if not awaited, since .json() returns a promise.
 
-	// We can easily get our queries, and have them formatted for us using `querySpread`
-	const { value } = querySpread(event.url.searchParams)
+   /** ... some code to handle the endpoint */
 
-	/** ... some code to handle the endpoint */
-
-	if(ok)
-		return Ok({ body: { message: 'Product posted' }, headers })
-	if(notOk)
-		return BadRequest() // Default error message: Bad Request
-	return InternalError({ error: 'Something went wrong.' })
+   if(ok)
+      return Ok({ body: { message: 'Product posted' }, headers })
+   if(notOk)
+      return BadRequest() // Default error message: Bad Request
+   return InternalError({ error: 'Something went wrong.' })
 } 
 ```
 
@@ -187,13 +184,15 @@ If we have `src/routes/api/products.ts` as an endpoint with a POST, we can acces
 The api will automatically pick up the paramters for the endpoint.
 ![Intellisense with API calls](./frontend-intellisense.gif)
 
+<br><br>
+
 #### **Awaited promise**
 If you await an api function such as `api.products.get()`, you will get a [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) (unless you're using .$.).
 
 ```ts
 let response = await api.products.get()
 if(response.status == 200)
-	console.log(response.body)
+   console.log(response.body)
 
 // eqv. to
 
@@ -218,19 +217,19 @@ api.products.warehouse$('austin-warehouse').storage.product$(productId).get()
 In SvelteKit, the load functions has its own fetch which you can pass to the api.
 ```html
 <script context="module">
-  export async function load({ params, fetch }) {
-    const { id } = params
+   export async function load({ params, fetch }) {
+      const { id } = params
 
-    // Pass `fetch` as the second argument
-    const response = await api.products.id$(id).get({}, fetch)
+      // Pass `fetch` as the second argument
+      const response = await api.products.id$(id).get({}, fetch)
 
-    return {
-      status: response.status,
-      props: {
-        product: response.ok && response.body
+      return {
+         status: response.status,
+         props: {
+            product: response.ok && response.body
+         }
       }
-    }
-  }
+   }
 </script>
 ```
 
@@ -251,18 +250,18 @@ api.product.get().ok(response => { console.log(response.body.message) })
 
 Every response-code has their own callback
 ```ts
-ok: 200             // .ok(response => )
-badRequest: 400     // .badRequest(response => ) 
+ok: 200          // .ok(response => )
+badRequest: 400    // .badRequest(response => ) 
 internalError: 500  // .internalError(response => )
 ```
 And some callbacks cover more:
 ```ts
-any: xxx            // .any(r => )
+any: xxx         // .any(r => )
 informational: 3xx  // .informational(r => )
-success: 2xx        // .success(r => )
-redirection: 3xx    // .redirection(r => )
-clientError: 4xx    // .clientError(r => )
-serverError: 5xx    // .serverError(r => )
+success: 2xx      // .success(r => )
+redirection: 3xx   // .redirection(r => )
+clientError: 4xx   // .clientError(r => )
+serverError: 5xx   // .serverError(r => )
 error: 4xx or 5xx   // .error(r => )
 ```
 
@@ -271,9 +270,9 @@ error: 4xx or 5xx   // .error(r => )
 #### **The types in the backend are available in the frontend**
 ```ts
 if(A)
-	return Ok({ body: { message: 'Hello there', lol: false } })
+   return Ok({ body: { message: 'Hello there', lol: false } })
 else
-	return Created({ body: { message: 'Message created', product: someProduct, lol: true } })
+   return Created({ body: { message: 'Message created', product: someProduct, lol: true } })
 
 // Side-note: Any Error response (4xx/5xx), have { error: string, target: any }
 // as optional options. They will be in response: { body: { error, target } }
@@ -285,38 +284,38 @@ return InternalError({ error: 'Something went wrong' })
 Here you'll find the types:
 ```ts
 api.product.get()
-	// { body: { message: string, lol: boolean }, ... }
-	.ok(response => {
-        const {
-            message, ✅
-            product, ⛔
-            lol ✅
-        } = response.body
-    }) 
-	// { body: { message: string, product: ProductType, lol: boolean }, ... }
-	.created(({ body }) => {
-        const { 
-            message, ✅
-            product, ✅
-            lol ✅
-        } = body
-    }) 
-	// { body: { error: string }, ... }
-	.internalError(r => console.error(r.body.error)) ✅
-	.success(r => {
-		let body = r.body
-		
-		// All success responses have { body: { message: string } }
-		body.message ✅
-		// Not all have product
-		body.product ⛔
+   // { body: { message: string, lol: boolean }, ... }
+   .ok(response => {
+      const {
+         message, ✅
+         product, ⛔
+         lol ✅
+      } = response.body
+   }) 
+   // { body: { message: string, product: ProductType, lol: boolean }, ... }
+   .created(({ body }) => {
+      const { 
+         message, ✅
+         product, ✅
+         lol ✅
+      } = body
+   }) 
+   // { body: { error: string }, ... }
+   .internalError(r => console.error(r.body.error)) ✅
+   .success(r => {
+      let body = r.body
+      
+      // All success responses have { body: { message: string } }
+      body.message ✅
+      // Not all have product
+      body.product ⛔
 
-		if(!('product' in body)) // Return if 'product'-key is not in body
-			return
-		
-		// Because we checked if product is in body, it is now valid
-		body.product ✅
-	})
+      if(!('product' in body)) // Return if 'product'-key is not in body
+         return
+      
+      // Because we checked if product is in body, it is now valid
+      body.product ✅
+   })
 ```
 These functions will also be called in order. So
 1. ok
@@ -347,7 +346,7 @@ This returns whatever is returned from the trailing callback. Naturally, only on
 ```ts
 // Since we don't »await«
 // products: Promise<Product[]>
-let products = api.product.get().ok(r => r.body)
+let products = api.product.get().$.ok(r => r.body)
 ```
 
 ![Assigning variables directly](./assign-var.gif)
@@ -362,12 +361,12 @@ import type { ResponseBody, RequestParams } from 'sveltekit-zero-api'
 
 ResponseBody gets the body of a response, for a specific status-code.
 ```ts
-			  // Where response: { body: { products: Product[] } }
+           // Where response: { body: { products: Product[] } }
 let products: ResponseBody<typeof api.products.get, 200>['products']
 
 let productParams: RequestParams<typeof api.products.post> = {
-	body: { productName: 'Banana' },
-	query: { value: 69.101 }
+   body: { productName: 'Banana' },
+   query: { value: 69.101 }
 }
 ```
 
@@ -389,50 +388,50 @@ import { BadRequest, Ok } from 'sveltekit-zero-api/http'
 import { querySpread } from 'sveltekit-zero-api'
 
 interface Post {
-    query?: {
-        str: string,
-        num: number,
-        bo: boolean,
-        obj: {
-            something: string,
-            array: any[]
-        },
-        arr: [],
-        date: Date
-    }
+   query?: {
+      str: string,
+      num: number,
+      bo: boolean,
+      obj: {
+         something: string,
+         array: any[]
+      },
+      arr: [],
+      date: Date
+   }
 }
 
 export const get = async (event: API<Post>) => {
-    const { searchParams } = event.url
-    
-    const { str, num, bo, obj, arr, date } = querySpread(searchParams)
+   const { searchParams } = event.url
+   
+   const { str, num, bo, obj, arr, date } = querySpread(searchParams)
 
-    // NOTE: ZeroAPI does NOT validate types!
-    // It only attempts to format the values, based on the determination schema below
+   // NOTE: ZeroAPI does NOT validate types!
+   // It only attempts to format the values, based on the determination schema below
 
-    if(typeof num !== 'number')
-        return BadRequest({ error: 'num: Invalid format; must be a number' })
+   if(typeof num !== 'number')
+      return BadRequest({ error: 'num: Invalid format; must be a number' })
 
-    obj.array.push('something')
+   obj.array.push('something')
 
-    ...
+   ...
 }
 ```
 
 Here's the formatting determination:
 ```ts
-"abc"       => "abc"
-"123.12"    => 123.12      // Only contains numbers
+"abc"      => "abc"
+"123.12"   => 123.12     // Only contains numbers
 "$123.123"  => "$123.123"  // NaN
 "123.12.12" => "123.12.12" // NaN
-"true"      => true
-"TRUE"      => "TRUE"      // Booleans has to be lowercase
-"false"     => false
+"true"     => true
+"TRUE"     => "TRUE"     // Booleans has to be lowercase
+"false"    => false
 "undefined" => undefined
-"null"      => null
-"NULL"      => "NULL"      // `null` and `undefined` has to be lowercase
-"{...}":    => {...}
-"[...]"     => [...]
+"null"     => null
+"NULL"     => "NULL"     // `null` and `undefined` has to be lowercase
+"{...}":   => {...}
+"[...]"    => [...]
 "2022-05-06T22:15:11.244Z" => new Date("2022-05-06T22:15:11.244Z") // Only accepts ISO-date strings (i.e. `new Date().toISOString()`) 
 '"2022-05-06T22:15:11.244Z"' => new Date("2022-05-06T22:15:11.244Z") // Has quotes around the ISO-string (from `new Date()`)
 ```
@@ -449,15 +448,15 @@ If you have a component that sits on the root-layout and handles error messages 
 ```ts
 // src/lib/components/error-handler.svelte
 <sript context="module">
-    import { SvelteErrorResponse } from 'sveltekit-zero-api'
-    
-    export function handleError(response: SvelteErrorResponse) {
-        errors = [...errors, response.body.error]
-        setTimeout(shift, 2000)
-    }
+   import { SvelteErrorResponse } from 'sveltekit-zero-api'
+   
+   export function handleError(response: SvelteErrorResponse) {
+      errors = [...errors, response.body.error]
+      setTimeout(shift, 2000)
+   }
 
-    const shift = () => { errors.shift(); errors = errors; }
-    let errors: string[] = [] 
+   const shift = () => { errors.shift(); errors = errors; }
+   let errors: string[] = [] 
 </script>
 
 ...
@@ -468,7 +467,7 @@ import { handleError } from '$components/error-handler.svelte'
 
 ...
 
-     products = api.products.post(params).error(handleError).$.ok(r => r.body)
+    products = api.products.post(params).error(handleError).$.ok(r => r.body)
 ```
 
 <br><br>
@@ -483,17 +482,17 @@ const dispatch = createEventDispatcher()
 export let api = undefined
 
 export function handleAPI() {
-    let zeroapi = api()
-    zeroapi
-        .ok(response => {
-            success = true
-        })
-        .error(response => {
-            error = true
-        })
-        .any(r => {
-            console.log('API handled')
-        })
+   let zeroapi = api()
+   zeroapi
+      .ok(response => {
+         success = true
+      })
+      .error(response => {
+         error = true
+      })
+      .any(r => {
+         console.log('API handled')
+      })
 }
 ```
 
@@ -502,11 +501,11 @@ import APIComponent from '...'
 ...
 
 <APIComponent api={() => api.products.post(params)} let:success let:error>
-    {#if success}
-        <div>
-            Hi mom
-        </div>
-    {/if}
+   {#if success}
+      <div>
+         Hi mom
+      </div>
+   {/if}
 </APIComponent>
 ```
 You can probably be more creative.
@@ -516,17 +515,17 @@ You can probably be more creative.
 ## Q&A
 - The `api` type does not always update after changes
   - TypeScript can be a little late at picking changes up sometimes. The immediate fix is to,
-    - make sure tsconfig.json has these configurations: 
-  		```ts
-		"compilerOptions": {
-			"lib": ["esnext", "DOM"],
-			"module": "esnext",
-			"target": "esnext"
-		},
-		"include": ["node_modules/sveltekit-zero-api/__temp.ts"]
-  		```
-    - ctrl+click the "`api`" or "`seomthing`" part in `api.something.get` to open **__types.ts**, and TypeScript should pick up the changes
-    - install VSCode Extension for [TS Nightly](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next) for the TS beta
+   - make sure tsconfig.json has these configurations: 
+        ```ts
+      "compilerOptions": {
+         "lib": ["esnext", "DOM"],
+         "module": "esnext",
+         "target": "esnext"
+      },
+      "include": ["node_modules/sveltekit-zero-api/__temp.ts"]
+        ```
+   - ctrl+click the "`api`" or "`seomthing`" part in `api.something.get` to open **__types.ts**, and TypeScript should pick up the changes
+   - install VSCode Extension for [TS Nightly](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-typescript-next) for the TS beta
 - Cannot read property '*' of undefined
   - Happens if you run the API on [SSR](https://kit.svelte.dev/docs#ssr-and-javascript). Use onMount, or any other client-side called functions (on:click etc.). Read more about component life-cycle: https://svelte.dev/tutorial/onmount
 
