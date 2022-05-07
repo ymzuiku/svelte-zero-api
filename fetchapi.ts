@@ -1,376 +1,455 @@
-type FixedAwaited<T> = T extends PromiseLike<infer U> ? U : T
-type Callback<T, U> = (response: Extract<FixedAwaited<T>, U>) => void
 import type * as StatusCode from './httpcodes'
-import type { Response } from './http'
+import type { SvelteResponse } from './http'
+import type { MaybePromise } from './lib/types/helpers'
 
-export interface ResponseType<T extends Promise<Record<string, unknown>>> extends Partial<Promise<T>> {
-	any: (callback: Callback<Promise<Response>, {}>) => this
-	
+type FixedAwaited<T> = T extends PromiseLike<infer U> ? U : T
+
+type Callback<T, S> = (response: Extract<FixedAwaited<T>, S>) => void
+
+export type ExportCallback<T extends Callback<any, any>> = T extends Callback<infer X, any> ? X : never
+
+export interface ResponseType<T extends MaybePromise<Record<string, unknown>>> extends Partial<Promise<SvelteResponse<T>>> {
+	any: (callback: Callback<MaybePromise<T>, {}>) => this
+
+	/** Returns the value, which is returned in the callback */
+	$: {}
+
 	/** You don't return a ClientError, but still want to check for it (ex. 404)? Underscore at the rescue! */
 	_:
 		// General
-		InformationalType<Promise<Response>, {}> & 
-		SuccessType<Promise<Response>, {}> & 
-		RedirectionType<Promise<Response>, {}> & 
-		ClientErrorType<Promise<Response>, {}> & 
-		ServerErrorType<Promise<Response>, {}> & 
-		ErrorType<Promise<Response>, {}> & 
+		InformationalType                 <MaybePromise<SvelteResponse<T>>, {}> & 
+		SuccessType                       <MaybePromise<SvelteResponse<T>>, {}> & 
+		RedirectionType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		ClientErrorType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		ServerErrorType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		ErrorType                         <MaybePromise<SvelteResponse<T>>, {}> & 
 
 		// 1××
-		ContinueType<Promise<Response>, {}> & 
-		SwitchingProtocolsType<Promise<Response>, {}> & 
-		ProcessingType<Promise<Response>, {}> & 
+		ContinueType                      <MaybePromise<SvelteResponse<T>>, {}> & 
+		SwitchingProtocolsType            <MaybePromise<SvelteResponse<T>>, {}> & 
+		ProcessingType                    <MaybePromise<SvelteResponse<T>>, {}> & 
 
 		// 2××
-		okType<Promise<Response>, {}> & 
-		CreatedType<Promise<Response>, {}> & 
-		AcceptedType<Promise<Response>, {}> & 
-		NonAuthoritativeInformationType<Promise<Response>, {}> & 
-		NoContentType<Promise<Response>, {}> & 
-		ResetContentType<Promise<Response>, {}> & 
-		PartialContentType<Promise<Response>, {}> & 
-		MultiStatusType<Promise<Response>, {}> & 
-		AlreadyReportedType<Promise<Response>, {}> & 
-		IMUsedType<Promise<Response>, {}> & 
+		okType                            <MaybePromise<SvelteResponse<T>>, {}> & 
+		CreatedType                       <MaybePromise<SvelteResponse<T>>, {}> & 
+		AcceptedType                      <MaybePromise<SvelteResponse<T>>, {}> & 
+		NonAuthoritativeInformationType   <MaybePromise<SvelteResponse<T>>, {}> & 
+		NoContentType                     <MaybePromise<SvelteResponse<T>>, {}> & 
+		ResetContentType                  <MaybePromise<SvelteResponse<T>>, {}> & 
+		PartialContentType                <MaybePromise<SvelteResponse<T>>, {}> & 
+		MultiStatusType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		AlreadyReportedType               <MaybePromise<SvelteResponse<T>>, {}> & 
+		IMUsedType                        <MaybePromise<SvelteResponse<T>>, {}> & 
 
 		// 3××
-		MultipleChoicesType<Promise<Response>, {}> & 
-		MovedPermanentlyType<Promise<Response>, {}> & 
-		FoundType<Promise<Response>, {}> & 
-		CheckOtherType<Promise<Response>, {}> & 
-		NotModifiedType<Promise<Response>, {}> & 
-		UseProxyType<Promise<Response>, {}> & 
-		SwitchProxyType<Promise<Response>, {}> & 
-		TemporaryRedirectType<Promise<Response>, {}> & 
-		PermanentRedirectType<Promise<Response>, {}> & 
+		MultipleChoicesType               <MaybePromise<SvelteResponse<T>>, {}> & 
+		MovedPermanentlyType              <MaybePromise<SvelteResponse<T>>, {}> & 
+		FoundType                         <MaybePromise<SvelteResponse<T>>, {}> & 
+		CheckOtherType                    <MaybePromise<SvelteResponse<T>>, {}> & 
+		NotModifiedType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		UseProxyType                      <MaybePromise<SvelteResponse<T>>, {}> & 
+		SwitchProxyType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		TemporaryRedirectType             <MaybePromise<SvelteResponse<T>>, {}> & 
+		PermanentRedirectType             <MaybePromise<SvelteResponse<T>>, {}> & 
 
 		// 4××
-		BadRequestType<Promise<Response>, {}> & 
-		UnauthorizedType<Promise<Response>, {}> & 
-		PaymentRequiredType<Promise<Response>, {}> & 
-		ForbiddenType<Promise<Response>, {}> & 
-		NotFoundType<Promise<Response>, {}> & 
-		MethodNotAllowedType<Promise<Response>, {}> & 
-		NotAcceptableType<Promise<Response>, {}> & 
-		ProxyAuthenticationRequiredType<Promise<Response>, {}> & 
-		RequestTimeoutType<Promise<Response>, {}> & 
-		ConflictType<Promise<Response>, {}> & 
-		GoneType<Promise<Response>, {}> & 
-		LengthRequiredType<Promise<Response>, {}> & 
-		PreconditionFailedType<Promise<Response>, {}> & 
-		PayloadTooLargeType<Promise<Response>, {}> & 
-		URITooLongType<Promise<Response>, {}> & 
-		UnsupportedMediaTypeType<Promise<Response>, {}> & 
-		RangeNotSatisfiableType<Promise<Response>, {}> & 
-		ExpectationFailedType<Promise<Response>, {}> & 
-		ImATeapotType<Promise<Response>, {}> & 
-		MisdirectedRequestType<Promise<Response>, {}> & 
-		UnprocessableEntityType<Promise<Response>, {}> & 
-		LockedType<Promise<Response>, {}> & 
-		FailedDependencyType<Promise<Response>, {}> & 
-		UpgradeRequiredType<Promise<Response>, {}> & 
-		PreconditionRequiredType<Promise<Response>, {}> & 
-		TooManyRequestsType<Promise<Response>, {}> & 
-		RequestHeaderFieldsTooLargeType<Promise<Response>, {}> & 
-		UnavailableForLegalReasonsType<Promise<Response>, {}> & 
+		BadRequestType                    <MaybePromise<SvelteResponse<T>>, {}> & 
+		UnauthorizedType                  <MaybePromise<SvelteResponse<T>>, {}> & 
+		PaymentRequiredType               <MaybePromise<SvelteResponse<T>>, {}> & 
+		ForbiddenType                     <MaybePromise<SvelteResponse<T>>, {}> & 
+		NotFoundType                      <MaybePromise<SvelteResponse<T>>, {}> & 
+		MethodNotAllowedType              <MaybePromise<SvelteResponse<T>>, {}> & 
+		NotAcceptableType                 <MaybePromise<SvelteResponse<T>>, {}> & 
+		ProxyAuthenticationRequiredType   <MaybePromise<SvelteResponse<T>>, {}> & 
+		RequestTimeoutType                <MaybePromise<SvelteResponse<T>>, {}> & 
+		ConflictType                      <MaybePromise<SvelteResponse<T>>, {}> & 
+		GoneType                          <MaybePromise<SvelteResponse<T>>, {}> & 
+		LengthRequiredType                <MaybePromise<SvelteResponse<T>>, {}> & 
+		PreconditionFailedType            <MaybePromise<SvelteResponse<T>>, {}> & 
+		PayloadTooLargeType               <MaybePromise<SvelteResponse<T>>, {}> & 
+		URITooLongType                    <MaybePromise<SvelteResponse<T>>, {}> & 
+		UnsupportedMediaTypeType          <MaybePromise<SvelteResponse<T>>, {}> & 
+		RangeNotSatisfiableType           <MaybePromise<SvelteResponse<T>>, {}> & 
+		ExpectationFailedType             <MaybePromise<SvelteResponse<T>>, {}> & 
+		ImATeapotType                     <MaybePromise<SvelteResponse<T>>, {}> & 
+		MisdirectedRequestType            <MaybePromise<SvelteResponse<T>>, {}> & 
+		UnprocessableEntityType           <MaybePromise<SvelteResponse<T>>, {}> & 
+		LockedType                        <MaybePromise<SvelteResponse<T>>, {}> & 
+		FailedDependencyType              <MaybePromise<SvelteResponse<T>>, {}> & 
+		UpgradeRequiredType               <MaybePromise<SvelteResponse<T>>, {}> & 
+		PreconditionRequiredType          <MaybePromise<SvelteResponse<T>>, {}> & 
+		TooManyRequestsType               <MaybePromise<SvelteResponse<T>>, {}> & 
+		RequestHeaderFieldsTooLargeType   <MaybePromise<SvelteResponse<T>>, {}> & 
+		UnavailableForLegalReasonsType    <MaybePromise<SvelteResponse<T>>, {}> & 
 
 		// 5××
-		InternalServerErrorType<Promise<Response>, {}> & 
-		NotImplementedType<Promise<Response>, {}> & 
-		BadGateawayType<Promise<Response>, {}> & 
-		ServiceUnavailableType<Promise<Response>, {}> & 
-		GatewayTimeoutType<Promise<Response>, {}> & 
-		HTTPVersionNotSupportedType<Promise<Response>, {}> & 
-		VariantAlsoNegotiatesType<Promise<Response>, {}> & 
-		InsufficientStorageType<Promise<Response>, {}> & 
-		LoopDetectedType<Promise<Response>, {}> & 
-		NotExtendedType<Promise<Response>, {}> & 
-		NetworkAuthenticationRequiredType<Promise<Response>, {}>
+		InternalServerErrorType           <MaybePromise<SvelteResponse<T>>, {}> & 
+		NotImplementedType                <MaybePromise<SvelteResponse<T>>, {}> & 
+		BadGateawayType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		ServiceUnavailableType            <MaybePromise<SvelteResponse<T>>, {}> & 
+		GatewayTimeoutType                <MaybePromise<SvelteResponse<T>>, {}> & 
+		HTTPVersionNotSupportedType       <MaybePromise<SvelteResponse<T>>, {}> & 
+		VariantAlsoNegotiatesType         <MaybePromise<SvelteResponse<T>>, {}> & 
+		InsufficientStorageType           <MaybePromise<SvelteResponse<T>>, {}> & 
+		LoopDetectedType                  <MaybePromise<SvelteResponse<T>>, {}> & 
+		NotExtendedType                   <MaybePromise<SvelteResponse<T>>, {}> & 
+		NetworkAuthenticationRequiredType <MaybePromise<SvelteResponse<T>>, {}>
 }
 
+type ReturnedCallback<T extends MaybePromise<object>, S extends object>
+	= <K>(callback: K & Callback<T, S>) => K extends (...any:any[]) => any ? Promise<ReturnType<K>> : unknown
+
+
 // * General
-export interface InformationalType<T extends Promise<object>, S extends object > {
+export interface InformationalType<T extends MaybePromise<object>, S extends object, This extends boolean = true> {
 	/** Callback for 1××-responses */
 	informational: (callback: Callback<T, S>) => this
+	$: { informational: ReturnedCallback<T, S> }
 }
-export interface SuccessType<T extends Promise<object>, S extends object> {
+export interface SuccessType<T extends MaybePromise<object>, S extends object> {
 	/** Callback for 2××-responses */
 	success: (callback: Callback<T, S>) => this
+	$: { success: ReturnedCallback<T, S> }
 }
-export interface RedirectionType<T extends Promise<object>, S extends object > {
+export interface RedirectionType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for 3××-responses */
 	redirection: (callback: Callback<T, S>) => this
+	$: { redirection: ReturnedCallback<T, S> }
 }
-export interface ClientErrorType<T extends Promise<object>, S extends object > {
+export interface ClientErrorType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for 4××-responses */
 	clientError: (callback: Callback<T, S>) => this
+	$: { clientError: ReturnedCallback<T, S> }
 }
-export interface ServerErrorType<T extends Promise<object>, S extends object > {
+export interface ServerErrorType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for 5××-responses */
 	serverError: (callback: Callback<T, S>) => this
+	$: { serverError: ReturnedCallback<T, S> }
 }
-export interface ErrorType<T extends Promise<object>, S extends object > {
+export interface ErrorType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for 4××- & 5××-responses */
 	error: (callback: Callback<T, S>) => this
+	$: { error: ReturnedCallback<T, S> }
 }
 
 // 1××
-export interface ContinueType<T extends Promise<object>, S extends object > {
+export interface ContinueType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 100-responses */
 	continue: (callback: Callback<T, S>) => this
+	$: { continue: ReturnedCallback<T, S> }
 }
-export interface SwitchingProtocolsType<T extends Promise<object>, S extends object > {
+export interface SwitchingProtocolsType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 101-responses */
 	switchingProtocols: (callback: Callback<T, S>) => this
+	$: { switchingProtocols: ReturnedCallback<T, S> }
 }
-export interface ProcessingType<T extends Promise<object>, S extends object > {
+export interface ProcessingType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 102-responses */
 	processing: (callback: Callback<T, S>) => this
+	$: { processing: ReturnedCallback<T, S> }
 }
 
 // 2××
-export interface okType<T extends Promise<object>, S extends object > {
+export interface okType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 200-responses */
 	ok: (callback: Callback<T, S>) => this
+	$: { ok: ReturnedCallback<T, S> }
 }
-export interface CreatedType<T extends Promise<object>, S extends object > {
+export interface CreatedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 201-responses */
 	created: (callback: Callback<T, S>) => this
+	$: { created: ReturnedCallback<T, S> }
 }
-export interface AcceptedType<T extends Promise<object>, S extends object > {
+export interface AcceptedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 202-responses */
 	accepted: (callback: Callback<T, S>) => this
+	$: { accepted: ReturnedCallback<T, S> }
 }
-export interface NonAuthoritativeInformationType<T extends Promise<object>, S extends object > {
+export interface NonAuthoritativeInformationType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 203-responses */
 	nonAuthoritativeInformation: (callback: Callback<T, S>) => this
+	$: { nonAuthoritativeInformation: ReturnedCallback<T, S> }
 }
-export interface NoContentType<T extends Promise<object>, S extends object > {
+export interface NoContentType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 204-responses */
 	noContent: (callback: Callback<T, S>) => this
+	$: { noContent: ReturnedCallback<T, S> }
 }
-export interface ResetContentType<T extends Promise<object>, S extends object > {
+export interface ResetContentType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 205-responses */
 	resetContent: (callback: Callback<T, S>) => this
+	$: { resetContent: ReturnedCallback<T, S> }
 }
-export interface PartialContentType<T extends Promise<object>, S extends object > {
+export interface PartialContentType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 206-responses */
 	partialContent: (callback: Callback<T, S>) => this
+	$: { partialContent: ReturnedCallback<T, S> }
 }
-export interface MultiStatusType<T extends Promise<object>, S extends object > {
+export interface MultiStatusType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 207-responses */
 	multiStatus: (callback: Callback<T, S>) => this
+	$: { multiStatus: ReturnedCallback<T, S> }
 }
-export interface AlreadyReportedType<T extends Promise<object>, S extends object > {
+export interface AlreadyReportedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 208-responses */
 	alreadyReported: (callback: Callback<T, S>) => this
+	$: { alreadyReported: ReturnedCallback<T, S> }
 }
-export interface IMUsedType<T extends Promise<object>, S extends object > {
+export interface IMUsedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 226-responses */
 	IMUsed: (callback: Callback<T, S>) => this
+	$: { IMUsed: ReturnedCallback<T, S> }
 }
 
 // 3××
-export interface MultipleChoicesType<T extends Promise<object>, S extends object > {
+export interface MultipleChoicesType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 300-responses */
 	multipleChoices: (callback: Callback<T, S>) => this
+	$: { multipleChoices: ReturnedCallback<T, S> }
 }
-export interface MovedPermanentlyType<T extends Promise<object>, S extends object > {
+export interface MovedPermanentlyType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 301-responses */
 	movedPermanently: (callback: Callback<T, S>) => this
+	$: { movedPermanently: ReturnedCallback<T, S> }
 }
-export interface FoundType<T extends Promise<object>, S extends object > {
+export interface FoundType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 302-responses */
 	found: (callback: Callback<T, S>) => this
+	$: { found: ReturnedCallback<T, S> }
 }
-export interface CheckOtherType<T extends Promise<object>, S extends object > {
+export interface CheckOtherType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 303-responses */
 	checkOther: (callback: Callback<T, S>) => this
+	$: { checkOther: ReturnedCallback<T, S> }
 }
-export interface NotModifiedType<T extends Promise<object>, S extends object > {
+export interface NotModifiedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 304-responses */
 	notModified: (callback: Callback<T, S>) => this
+	$: { notModified: ReturnedCallback<T, S> }
 }
-export interface UseProxyType<T extends Promise<object>, S extends object > {
+export interface UseProxyType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 305-responses */
 	useProxy: (callback: Callback<T, S>) => this
+	$: { useProxy: ReturnedCallback<T, S> }
 }
-export interface SwitchProxyType<T extends Promise<object>, S extends object > {
+export interface SwitchProxyType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 306-responses */
 	switchProxy: (callback: Callback<T, S>) => this
+	$: { switchProxy: ReturnedCallback<T, S> }
 }
-export interface TemporaryRedirectType<T extends Promise<object>, S extends object > {
+export interface TemporaryRedirectType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 307-responses */
 	temporaryRedirect: (callback: Callback<T, S>) => this
+	$: { temporaryRedirect: ReturnedCallback<T, S> }
 }
-export interface PermanentRedirectType<T extends Promise<object>, S extends object > {
+export interface PermanentRedirectType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 308-responses */
 	permanentRedirect: (callback: Callback<T, S>) => this
+	$: { permanentRedirect: ReturnedCallback<T, S> }
 }
 
 
 // 4××
-export interface BadRequestType<T extends Promise<object>, S extends object > {
+export interface BadRequestType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 400-responses */
 	badRequest: (callback: Callback<T, S>) => this
+	$: { badRequest: ReturnedCallback<T, S> }
 }
-export interface UnauthorizedType<T extends Promise<object>, S extends object > {
+export interface UnauthorizedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 401-responses */
 	unauthorized: (callback: Callback<T, S>) => this
+	$: { unauthorized: ReturnedCallback<T, S> }
 }
-export interface PaymentRequiredType<T extends Promise<object>, S extends object > {
+export interface PaymentRequiredType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 402-responses */
 	paymentRequired: (callback: Callback<T, S>) => this
+	$: { paymentRequired: ReturnedCallback<T, S> }
 }
-export interface ForbiddenType<T extends Promise<object>, S extends object > {
+export interface ForbiddenType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 403-responses */
 	forbidden: (callback: Callback<T, S>) => this
+	$: { forbidden: ReturnedCallback<T, S> }
 }
-export interface NotFoundType<T extends Promise<object>, S extends object > {
+export interface NotFoundType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 404-responses */
 	notFound: (callback: Callback<T, S>) => this
+	$: { notFound: ReturnedCallback<T, S> }
 }
-export interface MethodNotAllowedType<T extends Promise<object>, S extends object > {
+export interface MethodNotAllowedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 405-responses */
 	methodNotAllowed: (callback: Callback<T, S>) => this
+	$: { methodNotAllowed: ReturnedCallback<T, S> }
 }
-export interface NotAcceptableType<T extends Promise<object>, S extends object > {
+export interface NotAcceptableType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 406-responses */
 	notAcceptable: (callback: Callback<T, S>) => this
+	$: { notAcceptable: ReturnedCallback<T, S> }
 }
-export interface ProxyAuthenticationRequiredType<T extends Promise<object>, S extends object > {
+export interface ProxyAuthenticationRequiredType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 407-responses */
 	proxyAuthenticationRequired: (callback: Callback<T, S>) => this
+	$: { proxyAuthenticationRequired: ReturnedCallback<T, S> }
 }
-export interface RequestTimeoutType<T extends Promise<object>, S extends object > {
+export interface RequestTimeoutType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 408-responses */
 	requestTimeout: (callback: Callback<T, S>) => this
+	$: { requestTimeout: ReturnedCallback<T, S> }
 }
-export interface ConflictType<T extends Promise<object>, S extends object > {
+export interface ConflictType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 409-responses */
 	conflict: (callback: Callback<T, S>) => this
+	$: { conflict: ReturnedCallback<T, S> }
 }
-export interface GoneType<T extends Promise<object>, S extends object > {
+export interface GoneType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 410-responses */
 	gone: (callback: Callback<T, S>) => this
+	$: { gone: ReturnedCallback<T, S> }
 }
-export interface LengthRequiredType<T extends Promise<object>, S extends object > {
+export interface LengthRequiredType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 411-responses */
 	lengthRequired: (callback: Callback<T, S>) => this
+	$: { lengthRequired: ReturnedCallback<T, S> }
 }
-export interface PreconditionFailedType<T extends Promise<object>, S extends object > {
+export interface PreconditionFailedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 412-responses */
 	preconditionFailed: (callback: Callback<T, S>) => this
+	$: { preconditionFailed: ReturnedCallback<T, S> }
 }
-export interface PayloadTooLargeType<T extends Promise<object>, S extends object > {
+export interface PayloadTooLargeType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 413-responses */
 	payloadTooLarge: (callback: Callback<T, S>) => this
+	$: { payloadTooLarge: ReturnedCallback<T, S> }
 }
-export interface URITooLongType<T extends Promise<object>, S extends object > {
+export interface URITooLongType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 414-responses */
 	URITooLong: (callback: Callback<T, S>) => this
+	$: { URITooLong: ReturnedCallback<T, S> }
 }
-export interface UnsupportedMediaTypeType<T extends Promise<object>, S extends object > {
+export interface UnsupportedMediaTypeType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 415-responses */
 	unsupportedMediaType: (callback: Callback<T, S>) => this
+	$: { unsupportedMediaType: ReturnedCallback<T, S> }
 }
-export interface RangeNotSatisfiableType<T extends Promise<object>, S extends object > {
+export interface RangeNotSatisfiableType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 416-responses */
 	rangeNotSatisfiable: (callback: Callback<T, S>) => this
+	$: { rangeNotSatisfiable: ReturnedCallback<T, S> }
 }
-export interface ExpectationFailedType<T extends Promise<object>, S extends object > {
+export interface ExpectationFailedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 417-responses */
 	expectationFailed: (callback: Callback<T, S>) => this
+	$: { expectationFailed: ReturnedCallback<T, S> }
 }
-export interface ImATeapotType<T extends Promise<object>, S extends object > {
+export interface ImATeapotType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 418-responses */
 	imATeapot: (callback: Callback<T, S>) => this
+	$: { imATeapot: ReturnedCallback<T, S> }
 }
-export interface MisdirectedRequestType<T extends Promise<object>, S extends object > {
+export interface MisdirectedRequestType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 421-responses */
 	misdirectedRequest: (callback: Callback<T, S>) => this
+	$: { misdirectedRequest: ReturnedCallback<T, S> }
 }
-export interface UnprocessableEntityType<T extends Promise<object>, S extends object > {
+export interface UnprocessableEntityType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 422-responses */
 	unprocessableEntity: (callback: Callback<T, S>) => this
+	$: { unprocessableEntity: ReturnedCallback<T, S> }
 }
-export interface LockedType<T extends Promise<object>, S extends object > {
+export interface LockedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 423-responses */
 	locked: (callback: Callback<T, S>) => this
+	$: { locked: ReturnedCallback<T, S> }
 }
-export interface FailedDependencyType<T extends Promise<object>, S extends object > {
+export interface FailedDependencyType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 424-responses */
 	failedDependency: (callback: Callback<T, S>) => this
+	$: { failedDependency: ReturnedCallback<T, S> }
 }
-export interface UpgradeRequiredType<T extends Promise<object>, S extends object > {
+export interface UpgradeRequiredType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 426-responses */
 	upgradeRequired: (callback: Callback<T, S>) => this
+	$: { upgradeRequired: ReturnedCallback<T, S> }
 }
-export interface PreconditionRequiredType<T extends Promise<object>, S extends object > {
+export interface PreconditionRequiredType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 428-responses */
 	preconditionRequired: (callback: Callback<T, S>) => this
+	$: { preconditionRequired: ReturnedCallback<T, S> }
 }
-export interface TooManyRequestsType<T extends Promise<object>, S extends object > {
+export interface TooManyRequestsType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 429-responses */
 	tooManyRequests: (callback: Callback<T, S>) => this
+	$: { tooManyRequests: ReturnedCallback<T, S> }
 }
-export interface RequestHeaderFieldsTooLargeType<T extends Promise<object>, S extends object > {
+export interface RequestHeaderFieldsTooLargeType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 431-responses */
 	requestHeaderFieldsTooLarge: (callback: Callback<T, S>) => this
+	$: { requestHeaderFieldsTooLarge: ReturnedCallback<T, S> }
 }
-export interface UnavailableForLegalReasonsType<T extends Promise<object>, S extends object > {
+export interface UnavailableForLegalReasonsType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 451-responses */
 	unavailableForLegalReasons: (callback: Callback<T, S>) => this
+	$: { unavailableForLegalReasons: ReturnedCallback<T, S> }
 }
 
 
 // 5××
-export interface InternalServerErrorType<T extends Promise<object>, S extends object > {
+export interface InternalServerErrorType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 500-responses */
 	internalServerError: (callback: Callback<T, S>) => this
+	$: { internalServerError: ReturnedCallback<T, S> }
 }
-export interface NotImplementedType<T extends Promise<object>, S extends object > {
+export interface NotImplementedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 501-responses */
 	notImplemented: (callback: Callback<T, S>) => this
+	$: { notImplemented: ReturnedCallback<T, S> }
 }
-export interface BadGateawayType<T extends Promise<object>, S extends object > {
+export interface BadGateawayType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 502-responses */
 	badGateaway: (callback: Callback<T, S>) => this
+	$: { badGateaway: ReturnedCallback<T, S> }
 }
-export interface ServiceUnavailableType<T extends Promise<object>, S extends object > {
+export interface ServiceUnavailableType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 503-responses */
 	serviceUnavailable: (callback: Callback<T, S>) => this
+	$: { serviceUnavailable: ReturnedCallback<T, S> }
 }
-export interface GatewayTimeoutType<T extends Promise<object>, S extends object > {
+export interface GatewayTimeoutType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 504-responses */
 	gatewayTimeout: (callback: Callback<T, S>) => this
+	$: { gatewayTimeout: ReturnedCallback<T, S> }
 }
-export interface HTTPVersionNotSupportedType<T extends Promise<object>, S extends object > {
+export interface HTTPVersionNotSupportedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 505-responses */
 	HTTPVersionNotSupported: (callback: Callback<T, S>) => this
+	$: { HTTPVersionNotSupported: ReturnedCallback<T, S> }
 }
-export interface VariantAlsoNegotiatesType<T extends Promise<object>, S extends object > {
+export interface VariantAlsoNegotiatesType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 506-responses */
 	variantAlsoNegotiates: (callback: Callback<T, S>) => this
+	$: { variantAlsoNegotiates: ReturnedCallback<T, S> }
 }
-export interface InsufficientStorageType<T extends Promise<object>, S extends object > {
+export interface InsufficientStorageType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 507-responses */
 	insufficientStorage: (callback: Callback<T, S>) => this
+	$: { insufficientStorage: ReturnedCallback<T, S> }
 }
-export interface LoopDetectedType<T extends Promise<object>, S extends object > {
+export interface LoopDetectedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 508-responses */
 	loopDetected: (callback: Callback<T, S>) => this
+	$: { loopDetected: ReturnedCallback<T, S> }
 }
-export interface NotExtendedType<T extends Promise<object>, S extends object > {
+export interface NotExtendedType<T extends MaybePromise<object>, S extends object > {
 	/** Callback for status 510-responses */
 	notExtended: (callback: Callback<T, S>) => this
+	$: { notExtended: ReturnedCallback<T, S> }
 }
-export interface NetworkAuthenticationRequiredType<T extends Promise<object>, S extends object> {
+export interface NetworkAuthenticationRequiredType<T extends MaybePromise<object>, S extends object> {
 	/** Callback for status 511-responses */
 	networkAuthenticationRequired: (callback: Callback<T, S>) => this
+	$: { networkAuthenticationRequired: ReturnedCallback<T, S> }
 }
 
-export type FetchApi<T extends Promise<Record<string, unknown>>> =
+export type FetchApi<T extends MaybePromise<Record<string, unknown>>> =
 	ResponseType<T> &	
 
 	// General

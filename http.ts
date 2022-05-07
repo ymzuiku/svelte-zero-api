@@ -1,117 +1,127 @@
 /** SvelteKit Response */
-export interface Response {
-	status?: number,
-	body?: Record<string, unknown>,
-	headers?: Record<string, unknown>,
-	bodyUsed?: boolean,
-	ok?: boolean,
-	redirected?: boolean,
-	statusText?: string,
-	type?: string,
+interface DefaultResponse {
+	status?: number
+	body?: Record<any, any> | any
+	headers?: Record<any, any>
+	bodyUsed?: boolean
+	ok?: boolean
+	redirected?: boolean
+	statusText?: string
+	type?: string
 	url?: string
 }
 
-export interface DefaultResponse {
-	body?: Record<string, unknown>,
-	headers?: Record<string, unknown>
+export type SvelteResponse<T extends Record<any, any> = unknown> = {
+	[K in keyof DefaultResponse]: K extends keyof T ? T[K] : DefaultResponse[K]
+}
+
+export interface SvelteErrorResponse extends SvelteResponse<{ body: { error: string } }> { }
+
+interface DefaultResponse {
+	body?: Record<any, any> | any,
+	headers?: Record<any, any>
 }
 
 interface ErrorResponse extends DefaultResponse {
-	/** "Error Message Succesfully Failed" */
+	/** An error message that will be sent with body */
 	error?: string
+
+	/** The target that triggered error. Usually set to indicate a frontend element */
+	target?: any
 }
 
-export const createDefaultResponse = <C extends number, T extends DefaultResponse>(code: C, obj: T): T & { status: C } & Response => {
+export const createDefaultResponse = <C extends number, T extends DefaultResponse>(code: C, obj: T): { status: C } & SvelteResponse<T> => {
 	!obj && (obj = {} as T)
-	return ({ status: code, body: {}, headers: {}, ...obj })
+	return ({ status: code, body: {}, headers: {}, ...obj }) as unknown as
+		{ status: C } & SvelteResponse<T>
 }
+
+type InferErrorResponse<T> = T extends ErrorResponse & infer X ? X : never
+type ErrorResponseHasTarget<T> = InferErrorResponse<T> extends { target: any } ? { body: { target: InferErrorResponse<T>['target'] } } : {}
 
 /** Creates a response with correct ReturnType and sets body.error and body.target */
 export const createErrorResponse =
-	<C extends number, T extends DefaultResponse & ErrorResponse > (code: C, obj: T, defaultErrorMessage: string):
-		Omit<T, 'error'> & { status: C, body: { error: string } } & Response => {
-	
+	<C extends number, T extends ErrorResponse> (code: C, obj: T, defaultErrorMessage: string) => {
 	!obj && (obj = {} as T)
-	!obj.error && (obj.error = defaultErrorMessage)
-	
 	return {
 		status: code,
-		body: { error: obj.error, ...obj.body },
+		body: { error: obj.error || defaultErrorMessage, target: obj.target, ...obj.body },
 		headers: obj.headers
-	} as Omit<T, 'error'> & { status: C, body: { error: string } } & Response
+	} as
+		{ status: C } & SvelteResponse<InferErrorResponse<T> & { body: { error: string } } & ErrorResponseHasTarget<T>>
 }
 
 // 1××
-export const Continue           = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(100, obj)
-export const SwitchingProtocols = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(101, obj)
-export const Processing         = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(102, obj)
+export const Continue           = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(100, obj as T)
+export const SwitchingProtocols = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(101, obj as T)
+export const Processing         = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(102, obj as T)
 
 // 2××
-export const Ok                          = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(200, obj)
-export const Created                     = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(201, obj)
-export const Accepted                    = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(202, obj)
-export const NonAuthoritativeInformation = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(203, obj)
-export const NoContent                   = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(204, obj)
-export const ResetContent                = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(205, obj)
-export const PartialContent              = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(206, obj)
-export const MultiStatus                 = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(207, obj)
-export const AlreadyReported             = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(208, obj)
-export const IMUsed                      = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(226, obj)
+export const Ok                          = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(200, obj as T)
+export const Created                     = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(201, obj as T)
+export const Accepted                    = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(202, obj as T)
+export const NonAuthoritativeInformation = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(203, obj as T)
+export const NoContent                   = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(204, obj as T)
+export const ResetContent                = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(205, obj as T)
+export const PartialContent              = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(206, obj as T)
+export const MultiStatus                 = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(207, obj as T)
+export const AlreadyReported             = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(208, obj as T)
+export const IMUsed                      = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(226, obj as T)
 
 // 3××
-export const MultipleChoices   = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(300, obj)
-export const MovedPermanently  = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(301, obj)
-export const Found             = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(302, obj)
-export const CheckOther        = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(303, obj)
-export const NotModified       = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(304, obj)
-export const UseProxy          = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(305, obj)
-export const SwitchProxy       = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(306, obj)
-export const TemporaryRedirect = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(307, obj)
-export const PermanentRedirect = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(308, obj)
+export const MultipleChoices   = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(300, obj as T)
+export const MovedPermanently  = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(301, obj as T)
+export const Found             = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(302, obj as T)
+export const CheckOther        = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(303, obj as T)
+export const NotModified       = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(304, obj as T)
+export const UseProxy          = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(305, obj as T)
+export const SwitchProxy       = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(306, obj as T)
+export const TemporaryRedirect = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(307, obj as T)
+export const PermanentRedirect = <T extends DefaultResponse>(obj?: T) => createDefaultResponse(308, obj as T)
 
 // 4××
-export const BadRequest                  = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(400, obj, 'Bad Request')
-export const InvalidAuthenticationToken  = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(401, obj, 'Invalid Authentication Token')
-export const Unauthorized                = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(401, obj, 'Unauthorized')
-export const PaymentRequired             = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(401, obj, 'PaymentRequired')
-export const Forbidden                   = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(403, obj, 'Forbidden')
-export const NotFound                    = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(404, obj, 'Method Not Allowed')
-export const MethodNotAllowed            = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(405, obj, 'Not Acceptable')
-export const NotAcceptable               = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(406, obj, 'Proxy Authentication Required')
-export const ProxyAuthenticationRequired = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(407, obj, 'Request Timeout')
-export const RequestTimeout              = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(408, obj, 'Conflict')
-export const Conflict                    = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(409, obj, 'Gone')
-export const Gone                        = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(410, obj, 'Gone')
-export const LengthRequired              = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(411, obj, 'Length Required')
-export const PreconditionFailed          = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(412, obj, 'Precondition Failed')
-export const PayloadTooLarge             = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(413, obj, 'Payload Too Large')
-export const URITooLong                  = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(414, obj, 'URI Too Long')
-export const UnsupportedMediaType        = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(415, obj, 'Unsuported Media Type')
-export const RangeNotSatisfiable         = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(416, obj, 'Range Not Satisfiable')
-export const ExpectationFailed           = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(417, obj, 'Expectation Failed')
-export const ImATeapot                   = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(418, obj, 'I\'m A Teapot')
-export const MisdirectedRequest          = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(421, obj, 'Misdirected Request')
-export const UnprocessableEntity         = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(422, obj, 'Unprocessable Entity')
-export const Locked                      = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(423, obj, 'Locked')
-export const FailedDependency            = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(424, obj, 'Failed Dependency')
-export const UpgradeRequired             = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(426, obj, 'Upgrade Required')
-export const PreconditionRequired        = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(428, obj, 'Precondition Required')
-export const TooManyRequests             = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(429, obj, 'Too Many Requests')
-export const RequestHeaderFieldsTooLarge = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(431, obj, 'Request Header Fields Too Large')
-export const UnavailableForLegalReasons  = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(451, obj, 'Unavailable For Legal Reasons')
+export const BadRequest                  = <T extends ErrorResponse>(obj?: T) => createErrorResponse(400, obj as T, 'Bad Request')
+export const InvalidAuthenticationToken  = <T extends ErrorResponse>(obj?: T) => createErrorResponse(401, obj as T, 'Invalid Authentication Token')
+export const Unauthorized                = <T extends ErrorResponse>(obj?: T) => createErrorResponse(401, obj as T, 'Unauthorized')
+export const PaymentRequired             = <T extends ErrorResponse>(obj?: T) => createErrorResponse(401, obj as T, 'PaymentRequired')
+export const Forbidden                   = <T extends ErrorResponse>(obj?: T) => createErrorResponse(403, obj as T, 'Forbidden')
+export const NotFound                    = <T extends ErrorResponse>(obj?: T) => createErrorResponse(404, obj as T, 'Method Not Allowed')
+export const MethodNotAllowed            = <T extends ErrorResponse>(obj?: T) => createErrorResponse(405, obj as T, 'Not Acceptable')
+export const NotAcceptable               = <T extends ErrorResponse>(obj?: T) => createErrorResponse(406, obj as T, 'Proxy Authentication Required')
+export const ProxyAuthenticationRequired = <T extends ErrorResponse>(obj?: T) => createErrorResponse(407, obj as T, 'Request Timeout')
+export const RequestTimeout              = <T extends ErrorResponse>(obj?: T) => createErrorResponse(408, obj as T, 'Conflict')
+export const Conflict                    = <T extends ErrorResponse>(obj?: T) => createErrorResponse(409, obj as T, 'Gone')
+export const Gone                        = <T extends ErrorResponse>(obj?: T) => createErrorResponse(410, obj as T, 'Gone')
+export const LengthRequired              = <T extends ErrorResponse>(obj?: T) => createErrorResponse(411, obj as T, 'Length Required')
+export const PreconditionFailed          = <T extends ErrorResponse>(obj?: T) => createErrorResponse(412, obj as T, 'Precondition Failed')
+export const PayloadTooLarge             = <T extends ErrorResponse>(obj?: T) => createErrorResponse(413, obj as T, 'Payload Too Large')
+export const URITooLong                  = <T extends ErrorResponse>(obj?: T) => createErrorResponse(414, obj as T, 'URI Too Long')
+export const UnsupportedMediaType        = <T extends ErrorResponse>(obj?: T) => createErrorResponse(415, obj as T, 'Unsuported Media Type')
+export const RangeNotSatisfiable         = <T extends ErrorResponse>(obj?: T) => createErrorResponse(416, obj as T, 'Range Not Satisfiable')
+export const ExpectationFailed           = <T extends ErrorResponse>(obj?: T) => createErrorResponse(417, obj as T, 'Expectation Failed')
+export const ImATeapot                   = <T extends ErrorResponse>(obj?: T) => createErrorResponse(418, obj as T, 'I\'m A Teapot')
+export const MisdirectedRequest          = <T extends ErrorResponse>(obj?: T) => createErrorResponse(421, obj as T, 'Misdirected Request')
+export const UnprocessableEntity         = <T extends ErrorResponse>(obj?: T) => createErrorResponse(422, obj as T, 'Unprocessable Entity')
+export const Locked                      = <T extends ErrorResponse>(obj?: T) => createErrorResponse(423, obj as T, 'Locked')
+export const FailedDependency            = <T extends ErrorResponse>(obj?: T) => createErrorResponse(424, obj as T, 'Failed Dependency')
+export const UpgradeRequired             = <T extends ErrorResponse>(obj?: T) => createErrorResponse(426, obj as T, 'Upgrade Required')
+export const PreconditionRequired        = <T extends ErrorResponse>(obj?: T) => createErrorResponse(428, obj as T, 'Precondition Required')
+export const TooManyRequests             = <T extends ErrorResponse>(obj?: T) => createErrorResponse(429, obj as T, 'Too Many Requests')
+export const RequestHeaderFieldsTooLarge = <T extends ErrorResponse>(obj?: T) => createErrorResponse(431, obj as T, 'Request Header Fields Too Large')
+export const UnavailableForLegalReasons  = <T extends ErrorResponse>(obj?: T) => createErrorResponse(451, obj as T, 'Unavailable For Legal Reasons')
 
 // 5××
-export const InternalError                 = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(500, obj, 'Internal Error')
-export const NotImplemented                = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(501, obj, 'Not Implemented')
-export const BadGateaway                   = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(502, obj, 'Bad Gateaway')
-export const ServiceUnavailable            = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(503, obj, 'Service Unavailable')
-export const GatewayTimeout                = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(504, obj, 'Gateway Timeout')
-export const HTTPVersionNotSupported       = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(505, obj, 'HTTP Version Not Supported')
-export const VariantAlsoNegotiates         = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(506, obj, 'Variant Also Negotiates')
-export const InsufficientStorage           = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(507, obj, 'Insufficient Storage')
-export const LoopDetected                  = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(508, obj, 'Loop Detected')
-export const NotExtended                   = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(510, obj, 'Not Extended')
-export const NetworkAuthenticationRequired = <T extends DefaultResponse>(obj?: T & ErrorResponse) => createErrorResponse(511, obj, 'Network Authentication Required')
+export const InternalError                 = <T extends ErrorResponse>(obj?: T) => createErrorResponse(500, obj as T, 'Internal Error')
+export const NotImplemented                = <T extends ErrorResponse>(obj?: T) => createErrorResponse(501, obj as T, 'Not Implemented')
+export const BadGateaway                   = <T extends ErrorResponse>(obj?: T) => createErrorResponse(502, obj as T, 'Bad Gateaway')
+export const ServiceUnavailable            = <T extends ErrorResponse>(obj?: T) => createErrorResponse(503, obj as T, 'Service Unavailable')
+export const GatewayTimeout                = <T extends ErrorResponse>(obj?: T) => createErrorResponse(504, obj as T, 'Gateway Timeout')
+export const HTTPVersionNotSupported       = <T extends ErrorResponse>(obj?: T) => createErrorResponse(505, obj as T, 'HTTP Version Not Supported')
+export const VariantAlsoNegotiates         = <T extends ErrorResponse>(obj?: T) => createErrorResponse(506, obj as T, 'Variant Also Negotiates')
+export const InsufficientStorage           = <T extends ErrorResponse>(obj?: T) => createErrorResponse(507, obj as T, 'Insufficient Storage')
+export const LoopDetected                  = <T extends ErrorResponse>(obj?: T) => createErrorResponse(508, obj as T, 'Loop Detected')
+export const NotExtended                   = <T extends ErrorResponse>(obj?: T) => createErrorResponse(510, obj as T, 'Not Extended')
+export const NetworkAuthenticationRequired = <T extends ErrorResponse>(obj?: T) => createErrorResponse(511, obj as T, 'Network Authentication Required')
 
 
 
