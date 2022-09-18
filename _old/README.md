@@ -1,9 +1,3 @@
-# NOTE
-Currently being rewritten, and waiting for a TypeScript issue to be resolved.
-
-Latest NPM package does not currently work with the SvelteKit August update. This upcomign update resolves bad performance (https://github.com/Refzlund/sveltekit-zero-api/issues/6), 
-and makes it compatible with the recent SvelteKit changes. *Please await v0.11.0*.
-
 # SvelteKit Zero API
 Provides type-safety between front- and backend, but more importantly — creates a structure for ease of APIs in your project.
 

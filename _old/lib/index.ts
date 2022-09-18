@@ -7,7 +7,7 @@ import type { FetchAPICallback } from './types'
 
 import handler from './handler'
 
-const endpoints = ['get', 'post', 'put', 'del', 'options', 'patch']
+const endpoints = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 
 type ImportModule<T extends Record<any, any>> = {
 	[key in keyof T]: FetchAPICallback<T[key]>
@@ -43,7 +43,7 @@ export function createZeroApi<T>(config: ZeroAPIConfig): T {
 
 		/** api.users.post({ body: {...} }) */
 		function handleEndpoint() {
-			let method = route.toUpperCase().replace('DEL', 'DELETE')
+			let method = route.toUpperCase()
 			let path = directory.path
 
 			directory[route] = (contents, _fetch = null) =>

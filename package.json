@@ -1,29 +1,27 @@
 {
-  "name": "sveltekit-zero-api",
-  "version": "0.10.2",
-  "main": "lib/index.ts",
-  "types": "lib/index.ts",
-  "exports": {
-    "./watch": "./watch.mjs",
-    "./onWatch": "./onWatch.ts",
-	"./http": "./http.ts",
-	"./httpcodes": "./httpcodes.ts",
-	"./fetchapi": "./fetchapi.ts",
-    ".": "./lib/index.ts"
-  },
-  "private": false,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Refzlund/sveltekit-zero-api.git"
-  },
-  "bugs": {
-    "url": "git+https://github.com/Refzlund/sveltekit-zero-api.git"
-  },
-  "homepage": "git+https://github.com/Refzlund/sveltekit-zero-api.git",
-  "dependencies": {
-    "chokidar": "^3.5.2",
-    "fs-extra": "^10.0.0",
-    "tslib": "^2.3.1",
-    "typescript": "^4.4.4"
-  }
+	"name": "sveltekit-zero-api",
+	"version": "0.11.0",
+	"scripts": {
+		"dev": "set NODE_ENV=zeroapi && vite dev",
+		"package": "svelte-package",
+		"postinstall": "node init",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "next",
+		"@sveltejs/kit": "next",
+		"@sveltejs/package": "next",
+		"chokidar": "^3.5.3",
+		"svelte": "^3.50.1",
+		"svelte-check": "^2.9.0",
+		"svelte-preprocess": "^4.10.7",
+		"sveltekit-zero-api": "file:sveltekit-zero-api.tgz",
+		"svelte2tsx": "^0.5.17",
+		"tslib": "^2.4.0",
+		"typescript": "^4.8.3",
+		"vite": "^3.1.0"
+	},
+	"type": "module",
+	"module": "esnext"
 }

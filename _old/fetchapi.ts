@@ -8,6 +8,13 @@ type Callback<T, S> = (response: Extract<FixedAwaited<T>, S>) => void
 
 export type ExportCallback<T extends Callback<any, any>> = T extends Callback<infer X, any> ? X : never
 
+/*
+	Instead of having every type, how about the returning functions, extends like { status 200, name: 'ok' },
+	and the types will just use the name-key for a function?
+
+	_: could just be an object that lists the callbacks, rather than it being ONE GIANT intersection type
+*/
+
 export interface ResponseType<T extends MaybePromise<Record<string, unknown>>> extends Partial<Promise<SvelteResponse<T>>> {
 	any: (callback: Callback<MaybePromise<T>, {}>) => this
 
