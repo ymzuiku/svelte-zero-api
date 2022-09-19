@@ -61,10 +61,8 @@ export function apiUpdater(
 
 	debugging && console.log(`[DEBUG] Updating generated types at ${resolution}...`)
 	
-	fs.writeFile(
-		resolution, file(dirText, importStatements),
-		(err) => err && console.error(err)
-	)
+	// Flag is required to make it a writeable stream. Replacing file messes with TypeScript.
+	fs.writeFileSync(resolution, file(dirText, importStatements), { flag: 'w+' })
 }
 
 const file = (dirText: string, importCode: string) =>

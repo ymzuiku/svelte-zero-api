@@ -1,17 +1,21 @@
-<script>
+<script lang='ts'>
 	import api from '../api';
 	import { onMount } from 'svelte'
 
 	onMount(() => {
 		console.log('here')
 		api.fo.sluggers$('test').POST({
-			body: { message: 'Some message' },
+			body: {
+				message: 'Giraffe'
+			},
 			query: {
-				boink: 'yes',
-				test: 1
+				boink: 'y23',
+				test: 23
 			}
-		}).ok(res => {
+		}).Ok(res => {
 			console.log(res)
+		}).BadRequest(res => {
+			console.log(res.body)
 		})
 	})
 	

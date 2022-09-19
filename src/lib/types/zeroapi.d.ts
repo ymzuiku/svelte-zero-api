@@ -97,11 +97,7 @@ type Fetch = (info: RequestInfo, init?: RequestInit) => Promise<Response>;
 // E = { post(event: API<...>): APIResponse & APIResponse, get(event: API<...>)... }
 // M = 'post' | 'get' ...
 type MakeAPI<E extends Endpoint> = {
-	[M in keyof E]:
-		EndpointRequestParams<E, M> extends undefined ?
-			(fetch?: Fetch) => Simplify<Returned<E, M>>
-			:
-			(request: EndpointRequestParams<E, M>, fetch?: Fetch) => Simplify<Returned<E, M>>
+	[M in keyof E]: (request: EndpointRequestParams<E, M> & Omit<RequestInit, 'body'>, fetch?: Fetch) => Simplify<Returned<E, M>>
 }
 
 /** ZeroAPI */

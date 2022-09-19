@@ -2,9 +2,9 @@ import adapter from '@sveltejs/adapter-auto'
 import preprocess from 'svelte-preprocess'
 
 // -- Removed when packaging
-import { watch } from 'sveltekit-zero-api/watch'
+import { watchAPI } from 'sveltekit-zero-api'
 if (process.env.NODE_ENV !== 'production')
-   watch()
+   watchAPI()
 // --
 
 const exports = [
@@ -13,7 +13,8 @@ const exports = [
 	'http.ts',
 	'api/index.ts',
 	'watch/index.ts',
-	'types/zeroapi.d.ts'
+	'types/zeroapi.d.ts',
+	'queryspread.ts'
 ]
 
 /** @type {import('@sveltejs/kit').Config} */
