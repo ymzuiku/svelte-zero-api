@@ -14,7 +14,8 @@ const exports = [
 	'api/index.ts',
 	'watch/index.ts',
 	'types/zeroapi.d.ts',
-	'queryspread.ts'
+	'queryspread.ts',
+	'helpers.ts'
 ]
 
 /** @type {import('@sveltejs/kit').Config} */

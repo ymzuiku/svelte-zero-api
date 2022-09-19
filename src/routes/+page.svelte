@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import api from '../api';
+	import api, { intersect } from '../api';
 	import { onMount } from 'svelte'
 
-	onMount(() => {
+	onMount(async () => {
 		console.log('here')
-		api.fo.sluggers$('test').POST({
+		let res = api.fo.sluggers$('test').POST({
 			body: {
 				message: 'Giraffe'
 			},
@@ -12,10 +12,10 @@
 				boink: 'y23',
 				test: 23
 			}
-		}).Ok(res => {
-			console.log(res)
 		}).BadRequest(res => {
-			console.log(res.body)
+			const { boink } = intersect(res.body.errors)
+		}).Ok(res => {
+
 		})
 	})
 	

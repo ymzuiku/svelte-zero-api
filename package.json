@@ -22,7 +22,7 @@
 		"sveltekit-zero-api": "file:sveltekit-zero-api.tgz",
 		"tslib": "^2.4.0",
 		"typescript": "^4.8.3",
-		"vite": "^3.1.0"
+		"vite": "^3.1.3"
 	},
 	"type": "module",
 	"module": "esnext"

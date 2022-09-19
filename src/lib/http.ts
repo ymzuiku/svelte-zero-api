@@ -19,18 +19,25 @@ function createResponse(obj: Options | undefined, status: number): any {
 	)
 }
 
-function y<K extends Readonly<string>, Status extends Readonly<number>>(status: Status, str: K) {
+function y<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
 	return <T extends Options>(obj?: T) =>
-		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: true }> }>
+		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: true }> }> | GeneralResponse<K, Status, true, T>
 }
 
-function n<K extends Readonly<string>, Status extends Readonly<number>>(status: Status, str: K) {
+function n<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
 	return <T extends Options>(obj?: T) =>
-		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: false }> }>
+		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: false }> }> | GeneralResponse<K, Status, false, T>
 }
+ 
+export type CreateResponse<K extends Readonly<keyof StatusText>, Status extends number, OK extends boolean, T extends Record<any, any>> =
+	APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: OK }> }> | GeneralResponse<K, Status, OK, T>
 
-export type CreateResponse<K extends string, Status extends number, OK extends boolean, T extends Record<any, any>> =
-	APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: OK }> }>
+type GeneralResponse<
+	K extends Readonly<keyof StatusText>,
+	Status extends Readonly<number>,
+	OK extends Readonly<boolean>,
+	T extends Record<any, any>
+	> = APIResponse<{ [Property in StatusClass[K]]: () => Simplify<T & { status: Status, ok: OK }> }>
 
 export const
 	Continue                      = n(100, 'Continue'),

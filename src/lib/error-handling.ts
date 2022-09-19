@@ -4,11 +4,6 @@ import type { CreateResponse } from './http.js'
 
 type Type = 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function'
 
-type ErrResponse = StatusCodeFn['clientError'] | StatusCodeFn['serverError']
- 
-
-
-
 export const err = {
 	handler<E extends (Record<any, any> | null)[]>(...args: E) {
 		let errors = args.reverse().reduce((obj, current) => {
@@ -19,7 +14,7 @@ export const err = {
 		if (Object.keys(errors).length == 0)
 			return null
 		
-		return <K extends Readonly<ErrResponse>, T extends Parameters<typeof HTTP[K]>[0] = {}>(
+		return <K extends Readonly<StatusCodeFn['Error']>, T extends Parameters<typeof HTTP[K]>[0] = {}>(
 			response: K,
 			options?: T,
 			message?: string

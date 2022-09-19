@@ -72,14 +72,14 @@ type RecursiveMethodReturn<M extends MethodReturnTypes<any>> = {
 	[Return in keyof M]: (cb: Callback<M[Return]>) => Exclude<RecursiveMethodReturn<M> & Promise<SvelteResponse>, 'Symbol'>
 } & {
 	$: {
-		[Return in keyof M]: <K extends Callback<M[Return]>>(cb: K) => Promise<ReturnType<K>>
+		[Return in keyof M]: <K extends Callback<M[Return]>>(cb: K) => Promise<ReturnType<K> | undefined>
 	} & {
 		_: {
 			[Fn in Exclude<StatusCodeFn[keyof StatusCodeFn], keyof M>]: <K extends Callback<M[Return]>>(cb: K) => Promise<ReturnType<K>>
 		}
 	},
 	_: {
-		[Fn in Exclude<StatusCodeFn[keyof StatusCodeFn], keyof M>]: RecursiveMethodReturn<M> & Promise<SvelteResponse>
+		[Fn in Exclude<StatusCodeFn[keyof StatusCodeFn], keyof M>]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M>['_'] & Promise<SvelteResponse>
 	}
 }
 

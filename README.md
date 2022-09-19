@@ -93,7 +93,7 @@ Will be generated at `npm run dev` at ↑ outputDir
 | onError | Function to be called on error | `undefined`
 | onSuccess | Function to be called on success | `undefined`
 | stringifyQueryObjects | If a query value in a key-value pair is an object, it will be stringified automatically  | `true`
-| prependCallbacks | Prepends callbacks. Ex.: `(method) => method.serverError(errorHandler)` <sup>[tip](https://github.com/Refzlund/sveltekit-zero-api#error-handling-component)</sup> | `undefined`
+| prependCallbacks | Prepends callbacks. Ex.: `(method) => method.ServerError(errorHandler)` <sup>[tip](https://github.com/Refzlund/sveltekit-zero-api#error-handling-component)</sup> | `undefined`
 
 <br><br><br><br>
 
@@ -121,7 +121,7 @@ interface Post {
 We pass this interface, as our type to an endpoint:
 
 ```ts
-import type { API } from 'sveltekit-zero-api'
+import type { API } from './$types'
 export const post = async (event: API<Post>) => {
 
 } 
@@ -131,7 +131,7 @@ An endpoint (ex. **api.product.post**) always returns a response.
 All generalized response-codes can be imported:
 
 ```ts
-import type { API } from 'sveltekit-zero-api'
+import type { API } from './$types'
 import { Ok, BadRequest, InternalError } from 'sveltekit-zero-api/http'
 
 interface Post {
@@ -254,18 +254,18 @@ api.product.get().ok(response => { console.log(response.body.message) })
 
 Every response-code has their own callback
 ```ts
-ok: 200            // .ok(response => )
-badRequest: 400    // .badRequest(response => ) 
-internalError: 500 // .internalError(response => )
+Ok: 200            // .ok(response => )
+BadRequest: 400    // .badRequest(response => ) 
+InternalError: 500 // .internalError(response => )
 ```
 And some callbacks cover more:
 ```ts
 any: xxx           // .any(r => )
-informational: 1xx // .informational(r => )
-success: 2xx       // .success(r => )
+Informational: 1xx // .Informational(r => )
+Success: 2xx       // .Success(r => )
 redirection: 3xx   // .redirection(r => )
-clientError: 4xx   // .clientError(r => )
-serverError: 5xx   // .serverError(r => )
+ClientError: 4xx   // .ClientError(r => )
+ServerError: 5xx   // .ServerError(r => )
 error: 4xx or 5xx  // .error(r => )
 ```
 
@@ -287,9 +287,9 @@ return InternalError({ error: 'Something went wrong' })
 
 Here you'll find the types:
 ```ts
-api.product.get()
+api.product.GET()
    // { body: { message: string, lol: boolean }, ... }
-   .ok(response => {
+   .Ok(response => {
       const {
          message, ✅
          product, ⛔
@@ -297,7 +297,7 @@ api.product.get()
       } = response.body
    }) 
    // { body: { message: string, product: ProductType, lol: boolean }, ... }
-   .created(({ body }) => {
+   .Created(({ body }) => {
       const { 
          message, ✅
          product, ✅
@@ -305,11 +305,11 @@ api.product.get()
       } = body
    }) 
    // { body: { error: string }, ... }
-   .internalError(r => console.error(r.body.error)) ✅
-   .success(r => {
+   .InternalError(r => console.error(r.body.error)) ✅
+   .Success(r => {
       let body = r.body
       
-      // All success responses have { body: { message: string } }
+      // All Success responses have { body: { message: string } }
       body.message ✅
       // Not all have product
       body.product ⛔
@@ -322,13 +322,13 @@ api.product.get()
    })
 ```
 These functions will also be called in order. So
-1. ok
-2. success
+1. Ok
+2. Success
 
 or
 
-1. created
-2. success
+1. Created
+2. Success
 
 In case of 200 (Ok) or 201 (Created)
 
@@ -337,7 +337,7 @@ In case of 200 (Ok) or 201 (Created)
 #### **._.**
 If an endpoint does not return a status-code, but you still want a callback use **._.** wildcard:
 ```ts
-api.product.get()._.unavailableForLegalReasons(handleError)
+api.product.GET()._.UnavailableForLegalReasons(handleError)
 ```
 
 <br><br>
@@ -350,7 +350,7 @@ This returns whatever is returned from the trailing callback. Naturally, only on
 ```ts
 // Since we don't »await«
 // products: Promise<Product[]>
-let products = api.product.get().$.ok(r => r.body)
+let products = api.product.GET().$.Ok(r => r.body)
 ```
 
 ![Assigning variables directly](./assign-var.gif)
@@ -381,7 +381,7 @@ let productParams: RequestParams<typeof api.products.post> = {
 The `querySpread` function helps you get and format your queries quickly:
 
 ```ts
-import type { API } from 'sveltekit-zero-api'
+import type { API } from './$types'
 import { BadRequest, Ok } from 'sveltekit-zero-api/http'
 
 /**
@@ -509,8 +509,8 @@ let response
 export function handleAPI() {
    response = await api()
       .ok(response => {
-         success = true
-         dispatch('success', response)
+         Success = true
+         dispatch('Success', response)
       })
       .error(response => {
          error = true
@@ -522,8 +522,8 @@ export function handleAPI() {
 import APIComponent from '...'
 ...
 
-<APIComponent api={() => api.products.post(params)} let:success let:response on:success={...}>
-   {#if success}
+<APIComponent api={() => api.products.post(params)} let:Success let:response on:Success={...}>
+   {#if Success}
       <div>
          Hi mom
       </div>

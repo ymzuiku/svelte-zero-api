@@ -1,4 +1,7 @@
-interface ZeroAPIConfig {
+/// <reference path="./zeroapi.d.ts"/>
+import type { RecursiveMethodReturn } from './zeroapi.js'
+
+export interface ZeroAPIConfig {
 	/** Prepended on every request. Contains anything you'd put in `RequestInit` @ `fetch(url, RequestInit)` */
 	baseData?: Parameters<typeof fetch>[1]
 
@@ -41,5 +44,5 @@ interface ZeroAPIConfig {
 	onError?: (res: any) => Promise<any>
 
 	/** Prepended callbacks will be added to every request */
-	prependCallbacks?: (method: Omit<ReturnType<ZeroAPI<any>>['_'], '$'>) => void
+	prependCallbacks?: (method: RecursiveMethodReturn<{}>['_']) => void
 }

@@ -30,10 +30,6 @@ export async function POST(event: API<Post>) {
 		err.match({ message }, /Giraffe/g, 'Must include the word "Giraffe"')
 	))
 		return errorResponse('BadRequest')
-
-	let val = undefined
-	if(errorResponse = err.handler(err.require({val})))
-		return errorResponse('BadRequest')
 		
 	return Ok({
 		body: {

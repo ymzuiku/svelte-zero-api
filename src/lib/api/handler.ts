@@ -1,3 +1,5 @@
+import type { ZeroAPIConfig } from '../types/options'
+
 type Fn = (response: SvelteResponse) => any
 type Callback = [number, Fn]
 
@@ -137,6 +139,7 @@ function respond(callbacks: Callback[], res: Response, options: IOptions, $: $) 
 		.filter(([code]) => validStatus(code))
 		.forEach(([code, cb]) => { cb(res) })
 	
+
 	if ($.resolve && $.callback) {
 		if (validStatus($.callback[0]))
 			$.resolve($.callback[1](res))
@@ -155,12 +158,12 @@ function callbackHandler(handleCallback: (statusCode: number, callback: Fn) => a
 		any:                           function (cb: Fn) { return handleCallback(0,   cb) },
 
 		// general
-		informational:                 function (cb: Fn) { return handleCallback(1,   cb) },
-		success:                       function (cb: Fn) { return handleCallback(2,   cb) },
-		redirection:                   function (cb: Fn) { return handleCallback(3,   cb) },
-		error:                         function (cb: Fn) { return handleCallback(45,  cb) },
-		clientError:                   function (cb: Fn) { return handleCallback(4,   cb) },
-		serverError:                   function (cb: Fn) { return handleCallback(5,   cb) },
+		Informational:                 function (cb: Fn) { return handleCallback(1, cb) },
+		Success:                       function (cb: Fn) { return handleCallback(2, cb) },
+		Redirect:                      function (cb: Fn) { return handleCallback(3, cb) },
+		Error:                         function (cb: Fn) { return handleCallback(45,cb) },
+		ClientError:                   function (cb: Fn) { return handleCallback(4, cb) },
+		ServerError:                   function (cb: Fn) { return handleCallback(5, cb) },
 
 		// 1××
 		Continue:                      function (cb: Fn) { return handleCallback(100, cb) },

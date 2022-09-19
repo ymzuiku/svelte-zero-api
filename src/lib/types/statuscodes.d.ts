@@ -137,13 +137,26 @@ interface StatusText {
 }
 
 interface StatusCodeFn {
-	informational: StatusCode[100|101|102|103]
-	success:       StatusCode[200|201|202|203|204|205|206|207|208|226]
-	redirect:      StatusCode[300|301|302|303|304|305|306|307|308]
-	clientError:   StatusCode[
-		400|401|402|403|404|405|406|407|408|409|
-		410|411|412|413|414|415|416|417|418|421|
-		422|423|424|425|426|428|429|431|451
+	Informational: StatusCode[100 | 101 | 102 | 103]
+	Success:       StatusCode[200 | 201 | 202 | 203 | 204 | 205 | 206 | 207 | 208 | 226]
+	Redirect:      StatusCode[300 | 301 | 302 | 303 | 304 | 305 | 306 | 307 | 308]
+	ClientError:   StatusCode[
+		400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 |
+		410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 421 | 
+		422 | 423 | 424 | 425 | 426 | 428 | 429 | 431 | 451
 	]
-	serverError:   StatusCode[500|501|502|503|504|505|506|507|508|510|511]
+	ServerError:   StatusCode[500 | 501 | 502 | 503 | 504 | 505 | 506 | 507 | 508 | 510 | 511]
+	Error:         StatusCodeFn['ClientError'] | StatusCodeFn['ServerError']
+}
+
+type StatusClass = {
+	[Property in StatusCodeFn['Informational']]: 'Informational'
+} & {
+	[Property in StatusCodeFn['Success']]: 'Success'
+} & {
+	[Property in StatusCodeFn['Redirect']]: 'Redirect'
+} & {
+	[Property in StatusCodeFn['ClientError']]: 'ClientError' | 'Error'
+} & {
+	[Property in StatusCodeFn['ServerError']]: 'ServerError' | 'Error'
 }

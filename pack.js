@@ -7,16 +7,19 @@ let fileData = ''
 
 try {
 	C.log(34)('Packaging')(0)
-	execSync('pnpm remove sveltekit-zero-api -D')
+	execSync('pnpm i --ignore-scripts')
+	execSync('pnpm remove sveltekit-zero-api')
 	fileData = fs.readFileSync('svelte.config.js', 'utf-8')
 	fs.writeFileSync('svelte.config.js', fileData.replace(/(?<=Removed when packaging)[\s\S]*(?=\/\/ --)/, ''), 'utf-8')
 	execSync('set NODE_ENV=package')
 	execSync('pnpm package')
 } catch (error) {
-	console.error(C(31)('... An error occurred:')(), error)
+	console.error(C(31)('... An error occurred:')())
+	throw error
 }
 finally {
-	fs.writeFileSync('svelte.config.js', fileData, 'utf-8')
+	if(fileData.length > 0)
+		fs.writeFileSync('svelte.config.js', fileData, 'utf-8')
 }
 
 console.log('Extracting pack')
@@ -38,7 +41,8 @@ process.chdir('../')
 try {
 	fs.unlinkSync(resolve('./package'))
 } catch (error) {
-	C.warn(33)(`Couldn't delete ${resolve('./package')}, since it has been locked`)()
+	C.warn(33)(`Couldn't delete ${resolve('./package')}`)()
 }
 
+execSync('pnpm add -D ./sveltekit-zero-api.tgz', { stdio: 'inherit' })
 C.log(34)('Completed')(0)

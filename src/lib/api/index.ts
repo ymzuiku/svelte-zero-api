@@ -1,4 +1,5 @@
 import handler from './handler.js'
+import type { ZeroAPIConfig } from '../types/options'
 
 type Directory = {
 	[key: string]: string | Directory | ((...args: any[]) => any)
