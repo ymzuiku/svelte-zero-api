@@ -83,9 +83,14 @@ type RecursiveMethodReturn<M extends MethodReturnTypes<any>> = {
 	}
 }
 
+type GetKeys<U> = U extends Record<infer K, any> ? K extends string ? K : never : never
+type Inference<T, K extends string> = T extends { [P in K]: () => infer B } ? B : never
+type CombineFunctions<T> = { [K in GetKeys<T>]: () => Inference<T, K> }
+
 // Returns an intersection of all return types of the RestAPI method
 // { ok: () => T } & { badRequest: () => T }
-type MethodReturnTypes<M extends (...args: any[]) => (...args: any[]) => any> = UnionToIntersection<Awaited<ReturnType<M>>>
+type MethodReturnTypes<M extends (...args: any[]) => (...args: any[]) => any> =
+	CombineFunctions<Awaited<ReturnType<M>>>
 
 
 type Returned<E, M> = RecursiveMethodReturn<MethodReturnTypes<E[M]>> & Promise<SvelteResponse>
