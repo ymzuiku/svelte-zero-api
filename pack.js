@@ -25,6 +25,12 @@ finally {
 console.log('Extracting pack')
 
 process.chdir('./package')
+
+const packagejson = resolve('./package.json')
+const pack = JSON.parse(fs.readFileSync(packagejson, { encoding: 'utf-8' }))
+pack.scripts = { 'postinstall': 'node post-install' }
+fs.writeFileSync(packagejson, JSON.stringify(pack))
+
 execSync('npm pack', { stdio: 'ignore' })
 
 let packed = ''
@@ -37,6 +43,7 @@ for (let file of fs.readdirSync('.')) {
 }
 
 fs.renameSync(resolve(`./${packed}`), resolve('../sveltekit-zero-api.tgz'))
+
 process.chdir('../')
 
 execSync('pnpm add -D ./sveltekit-zero-api.tgz', { stdio: 'inherit' })

@@ -4,44 +4,56 @@ import createWatcher from './watcher.js'
 import { debugging } from '$lib/internal.js'
 const cwd = process.cwd()
 
-export async function watch() {
-	const
-		sveltekitDir = resolve(cwd, '.svelte-kit'),
-		typesDir = resolve(sveltekitDir, 'types'),
-		hasSvelteKitDir = fs.existsSync(sveltekitDir),
-		hasTypesDir = fs.existsSync(typesDir)
-	
-	async function findFiles(dir: string) {
-		const files = fs.readdirSync(dir)
-		for (let path of files) {
-			path = dir + '\\' + path
-			let stats = await fs.statSync(path)
-			if (stats.isDirectory()) {
-				findFiles(path)
-				continue
-			}
-			if (!path.match(/(\$types.d.ts)$/))
-				continue
-			updater('change', path, stats)
+function findFiles(dir: string) {
+	const files = fs.readdirSync(dir)
+	for (let path of files) {
+		path = dir + '\\' + path
+		let stats = fs.statSync(path)
+		if (stats.isDirectory()) {
+			findFiles(path)
+			continue
 		}
+		if (!path.match(/(\$types.d.ts)$/))
+			continue
+		updater('change', path, stats)
 	}
-
-	if (hasSvelteKitDir && hasTypesDir)
-		findFiles(typesDir)
-	else {
-		if (!hasSvelteKitDir)
-			fs.mkdirSync(sveltekitDir)
-		if (!hasTypesDir)
-			fs.mkdirSync(typesDir)
-	}
-	
-	createWatcher(sveltekitDir, updater)
+	return true
 }
 
+export const validateTypes = (timeout = 0) => {
+	const
+		sveltekitDir = resolve(cwd, '.svelte-kit'),
+		typesDir = resolve(sveltekitDir, 'types')
+	if (!fs.existsSync(sveltekitDir))
+		fs.mkdirSync(sveltekitDir)
+	if (!fs.existsSync(typesDir))
+		fs.mkdirSync(typesDir)
+	findFiles(typesDir)
+	if (timeout > 0)
+		setTimeout(() => findFiles(typesDir), timeout)
+}
+
+export async function watch() {
+	validateTypes(3000)
+	// Note: Not watching for changes in ´.svelte-kit/types´, because that didn't work
+	createWatcher(resolve(cwd, 'src'), updater)
+}
+
+const sleep = (s: number) => new Promise(r => setTimeout(r, s))
+
 const updater: WatchEvent = async (eventName, path, stats) => {
-	if (path.match(/(\$types.d.ts)$/)) {
-		let str = await fs.readFileSync(path, { encoding: 'utf8' })
-		if (str.includes('export type API') || !str.includes('export type RequestEvent')) return
+	const isEndpoint = path.match(/(\+server.ts)$/)
+	const isType = path.match(/(\$types.d.ts)$/)
+	if (isEndpoint || isType) {
+		await sleep(665 + 1)
+		if (isEndpoint) {
+			path = path.replace(cwd + '\\', '').replace('+server', '$types.d')
+			path = resolve(cwd, '.svelte-kit', 'types', path)
+		}
+		if (!fs.existsSync(path)) return
+		let str = fs.readFileSync(path, { encoding: 'utf-8' })
+		
+		if (/(export type API)/.test(str) || !/(export type RequestEvent)/.test(str)) return
 		str += `
 import type { APIInputs, API as A } from '\sveltekit-zero-api';
 export type API<Input extends APIInputs> = A<Input, RequestEvent>;`

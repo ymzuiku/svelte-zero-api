@@ -1,5 +1,5 @@
 export default 
-`import { createZeroApi } from 'sveltekit-zero-api'
+`import { createZeroApi } from 'sveltekit-zero-api/api'
 import type { GeneratedAPI } from './sveltekit-zero-api'
 
 const routes = createZeroApi({

@@ -30,7 +30,7 @@ export async function POST(event: API<Post>) {
 
 	await new Promise(r => setTimeout(r, 2000))
 
-	let errorResponse
+	let errorResponse 
 	if (errorResponse = err.handler(
 		err.require({ boink, test, message }),
 		err.type(query, { boink: 'string', test: 'number' }),
@@ -47,7 +47,7 @@ export async function POST(event: API<Post>) {
 	
 	return Ok({
 		body: {
-			message: 'Your message was: ' + message,
+			message: 'Your message was: ' + message, 
 			location: event.params.sluggers,
 			queries: {
 				boink,
