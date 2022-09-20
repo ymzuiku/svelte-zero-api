@@ -150,13 +150,13 @@ interface StatusCodeFn {
 }
 
 type StatusClass = {
-	[Property in StatusCodeFn['Informational']]: 'Informational'
+	[Property in StatusCodeFn['Informational']]: 'Informational' | 'Any'
 } & {
-	[Property in StatusCodeFn['Success']]: 'Success'
+	[Property in StatusCodeFn['Success']]: 'Success' | 'Any'
 } & {
-	[Property in StatusCodeFn['Redirect']]: 'Redirect'
+	[Property in StatusCodeFn['Redirect']]: 'Redirect' | 'Any'
 } & {
-	[Property in StatusCodeFn['ClientError']]: 'ClientError' | 'Error'
+	[Property in StatusCodeFn['ClientError']]: 'ClientError' | 'Error' | 'Any'
 } & {
-	[Property in StatusCodeFn['ServerError']]: 'ServerError' | 'Error'
+	[Property in StatusCodeFn['ServerError']]: 'ServerError' | 'Error' | 'Any'
 }

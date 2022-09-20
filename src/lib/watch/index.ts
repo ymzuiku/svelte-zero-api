@@ -6,6 +6,7 @@ import apiTemplate from './api-template.js'
 import createWatcher from './watcher.js'
 import { apiUpdater } from './api-updater.js'
 import { watch as watchTypes } from '../watch-types/index.js'
+import type { WatchOptions } from './types.js'
 const cwd = process.cwd()
 
 export function watch(watchOptions = {} as WatchOptions) {

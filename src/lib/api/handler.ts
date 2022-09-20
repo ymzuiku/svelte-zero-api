@@ -155,7 +155,7 @@ function respond(callbacks: Callback[], res: Response, options: IOptions, $: $) 
 function callbackHandler(handleCallback: (statusCode: number, callback: Fn) => any) {
 	return {
 		// "Any response"
-		any:                           function (cb: Fn) { return handleCallback(0,   cb) },
+		Any:                           function (cb: Fn) { return handleCallback(0,   cb) },
 
 		// general
 		Informational:                 function (cb: Fn) { return handleCallback(1, cb) },

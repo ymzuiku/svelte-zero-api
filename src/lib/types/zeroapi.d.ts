@@ -33,20 +33,9 @@ export type API<Input extends APIInputs = {}, R = RequestEvent<Record<string, st
 		} & Omit<R['url'], 'searchParams'>
 	}
 
-
-// * Testing
-// type SomeAPI<T> = API<T>
-// interface Post {
-// 	body: {
-// 		test: string
-// 	}
-// 	query: {
-// 		a: number
-// 	}
-// }
-// type post = SomeAPI<Post>
-// type Test = Inputs<post>
-
+export type RequestParams<Endpoint> = Pick<Parameters<Endpoint>[0], 'body' | 'query'>
+export type GetResponse<Endpoint, K extends keyof ReturnType<Endpoint>> = ReturnType<Endpoint>[K]
+export type ResponseBody<Endpoint, K extends Extract<keyof ReturnType<Endpoint>, keyof StatusCodeFn | keyof StatusText>> = Parameters<Parameters<GetResponse<Endpoint, K>>[0]>[0]['body']
 
 type GetQuery<A> = A extends { url: { searchParams: SearchParams<infer Query, any> } } ? Query extends Record<any, any> ? { query: Query } : {} : {}
 type GetBody<A> = A extends { request: { json: JSON<infer Body> } } ? Body extends Record<any, any> | string | number | boolean | Array<any> ? { body: Body } : {} : {}

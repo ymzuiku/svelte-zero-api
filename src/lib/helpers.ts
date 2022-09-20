@@ -4,3 +4,5 @@
 export function intersect<T>(obj: T) {
 	return obj as UnionToIntersection<T>
 }
+
+export type { RequestParams, ResponseBody, GetResponse } from './types/zeroapi.js'

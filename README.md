@@ -346,11 +346,16 @@ api.product.GET()._.UnavailableForLegalReasons(handleError)
 An **exception** to getting a `Promise<Response>`, is using the wildcard `.$.`
 
 This returns whatever is returned from the trailing callback. Naturally, only one is allowed. And is only allowed in the end of the function.
+If the return isn't an `Ok`, then it returns undefined.
 
 ```ts
 // Since we don't »await«
-// products: Promise<Product[]>
-let products = api.product.GET().$.Ok(r => r.body)
+// products: Product[] | undefined
+let products = await api.product.GET().$.Ok(r => r.body)
+if(!products) {
+	console.error('Did not receive any products.')
+	return
+}
 ```
 
 ![Assigning variables directly](./assign-var.gif)

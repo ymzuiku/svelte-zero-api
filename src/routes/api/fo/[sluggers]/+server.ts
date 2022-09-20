@@ -27,13 +27,18 @@ export async function POST(event: API<Post>) {
 		err.require({ boink, test }),
 		err.type(query, { boink: 'string', test: 'number' }),
 		err.test(boink?.length > 2, { boink: 'Must be longer than 2 characters' }),
+	))
+		return errorResponse('BadRequest')
+	
+	if (errorResponse = err.handler(
+		err.require({  message }),
 		err.match({ message }, /Giraffe/g, 'Must include the word "Giraffe"')
 	))
 		return errorResponse('BadRequest')
 		
 	return Ok({
 		body: {
-			message: message ? 'Your message was: ' + message : 'You forgot to send a message',
+			message: 'Your message was: ' + message,
 			location: 'The params for this page was: ' + event.params.sluggers,
 			queries: {
 				boink,

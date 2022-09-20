@@ -25,7 +25,7 @@ finally {
 console.log('Extracting pack')
 
 process.chdir('./package')
-execSync('npm pack')
+execSync('npm pack', { stdio: 'ignore' })
 
 let packed = ''
 
@@ -38,11 +38,6 @@ for (let file of fs.readdirSync('.')) {
 
 fs.renameSync(resolve(`./${packed}`), resolve('../sveltekit-zero-api.tgz'))
 process.chdir('../')
-try {
-	fs.unlinkSync(resolve('./package'))
-} catch (error) {
-	C.warn(33)(`Couldn't delete ${resolve('./package')}`)()
-}
 
 execSync('pnpm add -D ./sveltekit-zero-api.tgz', { stdio: 'inherit' })
 C.log(34)('Completed')(0)

@@ -1,4 +1,4 @@
-interface WatchOptions {
+export interface WatchOptions {
 	/** Which directories should be watched for changes, and for exported API methods? */
 	watchDir?: string
 	/** Where should the api-file be located? */
