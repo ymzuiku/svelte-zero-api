@@ -8,6 +8,7 @@ Provides type-safety between front- and backend, but more importantly — create
 - Supports slugged routes*
 - Can be used in the page `Load` function
 - You can type-define variables with endpoint responses
+- Has handy backend utility functions; [querySpread](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend#queryspread) and [Error Handling](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend#error-handling)
 
 Inspired by [svelte-zero-api](https://github.com/ymzuiku/svelte-zero-api) by [ymzuiku](https://github.com/ymzuiku).
 
