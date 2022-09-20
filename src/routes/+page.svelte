@@ -2,6 +2,7 @@
 	import api, { intersect } from '../api';
 	import type { RequestParams, ResponseBody } from 'sveltekit-zero-api/helpers'
 	import { onMount } from 'svelte'
+	import { browser } from '$app/environment'
 
 	const query: RequestParams<ReturnType<typeof api.fo.sluggers$>['POST']> = {
 		body: {
@@ -14,18 +15,26 @@
 	}
 	let body: ResponseBody<ReturnType<typeof api.fo.sluggers$>['POST'], 'Ok'> | undefined
 	
-	onMount(async () => {
-		console.log('here')
-		body = await api.fo.sluggers$('test').POST(query)
-			.Error(res => {
-				const { boink, message, test } = intersect(res.body.errors)
-				console.warn('ERR', res)
-			}).Success(res => {
-				console.log('OK', res)
-			}).$.Ok(res => res.body)
+	const getMessage = () => browser && api.fo.sluggers$('test').POST(query)
+		.Error(res => {
+			console.warn('ERR', res)
+		}).Success(res => {
+			console.log('OK', res)
+		}).$.Ok(res => res.body)
+
+	onMount(() => {
+		api.fo.sluggers$('boink').GET().Ok(res => console.log(res))
 	})
 	
 </script>
+
+{#await getMessage()}
+	Retrieving...
+	{:then body}
+	{#if body}
+		{body.message} @{body.location} 
+	{/if}
+{/await}
 
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>

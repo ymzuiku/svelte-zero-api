@@ -2,7 +2,7 @@ import type { API } from './$types'
 import { Ok, BadRequest } from 'sveltekit-zero-api/http'
 import { querySpread, err } from 'sveltekit-zero-api'
 
-export function GET() {
+export function GET(event: API<any>) {
 	return Ok()
 }
 
@@ -22,24 +22,27 @@ export async function POST(event: API<Post>) {
 	const query = querySpread(event) as Post['query']
 	const { boink, test } = query
 
+	await new Promise(r => setTimeout(r, 2000))
+
 	let errorResponse
 	if (errorResponse = err.handler(
-		err.require({ boink, test }),
+		err.require({ boink, test, message }),
 		err.type(query, { boink: 'string', test: 'number' }),
 		err.test(boink?.length > 2, { boink: 'Must be longer than 2 characters' }),
+		err.match({ message }, /Giraffe/g, 'Must include the word "Giraffe"')
 	))
 		return errorResponse('BadRequest')
 	
 	if (errorResponse = err.handler(
 		err.require({  message }),
-		err.match({ message }, /Giraffe/g, 'Must include the word "Giraffe"')
-	))
-		return errorResponse('BadRequest')
 		
+	))
+		return errorResponse('BadRequest', {})
+	
 	return Ok({
 		body: {
 			message: 'Your message was: ' + message,
-			location: 'The params for this page was: ' + event.params.sluggers,
+			location: event.params.sluggers,
 			queries: {
 				boink,
 				test
