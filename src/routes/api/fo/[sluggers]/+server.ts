@@ -2,7 +2,13 @@ import type { API } from './$types'
 import { Ok, BadRequest } from 'sveltekit-zero-api/http'
 import { querySpread, err } from 'sveltekit-zero-api'
 
-export function GET(event: API<any>) {
+interface Optional {
+	query?: {
+		test?: string
+	}
+}
+
+export function GET(event: API<Optional>) {
 	return Ok()
 }
 

@@ -1483,7 +1483,7 @@ packages:
     dev: true
 
   file:sveltekit-zero-api.tgz:
-    resolution: {integrity: sha512-+/dUQbH9WTGnZOEvqmRYjCn1JIPtdNgca4g2WpYmtO8x/QdxzZgE0lDIPAXZ36HgWlPpGWhxbIcPcRxRQHU/lA==, tarball: file:sveltekit-zero-api.tgz}
+    resolution: {integrity: sha512-DMjw8Z2l2GTgnSiGuaELsvMFkpgF1f5wbmBHtCjU+9lPDemDrprKzgO3rNt268gfcmdJzoaEWkQOccRSML31/A==, tarball: file:sveltekit-zero-api.tgz}
     name: sveltekit-zero-api
-    version: 0.11.0
+    version: 0.11.1
     dev: true

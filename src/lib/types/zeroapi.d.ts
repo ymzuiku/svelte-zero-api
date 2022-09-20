@@ -37,12 +37,14 @@ export type RequestParams<Endpoint> = Pick<Parameters<Endpoint>[0], 'body' | 'qu
 export type GetResponse<Endpoint, K extends keyof ReturnType<Endpoint>> = ReturnType<Endpoint>[K]
 export type ResponseBody<Endpoint, K extends Extract<keyof ReturnType<Endpoint>, keyof StatusCodeFn | keyof StatusText>> = Parameters<Parameters<GetResponse<Endpoint, K>>[0]>[0]['body']
 
-type GetQuery<A> = A extends { url: { searchParams: SearchParams<infer Query, any> } } ? Query extends Record<any, any> ? { query: Query } : {} : {}
-type GetBody<A> = A extends { request: { json: JSON<infer Body> } } ? Body extends Record<any, any> | string | number | boolean | Array<any> ? { body: Body } : {} : {}
+type GetQuery<A> =
+	A extends { url: { searchParams: SearchParams<infer Query, any> } } ? Query extends Record<any, any> | undefined ? Query extends undefined ? { query?: Query } : { query: Query } : {} : {}
+type GetBody<A> =
+	A extends { request: { json: JSON<infer Body> } } ? Body extends Record<any, any> | string | number | boolean | Array<any> | undefined ? Body extends undefined ? { body?: Body } : { body: Body } : {} : {}
 type GetInputs<A> = Simplify<GetBody<A> & GetQuery<A>>
 
 // Gets the query/body requirements specified inside API<>
-type Inputs<A> = GetInputs<A> extends { query: any } | { body: any } ? GetInputs<A> : undefined
+type Inputs<A> = GetInputs<A> extends { query?: any } | { body?: any } ? GetInputs<A> : undefined
 
 
 
@@ -91,7 +93,13 @@ type Fetch = (info: RequestInfo, init?: RequestInit) => Promise<Response>;
 // E = { post(event: API<...>): APIResponse & APIResponse, get(event: API<...>)... }
 // M = 'post' | 'get' ...
 type MakeAPI<E extends Endpoint> = {
-	[M in keyof E]: (request: EndpointRequestParams<E, M> & Omit<RequestInit, 'body'>, fetch?: Fetch) => Simplify<Returned<E, M>>
+	[M in keyof E]: EndpointRequestParams<E, M> extends never | undefined ?
+	(fetch?: Fetch) => Simplify<Returned<E, M>>
+	:
+	EndpointRequestParams<E, M> extends { query } | { body } ?
+	(request: EndpointRequestParams<E, M> & Omit<RequestInit, 'body'>, fetch?: Fetch) => Simplify<Returned<E, M>>
+	:
+	(request?: EndpointRequestParams<E, M> & Omit<RequestInit, 'body'>, fetch?: Fetch) => Simplify<Returned<E, M>>
 }
 
 /** ZeroAPI */
