@@ -60,8 +60,9 @@ export function apiUpdater(
 	const resolution = tempOutput ?
 		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
 
-	if (!fs.existsSync(resolution))
-		fs.mkdirSync(resolution, { recursive: true })
+	const folder = resolve(resolution, '..')
+	if (!fs.existsSync(folder))
+		fs.mkdirSync(folder, { recursive: true })
 	
 	debugging && console.log(`[DEBUG] Updating generated types at ${resolution} ...`)
 	
