@@ -50,7 +50,7 @@ export function apiUpdater(
 	dirText = dirText
 		// Transform routes into API types
 		.replaceAll(/\"\+server\"\: \"Z/g, '} & Z')
-		.replaceAll(/__server\>\"/g, '__server> & {')
+		.replaceAll(/(__server\>\",)|(__server\>\")/g, '__server> & {')
 		
 		// Transform slugs e.g. "[slug]": into functions slug$: (slug: S) =>
 		// TODO: Allow ex. [slug].[second] to become slug$second$: (slug: S, second: S) =>
@@ -63,7 +63,7 @@ export function apiUpdater(
 	if (!fs.existsSync(resolution))
 		fs.mkdirSync(resolution, { recursive: true })
 	
-	debugging && console.log(`[DEBUG] Updating generated types at ${resolution}...`)
+	debugging && console.log(`[DEBUG] Updating generated types at ${resolution} ...`)
 	
 	try {
 		// Flag is required to make it a writeable stream. Replacing file messes with TypeScript.
