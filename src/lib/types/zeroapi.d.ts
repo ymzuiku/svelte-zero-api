@@ -5,6 +5,8 @@
 /// <reference path="./statuscodes.d.ts" />
 /// <reference path="./options.d.ts" />
 
+import type { RequestEvent } from '@sveltejs/kit'
+
 export interface APIInputs {
 	body?: any,
 	query?: any
@@ -23,7 +25,7 @@ type SearchParams<Query, R> = {
 	Inferring it (as far as I know) is not possible — so the types
 	JSON and SearchParams are made to be inferred inside `Inputs<A>`
 */
-export type API<Input extends APIInputs = {}, R = RequestEvent<Record<string, string>, true>>
+export type API<Input extends APIInputs = {}, R = RequestEvent>
 	= Omit<R, 'request' | 'url'> & {
 		request: {
 			json: JSON<Input['body']>
