@@ -46,7 +46,7 @@ type Callback<Return extends any> = Return extends (...args: any[]) => any ? (re
 
 
 // Makes the API return type recursive
-type RecursiveMethodReturn<M extends MethodReturnTypes<any>> = {
+type RecursiveMethodReturn<M extends MethodReturnTypes<any>, E extends string = never> = {
 	[Return in keyof M]: (cb: Callback<M[Return]>) => Exclude<RecursiveMethodReturn<M> & Promise<SvelteResponse>, 'Symbol'>
 } & {
 	$: {
@@ -57,7 +57,7 @@ type RecursiveMethodReturn<M extends MethodReturnTypes<any>> = {
 		}
 	},
 	_: {
-		[Fn in Exclude<StatusCodeFn[keyof StatusCodeFn], keyof M>]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M>['_'] & Promise<SvelteResponse>
+		[Fn in Exclude<StatusCodeFn[keyof StatusCodeFn], keyof M> | E]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M, E>['_'] & Promise<SvelteResponse>
 	}
 }
 

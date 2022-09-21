@@ -84,6 +84,7 @@ export default function handler(options: IOptions, api: APIContent) {
 	response.then(async (res) => {
 		const json = (res.headers.get('content-type')||'').includes('application/json') && await res[options.config.format || 'json']()
 		// TODO: Handle other responses than just JSON
+		// https://kit.svelte.dev/docs/web-standards#stream-apis
 		const response = {
 			body: json || res.body,
 			bodyUsed: res.bodyUsed,
