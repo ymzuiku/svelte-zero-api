@@ -1,5 +1,5 @@
 /// <reference path="./types/zeroapi.d.ts" />
-import type { GetQuery, API } from './types/zeroapi'
+import type { GetInputs, API } from './types/zeroapi'
 
 function isObject(str: string) {
 	return (str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'))
@@ -53,9 +53,9 @@ type AllStrings<T extends Record<any, any>> = {
  * ```
 */
 export function querySpread<T>(event: T):
-	GetQuery<T> extends { query: infer Q } ? Q extends Record<any, any> ? DetermineValueTypes<Q> : Record<any, any> : Record<any, any>
+	GetInputs<T> extends { query?: infer Q } ? Q extends Record<any, any> ? DetermineValueTypes<Q> : Record<any, any> : Record<any, any>
 export function querySpread<T, B extends boolean>(event: T, formatTypes: B):
-	GetQuery<T> extends { query: infer Q } ? Q extends Record<any, any> ? B extends true | null | undefined ? DetermineValueTypes<Q> : AllStrings<Q> : Record<any, any> : Record<any, any>
+	GetInputs<T> extends { query?: infer Q } ? Q extends Record<any, any> ? B extends true | null | undefined ? DetermineValueTypes<Q> : AllStrings<Q> : Record<any, any> : Record<any, any>
 
 
 export function querySpread<T, B extends boolean>(event: T, formatTypes?: B) {

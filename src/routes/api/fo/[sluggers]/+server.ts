@@ -16,7 +16,7 @@ interface Post {
 	body: {
 		message: string
 	},
-	query: {
+	query?: {
 		boink: string
 		test: number
 	}
@@ -25,7 +25,7 @@ interface Post {
 export async function POST(event: API<Post>) {
 	const { message } = await event.request.json()
 	
-	const query = querySpread(event) as Post['query']
+	const query = querySpread(event)
 	const { boink, test } = query
 
 	await new Promise(r => setTimeout(r, 2000))
