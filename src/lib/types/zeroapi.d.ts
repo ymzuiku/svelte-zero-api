@@ -12,43 +12,28 @@ export interface APIInputs {
 	query?: any
 }
 
-type JSON<Body> = { (): Promise<Body> }
-type SearchParams<Query, R> = {
-	get: <T extends keyof Query>(s: T) => string,
-	getAll: <T extends keyof Query>(s: T) => Array<string>,
-	has: <T extends keyof Query>(s: T) => boolean
+type JSON<Input> = { (): Promise<Input['body']> }
+type SearchParams<Input, R> = {
+	get: <T extends keyof Input['query']>(s: T) => string,
+	getAll: <T extends keyof Input['query']>(s: T) => Array<string>,
+	has: <T extends keyof Input['query']>(s: T) => boolean
 } & Omit<R['url']['searchParams'], 'get' | 'getAll' | 'has'>
 
-/*
-	The complication: 
-	The generated $types creates a custom API with the generated RequestEvent.
-	Inferring it (as far as I know) is not possible — so the types
-	JSON and SearchParams are made to be inferred inside `Inputs<A>`
-*/
 export type API<Input extends APIInputs = {}, R = RequestEvent>
 	= Omit<R, 'request' | 'url'> & {
 		request: {
-			json: JSON<Input['body']>
+			json: JSON<Input>
 		} & Omit<R['request'], 'json'>
 		url: {
-			searchParams: SearchParams<Input['query'], R>
+			searchParams: SearchParams<Input, R>
 		} & Omit<R['url'], 'searchParams'>
 	}
 
 export type RequestParams<Endpoint> = Pick<Parameters<Endpoint>[0], 'body' | 'query'>
 export type GetResponse<Endpoint, K extends keyof ReturnType<Endpoint>> = ReturnType<Endpoint>[K]
 export type ResponseBody<Endpoint, K extends Extract<keyof ReturnType<Endpoint>, keyof StatusCodeFn | keyof StatusText>> = Parameters<Parameters<GetResponse<Endpoint, K>>[0]>[0]['body']
-
-type GetQuery<A> =
-	A extends { url: { searchParams: SearchParams<infer Query, any> } } ? Query extends Record<any, any> | undefined ? Query extends undefined ? { query?: Query } : { query: Query } : {} : {}
-type GetBody<A> =
-	A extends { request: { json: JSON<infer Body> } } ? Body extends Record<any, any> | string | number | boolean | Array<any> | undefined ? Body extends undefined ? { body?: Body } : { body: Body } : {} : {}
-type GetInputs<A> = Simplify<GetBody<A> & GetQuery<A>>
-
-// Gets the query/body requirements specified inside API<>
-type Inputs<A> = GetInputs<A> extends { query?: any } | { body?: any } ? GetInputs<A> : undefined
-
-
+	
+type GetInputs<A> = A extends { url: { searchParams: SearchParams<infer Input, any> } } ? Input : {}
 
 // Removes anything that doesn't use the API<any>
 type PickMethods<RestAPI> = {
@@ -87,22 +72,22 @@ type MethodReturnTypes<M extends (...args: any[]) => (...args: any[]) => any> =
 
 
 type Returned<E, M> = RecursiveMethodReturn<MethodReturnTypes<E[M]>> & Promise<SvelteResponse>
-type EndpointRequestParams<E, M> = Inputs<Parameters<E[M]>[0]>
-
-type Fetch = (info: RequestInfo, init?: RequestInit) => Promise<Response>;
+type Fetch = (info: RequestInfo, init?: RequestInit) => Promise<Response>
 
 // Converts the Rest API methods inside a .ts file into the zero api type used in the frontend
 // E = { post(event: API<...>): APIResponse & APIResponse, get(event: API<...>)... }
 // M = 'post' | 'get' ...
 type MakeAPI<E extends Endpoint> = {
-	[M in keyof E]: EndpointRequestParams<E, M> extends never | undefined ?
-	(fetch?: Fetch) => Simplify<Returned<E, M>>
-	:
-	EndpointRequestParams<E, M> extends { query } | { body } ?
-	(request: EndpointRequestParams<E, M> & Omit<RequestInit, 'body'>, fetch?: Fetch) => Simplify<Returned<E, M>>
-	:
-	(request?: EndpointRequestParams<E, M> & Omit<RequestInit, 'body'>, fetch?: Fetch) => Simplify<Returned<E, M>>
+	[M in keyof E]: GetEndpointRequest<GetInputs<Parameters<E[M]>[0]>, Simplify<Returned<E, M>>>
 }
+
+type Requestinit = Omit<RequestInit, 'body'>
+type GetEndpointRequest<T, R> =
+	T extends { body } | { query }
+	?
+	(request: Simplify<T> & Requestinit, fetch?: Fetch) => R
+	:
+	(request?: Simplify<T> & Requestinit, fetch?: Fetch) => R
 
 /** ZeroAPI */
 export type Z<RestAPI> = MakeAPI<PickMethods<RestAPI>>
