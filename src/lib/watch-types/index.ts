@@ -20,14 +20,10 @@ function findFiles(dir: string) {
 	return true
 }
 
-export const validateTypes = (timeout = 0) => {
-	const
-		sveltekitDir = resolve(cwd, '.svelte-kit'),
-		typesDir = resolve(sveltekitDir, 'types')
-	if (!fs.existsSync(sveltekitDir))
-		fs.mkdirSync(sveltekitDir)
+export const validateTypes = (/** Double check after ms */timeout = 0) => {
+	const typesDir = resolve(cwd, '.svelte-kit', 'types')
 	if (!fs.existsSync(typesDir))
-		fs.mkdirSync(typesDir)
+		fs.mkdirSync(typesDir, { recursive: true })
 	findFiles(typesDir)
 	if (timeout > 0)
 		setTimeout(() => findFiles(typesDir), timeout)

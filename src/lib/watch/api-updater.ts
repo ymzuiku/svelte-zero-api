@@ -2,6 +2,7 @@ import { pathToImportPath, toValidVariable } from '../utils/string.js'
 import fs from 'fs'
 import { resolve } from 'path'
 import { debugging } from '$lib/internal.js'
+import type { WatchOptions } from './types'
 
 const cwd = process.cwd()
 
@@ -59,8 +60,10 @@ export function apiUpdater(
 	const resolution = tempOutput ?
 		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
 
-	debugging && console.log(`[DEBUG] Updating generated types at ${resolution}...`)
+	if (!fs.existsSync(resolution))
+		fs.mkdirSync(resolution, { recursive: true })
 	
+	debugging && console.log(`[DEBUG] Updating generated types at ${resolution}...`)
 	
 	try {
 		// Flag is required to make it a writeable stream. Replacing file messes with TypeScript.
