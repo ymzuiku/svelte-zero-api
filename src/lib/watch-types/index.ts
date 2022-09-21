@@ -54,6 +54,6 @@ const updater: WatchEvent = async (eventName, path, stats) => {
 import type { APIInputs, API as A } from '\sveltekit-zero-api';
 export type API<Input extends APIInputs> = A<Input, RequestEvent>;`
 		fs.writeFileSync(path, str, { flag: 'w+' })
-		debugging && console.log(`[DEBUG] Updating $types at ${path}...`)
+		debugging && console.log(`[DEBUG] Updating $types at ${path} ...`)
 	}
 }

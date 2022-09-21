@@ -82,9 +82,16 @@ export default function handler(options: IOptions, api: APIContent) {
 	
 	const response = fetch(url, { ...baseData, ...api, headers: { ...(baseData['headers'] || {}), ...(api['headers'] || {}) } })
 	response.then(async (res) => {
+		const json = res.bodyUsed && (res.headers.get('content-type')||'').includes('application/json') && await res[options.config.format || 'json']()
+		// TODO: Handle other responses than just JSON
 		const response = {
-			body: await res[options.config.format || 'json'](),
+			body: json || res.body,
+			arrayBuffer: res.arrayBuffer,
+			blob: res.blob,
 			bodyUsed: res.bodyUsed,
+			clone: res.clone,
+			formData: res.formData,
+			text: res.text,
 			headers: res.headers,
 			ok: res.ok,
 			redirected: res.redirected,
