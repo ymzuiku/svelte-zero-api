@@ -12,7 +12,7 @@ function createResponse(obj: Options | undefined, status: number): any {
 	return new Response(
 		body && isJSON && typeof body === 'object' && JSON.stringify(body) || body, {
 			status, headers: {
-				'content-type': contentType || typeof body === 'object' && 'application/json' || 'text/plain;charset=UTF-8',
+				'content-type': contentType || typeof body === 'object' ? 'application/json' : 'text/plain;charset=UTF-8',
 				...headers
 			}
 		}
@@ -20,12 +20,12 @@ function createResponse(obj: Options | undefined, status: number): any {
 }
 
 function y<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
-	return <T extends Options>(obj?: T) =>
+	return <T extends Options = {}>(obj?: T) =>
 		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: true }> }> | GeneralResponse<K, Status, true, T>
 }
 
 function n<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
-	return <T extends Options>(obj?: T) =>
+	return <T extends Options = {}>(obj?: T) =>
 		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: false }> }> | GeneralResponse<K, Status, false, T>
 }
  

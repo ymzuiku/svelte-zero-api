@@ -24,6 +24,10 @@
 
 	onMount(() => {
 		api.fo.sluggers$('boink').GET().Ok(res => console.log(res))
+
+		api.fo.GET().Ok(res => {
+			
+		})
 	})
 	
 </script>
