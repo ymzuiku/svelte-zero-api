@@ -44,5 +44,5 @@ export interface ZeroAPIConfig {
 	onError?: (res: any) => Promise<any>
 
 	/** Prepended callbacks will be added to every request */
-	prependCallbacks?: (method: RecursiveMethodReturn<{}, keyof StatusCodeFn>['_']) => void
+	prependCallbacks?: (method: RecursiveMethodReturn['_']) => void
 }
