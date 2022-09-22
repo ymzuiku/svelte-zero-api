@@ -15,8 +15,8 @@ specifiers:
   vite: ^3.1.3
 
 devDependencies:
-  '@sveltejs/adapter-auto': 1.0.0-next.76
-  '@sveltejs/kit': 1.0.0-next.491_svelte@3.50.1+vite@3.1.3
+  '@sveltejs/adapter-auto': 1.0.0-next.80
+  '@sveltejs/kit': 1.0.0-next.493_svelte@3.50.1+vite@3.1.3
   '@sveltejs/package': 1.0.0-next.1_iprco5tylfmvffqgrvqxc46njy
   chokidar: 3.5.3
   svelte: 3.50.1
@@ -114,19 +114,19 @@ packages:
       picomatch: 2.3.1
     dev: true
 
-  /@sveltejs/adapter-auto/1.0.0-next.76:
-    resolution: {integrity: sha512-JPNBcQllucX0pqchYY8iD7adSKO+11C4fVT78zH6VupULirdYhns3R0npTXU63AoWO4FknpSY35GUhtyB4yEnA==}
+  /@sveltejs/adapter-auto/1.0.0-next.80:
+    resolution: {integrity: sha512-352WoZr9fQgxJqgNENvxRr2gsA+wTF6V9AVaQaaatDYd3RVEBaXTYOOalFaRLSa25mRUJaLYP2aaliqczMl23g==}
     dependencies:
-      '@sveltejs/adapter-cloudflare': 1.0.0-next.35
+      '@sveltejs/adapter-cloudflare': 1.0.0-next.38
       '@sveltejs/adapter-netlify': 1.0.0-next.78
-      '@sveltejs/adapter-vercel': 1.0.0-next.76
+      '@sveltejs/adapter-vercel': 1.0.0-next.77
     transitivePeerDependencies:
       - encoding
       - supports-color
     dev: true
 
-  /@sveltejs/adapter-cloudflare/1.0.0-next.35:
-    resolution: {integrity: sha512-/o6kl2iLxiRGmhaf70fuVeMVP9S8OprmtOYcMj2QIWmpV5bdIXWJmZXLotrJUfipTroKf4sI8ULdjwf9HkQwoQ==}
+  /@sveltejs/adapter-cloudflare/1.0.0-next.38:
+    resolution: {integrity: sha512-N6jdTomRZkdKlcNoguwYD7lpdXSt0beIyUJsp0MS/YLm/4gI83y698zFYInFKJ9t5e6DAnuEBSAXcg568z2oFA==}
     dependencies:
       '@cloudflare/workers-types': 3.16.0
       esbuild: 0.15.7
@@ -141,8 +141,8 @@ packages:
       set-cookie-parser: 2.5.1
     dev: true
 
-  /@sveltejs/adapter-vercel/1.0.0-next.76:
-    resolution: {integrity: sha512-Od9DBfeMwWC/sZNeCJw4TYVE3LMR8lGJivSdkXWgpvksgG+QizLyzTfvBacapId3wcu+7X4PPTLoH00o5iQGEQ==}
+  /@sveltejs/adapter-vercel/1.0.0-next.77:
+    resolution: {integrity: sha512-r4MqtP+lzx83HfcvI8PU0Yxzmxt6WQq9nzZETLboJouJzhSBUFIN5RmNZfEn6nNIlUwZbGQUEK/FxsRnnxI/Ig==}
     dependencies:
       '@vercel/nft': 0.22.1
       esbuild: 0.15.7
@@ -151,8 +151,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.491_svelte@3.50.1+vite@3.1.3:
-    resolution: {integrity: sha512-KO/t0OPxBWF5ZXp8RtIOVkQczo8NPHD6xqRVpSe/gZy9MmCmW/vhK2ifsENjayutyUNi7GzvrBgPyD91YHtm5g==}
+  /@sveltejs/kit/1.0.0-next.493_svelte@3.50.1+vite@3.1.3:
+    resolution: {integrity: sha512-q46RfW92UBtcWoVPnFtDpaRNRmXrkbuHIePUf0sDItTbXfON29LPblK4LMqyet0ntBW519KZYCc5xH/iGEpKEw==}
     engines: {node: '>=16.14'}
     hasBin: true
     requiresBuild: true
@@ -1483,8 +1483,8 @@ packages:
     dev: true
 
   file:sveltekit-zero-api.tgz:
-    resolution: {integrity: sha512-KN6oSgKQ5H+A4NeCkV51s8yL/Z9w0QuKDw2tfWNhujWYdaHZDyVJWX+00aFdlH5L4recdcQqzIvPuqmghruYAQ==, tarball: file:sveltekit-zero-api.tgz}
+    resolution: {integrity: sha512-zedyDwMoYq8OcfZKYDGOeP1hffRClXfnMLDCP8MXD4wEQWSKPOlH6lmnRN2yGzL3prItI36IBVxcLL4ypF7rwQ==, tarball: file:sveltekit-zero-api.tgz}
     name: sveltekit-zero-api
-    version: 0.11.8
+    version: 0.11.9
     requiresBuild: true
     dev: true
