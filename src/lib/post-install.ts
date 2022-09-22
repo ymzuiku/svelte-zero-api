@@ -1,2 +1,3 @@
 import { validateTypes } from './watch-types/index.js'
-setTimeout(validateTypes, 1500)
+if (process.env.NODE_ENV !== 'production')
+	setTimeout(validateTypes, 1500)
