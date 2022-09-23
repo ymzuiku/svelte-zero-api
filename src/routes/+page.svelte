@@ -15,7 +15,7 @@
 	}
 	let body: ResponseBody<ReturnType<typeof api.fo.sluggers$>['POST'], 'Ok'> | undefined
 	
-	const getMessage = () => browser && api.fo.sluggers$('test').POST(query)
+	const getMessage = () => api.fo.sluggers$('test').POST(query)
 		.Error(res => {
 			console.warn('ERR', res)
 		}).Success(res => {
@@ -25,9 +25,7 @@
 	onMount(() => {
 		api.fo.sluggers$('boink').GET().Ok(res => console.log(res))
 
-		api.fo.GET().Ok(res => {
-			
-		})
+		let test = api.fo.GET()._.$.Accepted(res => '' as const)
 	})
 	
 </script>

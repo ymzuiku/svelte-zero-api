@@ -42,23 +42,28 @@ type PickMethods<RestAPI> = {
 			RestAPI[Function] : never
 }
 
-type Callback<Return extends any> = Return extends (...args: any[]) => any ? (response: SvelteResponse<ReturnType<Return>>) => void : never
+type DefCallback = (response: DefaultResponse) => void
+type Callback<Return> = Return extends (...args: any[]) => any ?
+	(response: SvelteResponse<ReturnType<Return>>) => void
+	:
+	DefCallback
 
+type $<M, Keys> = {
+	[Return in Keys]: <K extends Callback<M[Return]>>(cb: K) => Promise<ReturnType<K> | undefined>
+}
+type _Keys<M> = Exclude<StatusCodeFn[keyof StatusCodeFn] | keyof StatusCodeFn, keyof M>
 
 // Makes the API return type recursive
-type RecursiveMethodReturn<M extends MethodReturnTypes<any> = {}> = {
-	[Return in keyof M]: (cb: Callback<M[Return]>) => Exclude<RecursiveMethodReturn<M> & Promise<SvelteResponse>, 'Symbol'>
+type RecursiveMethodReturn<M extends MethodReturnTypes<any>> = {
+	[Return in keyof M]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M> & Promise<SvelteResponse>
 } & {
-	$: {
-		[Return in keyof M]: <K extends Callback<M[Return]>>(cb: K) => Promise<ReturnType<K> | undefined>
-	} & {
-		_: {
-			[Fn in Exclude<StatusCodeFn[keyof StatusCodeFn] | keyof StatusCodeFn, keyof M>]: <K extends Callback<M[Return]>>(cb: K) => Promise<ReturnType<K>>
-		}
-	},
+	$: $<M, keyof M>
 	_: {
-		[Fn in Exclude<StatusCodeFn[keyof StatusCodeFn] | keyof StatusCodeFn, keyof M>]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M, E>['_'] & Promise<SvelteResponse>
-	}
+		// TODO: Hacky ('prependCallbacks') but I'm tired
+		[Fn in _Keys<M>]: (cb: keyof M extends 'prependCallbacks' ? DefCallback : Callback<M[Return]>) => RecursiveMethodReturn<M>['_'] & Promise<SvelteResponse>
+	} & (keyof M extends 'prependCallbacks' ? {} : {
+		$: $<M, _Keys<M>>
+	})
 }
 
 type GetKeys<U> = U extends Record<infer K, any> ? K extends string ? K : never : never

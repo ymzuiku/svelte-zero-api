@@ -44,7 +44,7 @@ export interface ZeroAPIConfig {
 	onError?: (res: any) => Promise<any>
 
 	/** Prepended callbacks will be added to every request */
-	prependCallbacks?: (method: RecursiveMethodReturn<{ no$ }>['_']) => void
+	prependCallbacks?: (method: RecursiveMethodReturn<{ prependCallbacks }>['_']) => void
 
 	/** (Def. true) If this is true, it will send the body of each request as an empty JSON to provide a backend error message when trying to use `request.json()` */
 	sendEmptyBodyAsJSON?: boolean

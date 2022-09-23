@@ -16,7 +16,7 @@ specifiers:
 
 devDependencies:
   '@sveltejs/adapter-auto': 1.0.0-next.80
-  '@sveltejs/kit': 1.0.0-next.493_svelte@3.50.1+vite@3.1.3
+  '@sveltejs/kit': 1.0.0-next.499_svelte@3.50.1+vite@3.1.3
   '@sveltejs/package': 1.0.0-next.1_iprco5tylfmvffqgrvqxc46njy
   chokidar: 3.5.3
   svelte: 3.50.1
@@ -151,8 +151,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sveltejs/kit/1.0.0-next.493_svelte@3.50.1+vite@3.1.3:
-    resolution: {integrity: sha512-q46RfW92UBtcWoVPnFtDpaRNRmXrkbuHIePUf0sDItTbXfON29LPblK4LMqyet0ntBW519KZYCc5xH/iGEpKEw==}
+  /@sveltejs/kit/1.0.0-next.499_svelte@3.50.1+vite@3.1.3:
+    resolution: {integrity: sha512-HoNsQ9CjdPLlDZLwcCsJTx5tW8YI3xhXEcJGuFHPLf600QcfeJWmQtE6mQF/SiykFkYR+2fD1GdRzKynJbZDMA==}
     engines: {node: '>=16.14'}
     hasBin: true
     requiresBuild: true
@@ -1483,8 +1483,8 @@ packages:
     dev: true
 
   file:sveltekit-zero-api.tgz:
-    resolution: {integrity: sha512-zedyDwMoYq8OcfZKYDGOeP1hffRClXfnMLDCP8MXD4wEQWSKPOlH6lmnRN2yGzL3prItI36IBVxcLL4ypF7rwQ==, tarball: file:sveltekit-zero-api.tgz}
+    resolution: {integrity: sha512-3xApuBYFJIsw6T8DTnGzqzzs23RQvxFjiZrKSt0n6sp/6bhz4Uen0EMYREcY0JZgKWzsBL6sQvvAthboYTMQJQ==, tarball: file:sveltekit-zero-api.tgz}
     name: sveltekit-zero-api
-    version: 0.11.9
+    version: 0.11.11
     requiresBuild: true
     dev: true
