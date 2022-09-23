@@ -9,6 +9,7 @@ function findFiles(dir: string) {
 	const files = fs.readdirSync(dir)
 	for (let path of files) {
 		path = dir + '\\' + path
+		if (!fs.existsSync(path)) continue
 		let stats = fs.statSync(path)
 		if (stats.isDirectory()) {
 			findFiles(path)
