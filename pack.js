@@ -26,11 +26,6 @@ console.log('Extracting pack')
 
 process.chdir('./package')
 
-const packagejson = resolve('./package.json')
-const pack = JSON.parse(fs.readFileSync(packagejson, { encoding: 'utf-8' }))
-pack.scripts = { 'postinstall': 'node post-install' }
-fs.writeFileSync(packagejson, JSON.stringify(pack))
-
 execSync('npm pack', { stdio: 'ignore' })
 
 let packed = ''
