@@ -1,4 +1,5 @@
 import type { ZeroAPIConfig } from '../types/options'
+import keys from './keys.js'
 
 type Fn = (response: SvelteResponse) => any
 type Callback = [number, Fn]
@@ -31,6 +32,12 @@ type $ = {
 	resolve: ((value?: any) => void) | undefined,
 }
 
+function setBody(options: IOptions, api: APIContent) {
+	if (options.config.sendEmptyBodyAsJSON === false) return
+	if (api.method === 'GET' || api.method === 'HEAD') return
+	api.body = 'body' in api ? typeof api.body === 'object' && JSON.stringify(api.body) : '{}'
+}
+
 export default function handler(options: IOptions, api: APIContent) {
 	const { fetch } = options
 	
@@ -45,7 +52,7 @@ export default function handler(options: IOptions, api: APIContent) {
 	if (!('content-type' in api.headers))
 		api.headers['content-type'] = api.headers['content-type'] || isForm ? 'multipart/form-data' : 'application/json'
 
-	api.body = 'body' in api ? typeof api.body === 'object' && JSON.stringify(api.body) : '{}'
+	setBody(options, api)
 
 	if (api.method === 'GET' && !('cache-control' in api.headers))
 		api.headers['cache-control'] = 'public, max-age=604800, immutable'
@@ -80,7 +87,9 @@ export default function handler(options: IOptions, api: APIContent) {
 		return promiser
 	})
 	
-	const response = fetch(url, { ...baseData, ...api, headers: { ...(baseData['headers'] || {}), ...(api['headers'] || {}) } })
+	const requestInit: RequestInit = { ...baseData, ...api, headers: { ...(baseData['headers'] || {}), ...(api['headers'] || {}) } }
+	if (api.body === undefined) delete requestInit['body']
+	const response = fetch(url, requestInit)
 	response.then(async (res) => {
 		const json = (res.headers.get('content-type')||'').includes('application/json') && await res[options.config.format || 'json']()
 		// TODO: Handle other responses than just JSON
@@ -165,90 +174,6 @@ function respond(callbacks: Callback[], res: Response, options: IOptions, $: $) 
 }
 
 
-function callbackHandler(handleCallback: (statusCode: number, callback: Fn) => any) {
-	return {
-		// "Any response"
-		Any:                           function (cb: Fn) { return handleCallback(0,   cb) },
-
-		// general
-		Informational:                 function (cb: Fn) { return handleCallback(1, cb) },
-		Success:                       function (cb: Fn) { return handleCallback(2, cb) },
-		Redirect:                      function (cb: Fn) { return handleCallback(3, cb) },
-		Error:                         function (cb: Fn) { return handleCallback(45,cb) },
-		ClientError:                   function (cb: Fn) { return handleCallback(4, cb) },
-		ServerError:                   function (cb: Fn) { return handleCallback(5, cb) },
-
-		// 1××
-		Continue:                      function (cb: Fn) { return handleCallback(100, cb) },
-		SwitchingProtocols:            function (cb: Fn) { return handleCallback(101, cb) },
-		Processing:                    function (cb: Fn) { return handleCallback(102, cb) },
-		EarlyHints:                    function (cb: Fn) { return handleCallback(103, cb) },
-
-		// 2××
-		Ok:                            function (cb: Fn) { return handleCallback(200, cb) },
-		Created:                       function (cb: Fn) { return handleCallback(201, cb) },
-		Accepted:                      function (cb: Fn) { return handleCallback(202, cb) },
-		NonAuthoritativeInformation:   function (cb: Fn) { return handleCallback(203, cb) },
-		NoContent:                     function (cb: Fn) { return handleCallback(204, cb) },
-		ResetContent:                  function (cb: Fn) { return handleCallback(205, cb) },
-		PartialContent:                function (cb: Fn) { return handleCallback(206, cb) },
-		MultiStatus:                   function (cb: Fn) { return handleCallback(207, cb) },
-		AlreadyReported:               function (cb: Fn) { return handleCallback(208, cb) },
-		IMUsed:                        function (cb: Fn) { return handleCallback(226, cb) },
-
-		// 3××
-		MultipleChoices:               function (cb: Fn) { return handleCallback(300, cb) },
-		MovedPermanently:              function (cb: Fn) { return handleCallback(301, cb) },
-		Found:                         function (cb: Fn) { return handleCallback(302, cb) },
-		SeeOther:                      function (cb: Fn) { return handleCallback(303, cb) },
-		NotModified:                   function (cb: Fn) { return handleCallback(304, cb) },
-		UseProxy:                      function (cb: Fn) { return handleCallback(305, cb) },
-		SwitchProxy:                   function (cb: Fn) { return handleCallback(306, cb) },
-		TemporaryRedirect:             function (cb: Fn) { return handleCallback(307, cb) },
-		PermanentRedirect:             function (cb: Fn) { return handleCallback(308, cb) },
-
-		// 4××
-		BadRequest:                    function (cb: Fn) { return handleCallback(400, cb) },
-		Unauthorized:                  function (cb: Fn) { return handleCallback(401, cb) },
-		PaymentRequired:               function (cb: Fn) { return handleCallback(402, cb) },
-		Forbidden:                     function (cb: Fn) { return handleCallback(403, cb) },
-		NotFound:                      function (cb: Fn) { return handleCallback(404, cb) },
-		MethodNotAllowed:              function (cb: Fn) { return handleCallback(405, cb) },
-		NotAcceptable:                 function (cb: Fn) { return handleCallback(406, cb) },
-		ProxyAuthenticationRequired:   function (cb: Fn) { return handleCallback(407, cb) },
-		RequestTimeout:                function (cb: Fn) { return handleCallback(408, cb) },
-		Conflict:                      function (cb: Fn) { return handleCallback(409, cb) },
-		Gone:                          function (cb: Fn) { return handleCallback(410, cb) },
-		LengthRequired:                function (cb: Fn) { return handleCallback(411, cb) },
-		PreconditionFailed:            function (cb: Fn) { return handleCallback(412, cb) },
-		PayloadTooLarge:               function (cb: Fn) { return handleCallback(413, cb) },
-		URITooLong:                    function (cb: Fn) { return handleCallback(414, cb) },
-		UnsupportedMediaType:          function (cb: Fn) { return handleCallback(415, cb) },
-		RangeNotSatisfiable:           function (cb: Fn) { return handleCallback(416, cb) },
-		ExpectationFailed:             function (cb: Fn) { return handleCallback(417, cb) },
-		ImATeapot:                     function (cb: Fn) { return handleCallback(418, cb) },
-		MisdirectedRequest:            function (cb: Fn) { return handleCallback(421, cb) },
-		UnprocessableEntity:           function (cb: Fn) { return handleCallback(422, cb) },
-		Locked:                        function (cb: Fn) { return handleCallback(423, cb) },
-		FailedDependency:              function (cb: Fn) { return handleCallback(424, cb) },
-		TooEarly:                      function (cb: Fn) { return handleCallback(425, cb) },
-		UpgradeRequired:               function (cb: Fn) { return handleCallback(426, cb) },
-		PreconditionRequired:          function (cb: Fn) { return handleCallback(428, cb) },
-		TooManyRequests:               function (cb: Fn) { return handleCallback(429, cb) },
-		RequestHeaderFieldsTooLarge:   function (cb: Fn) { return handleCallback(431, cb) },
-		UnavailableForLegalReasons:    function (cb: Fn) { return handleCallback(451, cb) },
-
-		// 5××
-		InternalServerError:           function (cb: Fn) { return handleCallback(500, cb) },
-		NotImplemented:                function (cb: Fn) { return handleCallback(501, cb) },
-		BadGateway:                    function (cb: Fn) { return handleCallback(502, cb) },
-		ServiceUnavailable:            function (cb: Fn) { return handleCallback(503, cb) },
-		GatewayTimeout:                function (cb: Fn) { return handleCallback(504, cb) },
-		HTTPVersionNotSupported:       function (cb: Fn) { return handleCallback(505, cb) },
-		VariantAlsoNegotiates:         function (cb: Fn) { return handleCallback(506, cb) },
-		InsufficientStorage:           function (cb: Fn) { return handleCallback(507, cb) },
-		LoopDetected:                  function (cb: Fn) { return handleCallback(508, cb) },
-		NotExtended:                   function (cb: Fn) { return handleCallback(510, cb) },
-		NetworkAuthenticationRequired: function (cb: Fn) { return handleCallback(511, cb) }
-	}
+function callbackHandler(handleCallback: (statusCode: number, callback: Fn) => any): any {
+	return Object.entries(keys).reduce((previous, [key, val]) => ({ ...previous, [key]: function (cb: Fn) { return handleCallback(val, cb) } }), {})
 }

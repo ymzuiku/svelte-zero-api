@@ -37,12 +37,15 @@ export interface ZeroAPIConfig {
 	*/
 	baseUrl?: string
 
-	// A callback function that will be called on successful requests
+	// A function that will be called on successful requests
 	onSuccess?: (res: any) => Promise<any>
 
-	/** A callback function that will be called if the API somehow throws an error */
+	/** A function that will be called if the API somehow throws an error */
 	onError?: (res: any) => Promise<any>
 
 	/** Prepended callbacks will be added to every request */
-	prependCallbacks?: (method: RecursiveMethodReturn['_']) => void
+	prependCallbacks?: (method: RecursiveMethodReturn<{ no$ }>['_']) => void
+
+	/** (Def. true) If this is true, it will send the body of each request as an empty JSON to provide a backend error message when trying to use `request.json()` */
+	sendEmptyBodyAsJSON?: boolean
 }

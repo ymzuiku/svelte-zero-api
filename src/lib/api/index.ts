@@ -1,5 +1,6 @@
 import handler from './handler.js'
 import type { ZeroAPIConfig } from '../types/options'
+import keys from './keys.js'
 
 type Directory = {
 	[key: string]: string | Directory | ((...args: any[]) => any)
@@ -8,6 +9,18 @@ type Directory = {
 const endpoints = [
 	'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
 ] as const
+
+// TODO: I feel like this could be optimized to not check for the keys,
+// but I can't figure out how to rn :(
+const apiKeys: Record<any, any> = Object.keys(keys).reduce((previous, current) => ({...previous, [current]: (...args: any) => emptyProxy}), {})
+const emptyProxy: any = new Proxy({}, {
+	get: function (target: Record<any, any>, prop: string) {
+		if (prop === '$' || prop === '_') return emptyProxy
+		let k = apiKeys[prop] as any
+		if (k) return k
+		return target[prop]
+	}
+})
 
 export function createZeroApi<T = any>(config: ZeroAPIConfig): T {
 	function createDirectory(directory: Directory): any {
@@ -29,8 +42,11 @@ export function createZeroApi<T = any>(config: ZeroAPIConfig): T {
 			const method = route.toUpperCase()
 			const path = directory.path as string
 
-			directory[route] = (contents, _fetch = null) =>
-				handler({ config, path, fetch: _fetch || fetch }, { method, headers: {}, ...contents })
+			directory[route] = (contents, _fetch = null) => {
+				if (_fetch == null && typeof document === 'undefined')
+					return emptyProxy
+				return handler({ config, path, fetch: _fetch || fetch }, { method, headers: {}, ...contents })
+			}
 			return directory[route]
 		}
 
