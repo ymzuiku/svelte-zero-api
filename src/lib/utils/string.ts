@@ -1,4 +1,4 @@
-const invalidCharacters = ['[', '/', '\\', ']', '-', ':', '.', '+']
+const invalidCharacters = ['[', '/', '\\', ']', '-', ':', '.', '+', '(', ')']
 /** Replaces `[` `/` `\` `]` `-` `:` `.` with `_` */
 export const toValidVariable = (name = '') =>
 	name.replaceAll(new RegExp(invalidCharacters.map(m => '\\' + m).join('|'), 'g'), '_')

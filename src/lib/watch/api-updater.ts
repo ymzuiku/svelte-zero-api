@@ -13,12 +13,13 @@ export function apiUpdater(
 	watchDirectory: string
 ) {
 	type Directory = { [key: string]: string | Directory }
-	const apiTypes: Directory = {}
+	let apiTypes: Directory = {}
 	let importStatements = ''
+	debugging && console.time('[DEBUG] Updated generated types at ${resolution} ...')
 	function recursiveLoad(dir: string, directory: Directory) {
 		const files = fs.readdirSync(dir)
 
-		// ex. src/routes/api/somedir/index.ts
+		// ex. src/routes/(app)/api/somedir/index.ts
 		for (const fileName of files) {
 			const path = resolve(dir, fileName)
 			const metadata = fs.statSync(path)
@@ -38,11 +39,25 @@ export function apiUpdater(
 			importStatements += `import * as ${name} from "${importName}";\n`
 
 			const key = fileName.replace(/\.(ts|js)$/g, '')
-			const index = key.startsWith('index')
 			directory[key] = `Z<typeof ${name}>`
 		}
 	}
 	recursiveLoad(watchDirectory, apiTypes)
+
+	function fixKeys(obj: any) {
+		for (let key of Object.keys(obj)) {
+			if (typeof obj[key] === 'object')
+				obj[key] = fixKeys(obj[key])
+			const isGroup = key.startsWith('(') && key.endsWith(')')
+			if (!isGroup)
+				continue
+			let content = obj[key]
+			delete obj[key]
+			obj = { ...obj, ...content }
+		}
+		return obj
+	}
+	apiTypes = fixKeys(apiTypes)
 
 	let dirText = JSON.stringify(apiTypes, null, 2)
 		
@@ -64,7 +79,7 @@ export function apiUpdater(
 	if (!fs.existsSync(folder))
 		fs.mkdirSync(folder, { recursive: true })
 	
-	debugging && console.log(`[DEBUG] Updating generated types at ${resolution} ...`)
+	debugging && console.timeEnd('[DEBUG] Updated generated types at ${resolution} ...')
 	
 	try {
 		// Flag is required to make it a writeable stream. Replacing file messes with TypeScript.
