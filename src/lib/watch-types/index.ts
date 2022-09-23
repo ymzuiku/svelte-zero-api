@@ -5,6 +5,7 @@ import { debugging } from '$lib/internal.js'
 const cwd = process.cwd()
 
 function findFiles(dir: string) {
+	if(!fs.existsSync(dir)) return false
 	const files = fs.readdirSync(dir)
 	for (let path of files) {
 		path = dir + '\\' + path
