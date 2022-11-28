@@ -1,6 +1,6 @@
 {
 	"name": "sveltekit-zero-api",
-	"version": "0.11.15",
+	"version": "0.11.16",
 	"scripts": {
 		"d": "set NODE_ENV=zeroapi && vite dev",
 		"dev": "pnpm add -D ./sveltekit-zero-api.tgz && set NODE_ENV=zeroapi && vite dev",
