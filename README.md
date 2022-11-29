@@ -12,8 +12,8 @@ Provides type-safety between front- and backend, but more importantly — create
 
 Inspired by [svelte-zero-api](https://github.com/ymzuiku/svelte-zero-api) by [ymzuiku](https://github.com/ymzuiku).
 
-![Assigning variables directly](./assign-var.gif)
-![Intellisense with API calls](./frontend-intellisense.gif)
+![Assigning variables directly](https://github.com/Refzlund/sveltekit-zero-api/blob/master/assign-var.gif)
+![Intellisense with API calls](https://github.com/Refzlund/sveltekit-zero-api/blob/master/frontend-intellisense.gif)
 
 ---------
 
@@ -30,5 +30,3 @@ Installation, usage and utility types can all be fond on the GitHub Wiki:
 ### Q&A
 - The `api` type does not always update after changes
   - This is an issue with typescript. Just make a quick change (save) in a backend api and revert it again (save). 
-- Cannot read property '*' of undefined
-  - Happens if you run the API on [SSR](https://kit.svelte.dev/docs#ssr-and-javascript). Use onMount, or any other client-side called functions (on:click etc.). Read more about component life-cycle: https://svelte.dev/tutorial/onmount
