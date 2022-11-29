@@ -1,5 +1,6 @@
 {
 	"name": "sveltekit-zero-api",
+	"description": "Provides type-safety between front- and backend of your SvelteKit project",
 	"version": "0.11.16",
 	"scripts": {
 		"d": "set NODE_ENV=zeroapi && vite dev",
@@ -25,6 +26,12 @@
 		"typescript": "^4.8.3",
 		"vite": "^3.1.3"
 	},
+	"repository": "github:refzlund/sveltekit-zero-api",
+	"homepage": "https://github.com/Refzlund/sveltekit-zero-api",
+	"bugs": {
+		"url": "https://github.com/Refzlund/sveltekit-zero-api/issues"
+	},
 	"type": "module",
-	"module": "esnext"
+	"module": "esnext",
+	"keywords": ["sveltekit", "api", "endpoint", "typesafety", "typescript"]
 }
