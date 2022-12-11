@@ -70,7 +70,8 @@ export function apiUpdater(
 		// Transform slugs e.g. "[slug]": into functions slug$: (slug: S) =>
 		// TODO: Allow ex. [slug].[second] to become slug$second$: (slug: S, second: S) =>
 		.replaceAll(/\"\[(.*?)\]\"\:/g, '$1$: ($1: S) =>')
-
+		.replaceAll(/=\w+(?=:|\$)/g, '')
+	
 	const { tempOutput, outputDir = 'src' } = watchOptions
 	const resolution = tempOutput ?
 		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')

@@ -1,7 +1,7 @@
 {
 	"name": "sveltekit-zero-api",
 	"description": "Provides type-safety between front- and backend of your SvelteKit project",
-	"version": "0.11.16",
+	"version": "0.11.17",
 	"scripts": {
 		"d": "set NODE_ENV=zeroapi && vite dev",
 		"dev": "pnpm add -D ./sveltekit-zero-api.tgz && set NODE_ENV=zeroapi && vite dev",
@@ -17,14 +17,14 @@
 		"@sveltejs/kit": "next",
 		"@sveltejs/package": "next",
 		"chokidar": "^3.5.3",
-		"svelte": "^3.50.1",
+		"svelte": "^3.54.0",
 		"svelte-check": "^2.9.0",
 		"svelte-preprocess": "^4.10.7",
 		"svelte2tsx": "^0.5.17",
 		"sveltekit-zero-api": "file:sveltekit-zero-api.tgz",
 		"tslib": "^2.4.0",
 		"typescript": "^4.8.3",
-		"vite": "^3.1.3"
+		"vite": "^4.0.0"
 	},
 	"repository": "github:refzlund/sveltekit-zero-api",
 	"homepage": "https://github.com/Refzlund/sveltekit-zero-api",
