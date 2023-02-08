@@ -22,11 +22,3 @@ Installation, usage and utility types can all be fond on the GitHub Wiki:
 ### [Installation/Getting started](https://github.com/Refzlund/sveltekit-zero-api/wiki/Get-Started)
 ### [Backend - Setting up endpoints](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend)
 ### [Frontend - Using the API](https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend)
-
-<sup>Let me know if you prefer to have the wiki content on the frontpage instead.</sup>
-
-<br><br><br><br><br><br>
-
-### Q&A
-- The `api` type does not always update after changes
-  - This is an issue with typescript. Just make a quick change (save) in a backend api and revert it again (save). 
