@@ -15,7 +15,7 @@ export function apiUpdater(
 	type Directory = { [key: string]: string | Directory }
 	let apiTypes: Directory = {}
 	let importStatements = ''
-	debugging && console.time('[DEBUG] Updated generated types at ${resolution} ...')
+	debugging && console.time(`[DEBUG] Updated generated types at ${routesDirectory} ...`)
 	function recursiveLoad(dir: string, directory: Directory) {
 		const files = fs.readdirSync(dir)
 
@@ -80,7 +80,7 @@ export function apiUpdater(
 	if (!fs.existsSync(folder))
 		fs.mkdirSync(folder, { recursive: true })
 	
-	debugging && console.timeEnd('[DEBUG] Updated generated types at ${resolution} ...')
+	debugging && console.timeEnd(`[DEBUG] Updated generated types at ${resolution} ...`)
 	
 	try {
 		// Flag is required to make it a writeable stream. Replacing file messes with TypeScript.

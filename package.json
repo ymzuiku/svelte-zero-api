@@ -1,7 +1,7 @@
 {
 	"name": "sveltekit-zero-api",
 	"description": "Provides type-safety between front- and backend of your SvelteKit project",
-	"version": "0.12.0",
+	"version": "0.12.1",
 	"scripts": {
 		"d": "set NODE_ENV=zeroapi && vite dev",
 		"dev": "pnpm add -D ./sveltekit-zero-api.tgz && set NODE_ENV=zeroapi && vite dev",

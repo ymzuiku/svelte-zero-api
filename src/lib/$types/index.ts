@@ -14,7 +14,7 @@ function findAndUpdate$types(dir: string) {
 		}
 		if (!path.match(/(\$types.d.ts)$/))
 			continue
-		$typesUpdater('change', path, stats)
+		$typesUpdater(path)
 	}
 	return true
 }
@@ -34,11 +34,11 @@ export const validateTypes = (/** Double check after ms */timeout = 0, mkdir = t
 
 // const sleep = (s: number) => new Promise(r => setTimeout(r, s))
 
-export const $typesUpdater: WatchEvent = async (eventName, path, stats) => {
+export const $typesUpdater = async (path: string) => {
 	const isEndpoint = path.match(/(\+server.ts)$/)
 	const isType = path.match(/(\$types.d.ts)$/)
 	if (isEndpoint || isType) {
-		// await sleep(665 + 1)
+		// await sleep(666)
 		if (isEndpoint) {
 			path = path.replace(cwd + '\\', '').replace('+server', '$types.d')
 			path = resolve(cwd, '.svelte-kit', 'types', path)
