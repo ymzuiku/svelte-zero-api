@@ -1,12 +1,6 @@
 import adapter from '@sveltejs/adapter-auto'
 import preprocess from 'svelte-preprocess'
 
-// -- Removed when packaging
-import { watchAPI } from 'sveltekit-zero-api'
-if (process.env.NODE_ENV !== 'production')
-   watchAPI()
-// --
-
 const exports = [
 	'index.ts',
 	'__temp.ts',

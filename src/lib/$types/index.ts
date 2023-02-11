@@ -1,21 +1,20 @@
 import { resolve } from 'path'
 import fs from 'fs'
-import createWatcher from './watcher.js'
 import { debugging } from '$lib/internal.js'
 const cwd = process.cwd()
 
-function findFiles(dir: string) {
+function findAndUpdate$types(dir: string) {
 	const files = fs.readdirSync(dir)
 	for (let path of files) {
 		path = dir + '/' + path
 		let stats = fs.statSync(path)
 		if (stats.isDirectory()) {
-			findFiles(path)
+			findAndUpdate$types(path)
 			continue
 		}
 		if (!path.match(/(\$types.d.ts)$/))
 			continue
-		updater('change', path, stats)
+		$typesUpdater('change', path, stats)
 	}
 	return true
 }
@@ -28,24 +27,18 @@ export const validateTypes = (/** Double check after ms */timeout = 0, mkdir = t
 		else
 			return
 	}
-	findFiles(typesDir)
+	findAndUpdate$types(typesDir)
 	if (timeout > 0)
-		setTimeout(() => findFiles(typesDir), timeout)
+		setTimeout(() => findAndUpdate$types(typesDir), timeout)
 }
 
-export async function watch() {
-	validateTypes(3000)
-	// Note: Not watching for changes in ´.svelte-kit/types´, because that didn't work
-	createWatcher(resolve(cwd, 'src'), updater)
-}
+// const sleep = (s: number) => new Promise(r => setTimeout(r, s))
 
-const sleep = (s: number) => new Promise(r => setTimeout(r, s))
-
-const updater: WatchEvent = async (eventName, path, stats) => {
+export const $typesUpdater: WatchEvent = async (eventName, path, stats) => {
 	const isEndpoint = path.match(/(\+server.ts)$/)
 	const isType = path.match(/(\$types.d.ts)$/)
 	if (isEndpoint || isType) {
-		await sleep(665 + 1)
+		// await sleep(665 + 1)
 		if (isEndpoint) {
 			path = path.replace(cwd + '\\', '').replace('+server', '$types.d')
 			path = resolve(cwd, '.svelte-kit', 'types', path)

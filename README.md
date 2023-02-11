@@ -1,5 +1,35 @@
-# SvelteKit Zero API
-Provides type-safety between front- and backend, but more importantly — creates a structure for ease of APIs in your project.
+<p align="center">
+    <img width="1000" src="https://raw.githubusercontent.com/Refzlund/sveltekit-zero-api/master/SvelteKit%20Zero%20API.png" alt="SurrealDB Icon">
+</p>
+<h3 align="center">Seameless type-safety &nbsp; means &nbsp; better developer experience.</h3>
+
+<p align="center">
+	<img src="https://badge.fury.io/js/sveltekit-zero-api.svg">
+	&nbsp;
+	<img src="https://img.shields.io/npm/dt/sveltekit-zero-api.svg">
+</p>
+
+## Quick Start
+<p align="center">
+	<code>npm i -D sveltekit-zero-api</code>
+	&nbsp;/&nbsp;
+	<code>pnpm add -D sveltekit-zero-api</code>
+</p>
+
+```ts
+// vite.config.ts
+import { zeroAPI } from 'sveltekit-zero-api'
+
+const config: UserConfig = {
+	plugins: [
+		sveltekit(),
+		zeroAPI()
+	]
+}
+```
+
+<h2><img height="24" src="https://raw.githubusercontent.com/sveltejs/branding/c4dfca6743572087a6aef0e109ffe3d95596e86a/svelte-logo.svg">&nbsp;&nbsp;What is SvelteKit Zero API?</h2>
+<b>Zero API</b> attempts to sow the gap between the frontend and backend. This includes sending correct respone codes and dealing with them effectively on the front-end. This may also include error handling. 
 
 - Body and query is typed seemlessly in both frontend, and endpoints
 - Queries are easier to use with querySpread which supports objects as query parameters
@@ -9,8 +39,6 @@ Provides type-safety between front- and backend, but more importantly — create
 - Can be used in the page `Load` function
 - You can type-define variables with endpoint responses
 - Has handy backend utility functions; [querySpread](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend#queryspread) and [Error Handling](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend#error-handling)
-
-Inspired by [svelte-zero-api](https://github.com/ymzuiku/svelte-zero-api) by [ymzuiku](https://github.com/ymzuiku).
 
 ![Assigning variables directly](https://github.com/Refzlund/sveltekit-zero-api/blob/master/assign-var.gif)
 ![Intellisense with API calls](https://github.com/Refzlund/sveltekit-zero-api/blob/master/frontend-intellisense.gif)
@@ -22,3 +50,10 @@ Installation, usage and utility types can all be fond on the GitHub Wiki:
 ### [Installation/Getting started](https://github.com/Refzlund/sveltekit-zero-api/wiki/Get-Started)
 ### [Backend - Setting up endpoints](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend)
 ### [Frontend - Using the API](https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend)
+
+---
+
+
+
+## Acknowledgments
+Thank you [ymzuiku](https://github.com/ymzuiku) for igniting the initial concept and codebase [svelte-zero-api](https://github.com/ymzuiku/svelte-zero-api). And naturally, a big thanks to the Vite and Svelte family for the worlds best framework!💘

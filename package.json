@@ -1,7 +1,7 @@
 {
 	"name": "sveltekit-zero-api",
 	"description": "Provides type-safety between front- and backend of your SvelteKit project",
-	"version": "0.11.17",
+	"version": "0.12.0",
 	"scripts": {
 		"d": "set NODE_ENV=zeroapi && vite dev",
 		"dev": "pnpm add -D ./sveltekit-zero-api.tgz && set NODE_ENV=zeroapi && vite dev",
@@ -13,18 +13,22 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "next",
-		"@sveltejs/kit": "next",
-		"@sveltejs/package": "next",
+		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/kit": "^1.5.5",
+		"@sveltejs/package": "^1.0.2",
 		"chokidar": "^3.5.3",
-		"svelte": "^3.54.0",
-		"svelte-check": "^2.9.0",
+		"svelte": "^3.55.1",
+		"svelte-check": "^2.10.3",
 		"svelte-preprocess": "^4.10.7",
-		"svelte2tsx": "^0.5.17",
+		"svelte2tsx": "^0.5.23",
 		"sveltekit-zero-api": "file:sveltekit-zero-api.tgz",
-		"tslib": "^2.4.0",
-		"typescript": "^4.8.3",
-		"vite": "^4.0.0"
+		"tslib": "^2.5.0",
+		"typescript": "^4.9.5",
+		"vite": "^4.1.1"
+	},
+	"peerDependencies": {
+		"@sveltejs/kit": "^1.5.5",
+		"svelte": "^3.55.1"
 	},
 	"repository": "github:refzlund/sveltekit-zero-api",
 	"homepage": "https://github.com/Refzlund/sveltekit-zero-api",
@@ -33,5 +37,11 @@
 	},
 	"type": "module",
 	"module": "esnext",
-	"keywords": ["sveltekit", "api", "endpoint", "typesafety", "typescript"]
+	"keywords": [
+		"sveltekit",
+		"api",
+		"endpoint",
+		"typesafety",
+		"typescript"
+	]
 }

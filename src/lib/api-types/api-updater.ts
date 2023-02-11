@@ -2,15 +2,15 @@ import { pathToImportPath, toValidVariable } from '../utils/string.js'
 import fs from 'fs'
 import { resolve } from 'path'
 import { debugging } from '$lib/internal.js'
-import type { WatchOptions } from './types'
+import type { ZeroAPIPluginConfig } from '$lib/vitePlugin.js'
 
 const cwd = process.cwd()
 
 /** Is run when file changes has been detected */
 export function apiUpdater(
-	watchOptions: WatchOptions,
+	config: ZeroAPIPluginConfig,
 	/** Resolved to real path i.e. `src/routes = C:/current/project/src/routes` */
-	watchDirectory: string
+	routesDirectory: string
 ) {
 	type Directory = { [key: string]: string | Directory }
 	let apiTypes: Directory = {}
@@ -42,7 +42,7 @@ export function apiUpdater(
 			directory[key] = `Z<typeof ${name}>`
 		}
 	}
-	recursiveLoad(watchDirectory, apiTypes)
+	recursiveLoad(routesDirectory, apiTypes)
 
 	function fixKeys(obj: any) {
 		for (let key of Object.keys(obj)) {
@@ -72,7 +72,7 @@ export function apiUpdater(
 		.replaceAll(/\"\[(.*?)\]\"\:/g, '$1$: ($1: S) =>')
 		.replaceAll(/=\w+(?=:|\$)/g, '')
 	
-	const { tempOutput, outputDir = 'src' } = watchOptions
+	const { tempOutput, outputDir = 'src' } = config
 	const resolution = tempOutput ?
 		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
 
