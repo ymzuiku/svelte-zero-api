@@ -47,15 +47,22 @@ const config: UserConfig = {
 
 ---------
 
-Installation, usage and utility types can all be fond on the GitHub Wiki:
+<p align="center">
+Installation, usage and utility types can all be fond on the GitHub Wiki
+</p>
 
-### [Installation/Getting started](https://github.com/Refzlund/sveltekit-zero-api/wiki/Get-Started)
-### [Backend - Setting up endpoints](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend)
-### [Frontend - Using the API](https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend)
+<h3 align="center">
+	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Get-Started">Getting Started</a>
+</h3>
+<h3 align="center">
+	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend">Backend - Setting up endpoints</a>
+</h3>
+<h3 align="center">
+	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend">Frontend - Using the API</a>
+</h3>
 
----
-
-
+<br>
+<br>
 
 ## Acknowledgments
 Thank you [ymzuiku](https://github.com/ymzuiku) for igniting the initial concept and codebase [svelte-zero-api](https://github.com/ymzuiku/svelte-zero-api). And naturally, a big thanks to the Vite and Svelte family for the worlds best framework!💘
