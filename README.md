@@ -1,7 +1,7 @@
 <p align="center">
     <img width="1000" src="https://raw.githubusercontent.com/Refzlund/sveltekit-zero-api/master/SvelteKit%20Zero%20API.png" alt="SurrealDB Icon">
 </p>
-<h3 align="center">Seameless type-safety &nbsp; means &nbsp; better developer experience.</h3>
+<h3 align="center">Seamless type-safety &nbsp; means &nbsp; better developer experience.</h3>
 
 <p align="center">
 	<img src="https://badge.fury.io/js/sveltekit-zero-api.svg">
