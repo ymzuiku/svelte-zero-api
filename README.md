@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="650" src="https://raw.githubusercontent.com/Refzlund/sveltekit-zero-api/master/SvelteKit%20Zero%20API.png" alt="SurrealDB Icon">
+    <img width="542" src="https://raw.githubusercontent.com/Refzlund/sveltekit-zero-api/master/SvelteKit%20Zero%20API.png" alt="SurrealDB Icon">
 </p>
 <h3 align="center">Seamless type-safety &nbsp; means &nbsp; better developer experience.</h3>
 
