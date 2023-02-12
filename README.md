@@ -29,8 +29,8 @@ const config: UserConfig = {
 ```
 
 <h2><img height="24" src="https://raw.githubusercontent.com/sveltejs/branding/c4dfca6743572087a6aef0e109ffe3d95596e86a/svelte-logo.svg">&nbsp;&nbsp;What is SvelteKit Zero API?</h2>
-<b>Zero API</b> attempts to sow the gap between the frontend and backend. This includes sending correct respone codes and dealing with them effectively on the front-end. This may also include error handling. 
-
+<b>Zero API</b> attempts to sow the gap between the frontend and backend. This includes typing backend response codes and their content and dealing with them effectively using [callback functions](https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend#callbacks). This may also include error handling. 
+<br>
 - Body and query is typed seemlessly in both frontend, and endpoints
 - Queries are easier to use with querySpread which supports objects as query parameters
 - Endpoint routes are automatically typed
