@@ -6,6 +6,17 @@ import type { ZeroAPIPluginConfig } from '$lib/vitePlugin.js'
 
 const cwd = process.cwd()
 
+function deleteNestedEmptyObjects(obj: any) {
+	// modify by reference
+	Object.keys(obj).forEach(function(key) {
+		if (typeof obj[key] === 'object') {
+			deleteNestedEmptyObjects(obj[key])
+			if (Object.keys(obj[key]).length === 0) {
+				delete obj[key]
+			}
+		}
+	})
+}
 /** Is run when file changes has been detected */
 export function apiUpdater(
 	config: ZeroAPIPluginConfig,
@@ -57,6 +68,8 @@ export function apiUpdater(
 		}
 		return obj
 	}
+
+	deleteNestedEmptyObjects(apiTypes)
 	apiTypes = fixKeys(apiTypes)
 
 	let dirText = JSON.stringify(apiTypes, null, 2)
