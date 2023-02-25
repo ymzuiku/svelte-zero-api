@@ -42,13 +42,19 @@ export function apiUpdater(
 		const files = fs.readdirSync(dir)
 
 		// ex. src/routes/(app)/api/somedir/index.ts
-		for (const fileName of files) {
+		for (let fileName of files) {
 			const path = resolve(dir, fileName)
 			const metadata = fs.statSync(path)
 
 			if (metadata.isDirectory()) {
-				if (!directory[fileName])
+				if (!directory[fileName]){
+					if(fileName.match(/\[(.*?)\]/)){
+						// this should be a promise, it should resolve when dirText is parsed...
+						const { alias } = parsePath(resolution, path + '\\+server.ts') // comply with pathToImportPath
+						fileName = fileName.replace(/\[(.*?)\]/, `[$1]${alias}`)
+					}
 					directory[fileName] = {}
+				}
 				recursiveLoad(path, directory[fileName] as Directory)
 				continue
 			}
@@ -92,7 +98,11 @@ export function apiUpdater(
 		
 		// Transform slugs e.g. "[slug]": into functions slug$: (slug: S) =>
 		// TODO: Allow ex. [slug].[second] to become slug$second$: (slug: S, second: S) =>
-		.replaceAll(/\"\[(.*?)\]\"\:/g, '$1$: ($1: S) =>')
+		.replaceAll(/\"\[(.*?)\](.*?)\"\:/g, (match, p1, p2) => {
+			// FIXME: check for other cases
+			const alias = p2 || '{}';
+			return `${p1}$: (${p1}: Slug<typeof ${alias}>) =>`;
+		})
 		.replaceAll(/=\w+(?=:|\$)/g, '')
 	
 	const folder = resolve(resolution, '..')
@@ -118,5 +128,6 @@ const file = (dirText: string, importCode: string) =>
 import type { Z } from 'sveltekit-zero-api/types/zeroapi'
 ${importCode}
 
-type S = string | number 
+type Slug<Module> = Module extends { Slug: infer S } ? S : string | number
+
 export type GeneratedAPI = ${dirText}`
