@@ -45,7 +45,7 @@ export default function handler(options: IOptions, api: APIContent) {
 	if (stringifyQueryObjects && 'query' in api) 
 		stringifyQuery(api)
 
-	const url = options.config.baseUrl || '' + options.path + ('query' in api ? '?' + new URLSearchParams(api.query).toString() : '')
+	const url = (options.config.baseUrl || '') + options.path + ('query' in api ? '?' + new URLSearchParams(api.query).toString() : '')
 	const baseData = options.config.baseData || {}
 
 	const isForm = Object.prototype.toString.call(api.body) === '[object FormData]'
