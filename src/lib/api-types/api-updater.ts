@@ -1,6 +1,6 @@
 import { pathToImportPath, toValidVariable } from '../utils/string.js'
 import fs from 'fs'
-import { resolve } from 'path'
+import { resolve, relative } from 'path'
 import { debugging } from '$lib/internal.js'
 import type { ZeroAPIPluginConfig } from '$lib/vitePlugin.js'
 
@@ -17,6 +17,13 @@ function deleteNestedEmptyObjects(obj: any) {
 		}
 	})
 }
+function parsePath(resolutionPath: string, path: string) {
+	const _relative = relative(resolutionPath, path).replace('..', '.')
+	const importName = pathToImportPath(_relative)
+	const alias = toValidVariable(importName)
+	return { importName, alias }
+}
+
 /** Is run when file changes has been detected */
 export function apiUpdater(
 	config: ZeroAPIPluginConfig,
@@ -27,6 +34,10 @@ export function apiUpdater(
 	let apiTypes: Directory = {}
 	let importStatements = ''
 	debugging && console.time(`[DEBUG] Updated generated types at ${routesDirectory} ...`)
+	const { tempOutput, outputDir = 'src' } = config
+	const resolution = tempOutput ?
+		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
+
 	function recursiveLoad(dir: string, directory: Directory) {
 		const files = fs.readdirSync(dir)
 
@@ -45,12 +56,11 @@ export function apiUpdater(
 			if (!/\+server.(ts|js)/gm.test(fileName))
 				continue
 
-			const importName = pathToImportPath(path)
-			const name = toValidVariable(importName)
-			importStatements += `import * as ${name} from "${importName}";\n`
+			const { alias, importName } = parsePath(resolution, path)
+			importStatements += `import * as ${alias} from "${importName}"\n`
 
 			const key = fileName.replace(/\.(ts|js)$/g, '')
-			directory[key] = `Z<typeof ${name}>`
+			directory[key] = `Z<typeof ${alias}>`
 		}
 	}
 	recursiveLoad(routesDirectory, apiTypes)
@@ -85,10 +95,6 @@ export function apiUpdater(
 		.replaceAll(/\"\[(.*?)\]\"\:/g, '$1$: ($1: S) =>')
 		.replaceAll(/=\w+(?=:|\$)/g, '')
 	
-	const { tempOutput, outputDir = 'src' } = config
-	const resolution = tempOutput ?
-		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
-
 	const folder = resolve(resolution, '..')
 	if (!fs.existsSync(folder))
 		fs.mkdirSync(folder, { recursive: true })
