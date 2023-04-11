@@ -1,8 +1,7 @@
 <script lang='ts'>
-	import api, { intersect } from '../api';
+	import api from '$browser/api';
 	import type { RequestParams, ResponseBody } from 'sveltekit-zero-api/helpers'
 	import { onMount } from 'svelte'
-	import { browser } from '$app/environment'
 
 	const query: RequestParams<ReturnType<typeof api.fo.sluggers$>['POST']> = {
 		body: {
