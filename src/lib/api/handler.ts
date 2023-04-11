@@ -45,7 +45,7 @@ export default function handler(options: IOptions, api: APIContent) {
 	if (stringifyQueryObjects && 'query' in api) 
 		stringifyQuery(api)
 
-	const url = options.config.baseUrl || '' + options.path + ('query' in api ? '?' + new URLSearchParams(api.query).toString() : '')
+	const url = (options.config.baseUrl || '') + options.path + ('query' in api ? '?' + new URLSearchParams(api.query).toString() : '')
 	const baseData = options.config.baseData || {}
 
 	const isForm = Object.prototype.toString.call(api.body) === '[object FormData]'
@@ -89,7 +89,10 @@ export default function handler(options: IOptions, api: APIContent) {
 	
 	const requestInit: RequestInit = { ...baseData, ...api, headers: { ...(baseData['headers'] || {}), ...(api['headers'] || {}) } }
 	if (api.body === undefined) delete requestInit['body']
-	const response = fetch(url, requestInit)
+	// avoid making the "preflight http request", which will make it twice as fast
+	const collapsedRequestInit = api.method === 'GET' ? undefined : requestInit
+	
+	const response = fetch(url, collapsedRequestInit);
 	response.then(async (res) => {
 		const json = (res.headers.get('content-type')||'').includes('application/json') && await res[options.config.format || 'json']()
 		// TODO: Handle other responses than just JSON

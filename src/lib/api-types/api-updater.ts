@@ -1,10 +1,28 @@
 import { pathToImportPath, toValidVariable } from '../utils/string.js'
 import fs from 'fs'
-import { resolve } from 'path'
+import { resolve, relative } from 'path'
 import { debugging } from '$lib/internal.js'
 import type { ZeroAPIPluginConfig } from '$lib/vitePlugin.js'
 
 const cwd = process.cwd()
+
+function deleteNestedEmptyObjects(obj: any) {
+	// modify by reference
+	Object.keys(obj).forEach(function(key) {
+		if (typeof obj[key] === 'object') {
+			deleteNestedEmptyObjects(obj[key])
+			if (Object.keys(obj[key]).length === 0) {
+				delete obj[key]
+			}
+		}
+	})
+}
+function parsePath(resolutionPath: string, path: string) {
+	const _relative = relative(resolutionPath, path).replace('..', '.')
+	const importName = pathToImportPath(_relative)
+	const alias = toValidVariable(importName)
+	return { importName, alias }
+}
 
 /** Is run when file changes has been detected */
 export function apiUpdater(
@@ -16,17 +34,27 @@ export function apiUpdater(
 	let apiTypes: Directory = {}
 	let importStatements = ''
 	debugging && console.time(`[DEBUG] Updated generated types at ${routesDirectory} ...`)
+	const { tempOutput, outputDir = 'src' } = config
+	const resolution = tempOutput ?
+		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
+
 	function recursiveLoad(dir: string, directory: Directory) {
 		const files = fs.readdirSync(dir)
 
 		// ex. src/routes/(app)/api/somedir/index.ts
-		for (const fileName of files) {
+		for (let fileName of files) {
 			const path = resolve(dir, fileName)
 			const metadata = fs.statSync(path)
 
 			if (metadata.isDirectory()) {
-				if (!directory[fileName])
+				if (!directory[fileName]){
+					if(fileName.match(/\[(.*?)\]/)){
+						// this should be a promise, it should resolve when dirText is parsed...
+						const { alias } = parsePath(resolution, path + '\\+server.ts') // comply with pathToImportPath
+						fileName = fileName.replace(/\[(.*?)\]/, `[$1]${alias}`)
+					}
 					directory[fileName] = {}
+				}
 				recursiveLoad(path, directory[fileName] as Directory)
 				continue
 			}
@@ -34,12 +62,11 @@ export function apiUpdater(
 			if (!/\+server.(ts|js)/gm.test(fileName))
 				continue
 
-			const importName = pathToImportPath(path)
-			const name = toValidVariable(importName)
-			importStatements += `import * as ${name} from "${importName}";\n`
+			const { alias, importName } = parsePath(resolution, path)
+			importStatements += `import * as ${alias} from "${importName}"\n`
 
 			const key = fileName.replace(/\.(ts|js)$/g, '')
-			directory[key] = `Z<typeof ${name}>`
+			directory[key] = `Z<typeof ${alias}>`
 		}
 	}
 	recursiveLoad(routesDirectory, apiTypes)
@@ -57,6 +84,8 @@ export function apiUpdater(
 		}
 		return obj
 	}
+
+	deleteNestedEmptyObjects(apiTypes)
 	apiTypes = fixKeys(apiTypes)
 
 	let dirText = JSON.stringify(apiTypes, null, 2)
@@ -69,13 +98,13 @@ export function apiUpdater(
 		
 		// Transform slugs e.g. "[slug]": into functions slug$: (slug: S) =>
 		// TODO: Allow ex. [slug].[second] to become slug$second$: (slug: S, second: S) =>
-		.replaceAll(/\"\[(.*?)\]\"\:/g, '$1$: ($1: S) =>')
+		.replaceAll(/\"\[(.*?)\](.*?)\"\:/g, (match, p1, p2) => {
+			// FIXME: check for other cases
+			const alias = p2 || '{}';
+			return `${p1}$: (${p1}: Slug<typeof ${alias}>) =>`;
+		})
 		.replaceAll(/=\w+(?=:|\$)/g, '')
 	
-	const { tempOutput, outputDir = 'src' } = config
-	const resolution = tempOutput ?
-		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
-
 	const folder = resolve(resolution, '..')
 	if (!fs.existsSync(folder))
 		fs.mkdirSync(folder, { recursive: true })
@@ -99,5 +128,6 @@ const file = (dirText: string, importCode: string) =>
 import type { Z } from 'sveltekit-zero-api/types/zeroapi'
 ${importCode}
 
-type S = string | number 
+type Slug<Module> = Module extends { Slug: infer S } ? S : string | number
+
 export type GeneratedAPI = ${dirText}`

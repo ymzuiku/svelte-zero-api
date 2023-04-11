@@ -8,7 +8,7 @@ let fileData = ''
 try {
 	C.log(34)('Packaging')(0)
 	execSync('pnpm i --ignore-scripts')
-	execSync('pnpm remove sveltekit-zero-api')
+	// execSync('pnpm remove sveltekit-zero-api')
 	fileData = fs.readFileSync('svelte.config.js', 'utf-8')
 	fs.writeFileSync('svelte.config.js', fileData.replace(/(?<=Removed when packaging)[\s\S]*(?=\/\/ --)/, ''), 'utf-8')
 	execSync('set NODE_ENV=package')
