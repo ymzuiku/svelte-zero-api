@@ -11,3 +11,11 @@ dist
 .vscode
 pnpm-lock.yaml
 **/sveltekit-zero-api.d.ts
+
+src
+static
+svelte.config.js
+vite.config.ts
+assign-var.gif
+frontend-intellisense.gif
+SvelteKit Zero API.png
