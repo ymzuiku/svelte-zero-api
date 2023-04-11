@@ -7,8 +7,7 @@ package
 .env.*
 !.env.example
 .svelte.config.js
-sveltekit-zero-api.tgz
 .pnpm-debug.log
 .vscode
 pnpm-lock.yaml
-./src/packaged-sveltekit-zero-api
+**/sveltekit-zero-api.d.ts

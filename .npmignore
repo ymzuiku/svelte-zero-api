@@ -1,1 +1,13 @@
-./src/packaged-sveltekit-zero-api
+.DS_Store
+node_modules
+build
+.svelte-kit
+package
+.env
+.env.*
+!.env.example
+.svelte.config.js
+.pnpm-debug.log
+.vscode
+pnpm-lock.yaml
+**/sveltekit-zero-api.d.ts
