@@ -12,4 +12,4 @@ export function POST(event: API<any>) {
 			message: 'Hello World!'
 		}
 	})
-} 
+}
