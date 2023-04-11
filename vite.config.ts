@@ -8,7 +8,14 @@ const config: UserConfig = {
 		zeroAPI({
 			outputDir: 'src/(browser)'
 		})
-	]
+	],
+	server: {
+		fs: {
+			allow: [
+				'./dist'
+			]
+		}
+	}
 };
 
 export default config;
