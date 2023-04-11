@@ -1,1 +1,0 @@
-type WatchEvent = (eventName: "add" | "addDir" | "change" | "unlink" | "unlinkDir", path: string, stats?: import('fs').Stats | undefined) => void

@@ -1,5 +1,4 @@
 import type { Plugin } from 'vite'
-import { $typesUpdater } from './$types/index.js'
 import fs from 'fs'
 import { resolve } from 'path'
 import apiTemplate from './api-types/api-template.js'
@@ -59,24 +58,10 @@ export default function zeroApi(config: ZeroAPIPluginConfig = {}): Plugin {
 	const resolvedRoutes = resolve(cwd, routesDir)
 	
 	apiUpdater(config, resolvedRoutes)
-	const generatedTypes = resolve(cwd, '.svelte-kit/types')
-	function scan$types(path: string) {
-		for (const fileName of fs.readdirSync(path)) {
-			const r = resolve(path, fileName)
-			if (fileName.match(/^\$types\.d\.ts$/g)) {
-				$typesUpdater(r)
-			}
-			else if (fs.statSync(r).isDirectory())
-				scan$types(r)
-		}
-	}
-	scan$types(generatedTypes)
-
 	return {
 		name: 'svelte-plugin-zero-api',
 		configureServer(vite) {
 			vite.watcher.on('change', (path) => {
-				$typesUpdater(path)
 				apiUpdater(config, resolvedRoutes)
 			})
 		}

@@ -13,33 +13,33 @@ export interface APIInputs {
 }
 
 type JSON<Input> = { (): Promise<Input['body']> }
-type SearchParams<Input, R> = {
+type SearchParams<Input> = {
 	get: <T extends keyof Input['query']>(s: T) => string,
 	getAll: <T extends keyof Input['query']>(s: T) => Array<string>,
 	has: <T extends keyof Input['query']>(s: T) => boolean
-} & Omit<R['url']['searchParams'], 'get' | 'getAll' | 'has'>
+} & Omit<RequestEvent['url']['searchParams'], 'get' | 'getAll' | 'has'>
 
-export type API<Input extends APIInputs = {}, R = RequestEvent>
-	= Omit<R, 'request' | 'url'> & {
+export type API<Input extends APIInputs = {}, RequestEvent = RequestEvent>
+	= Omit<RequestEvent, 'request' | 'url'> & {
 		request: {
 			json: JSON<Input>
-		} & Omit<R['request'], 'json'>
+		} & Omit<RequestEvent['request'], 'json'>
 		url: {
-			searchParams: SearchParams<Input, R>
-		} & Omit<R['url'], 'searchParams'>
+			searchParams: SearchParams<Input>
+		} & Omit<RequestEvent['url'], 'searchParams'>
 	}
 
 export type RequestParams<Endpoint> = Pick<Parameters<Endpoint>[0], 'body' | 'query'>
 export type GetResponse<Endpoint, K extends keyof ReturnType<Endpoint>> = ReturnType<Endpoint>[K]
 export type ResponseBody<Endpoint, K extends Extract<keyof ReturnType<Endpoint>, keyof StatusCodeFn | keyof StatusText>> = Parameters<Parameters<GetResponse<Endpoint, K>>[0]>[0]['body']
 	
-type GetInputs<A> = A extends { url: { searchParams: SearchParams<infer Input, any> } } ? Input : {}
+type InferAPI<A> = A extends API<infer Input> ? Input : {}
 
 // Removes anything that doesn't use the API<any>
-type PickMethods<RestAPI> = {
-	[Function in keyof RestAPI]:
-		Function extends 'GET' | 'POST' | 'DELETE' | 'PUT' | 'OPTIONS' | 'PATCH' ?
-			RestAPI[Function] : never
+type PickMethods<const ServerExports> = {
+	[Keys in keyof ServerExports]:
+		Keys extends 'GET' | 'POST' | 'DELETE' | 'PUT' | 'OPTIONS' | 'PATCH' ?
+			ServerExports[Keys] : never
 }
 
 type DefCallback = (response: DefaultResponse) => void
@@ -80,10 +80,16 @@ type Returned<E, M> = RecursiveMethodReturn<MethodReturnTypes<E[M]>> & Promise<S
 type Fetch = (info: RequestInfo, init?: RequestInit) => Promise<Response>
 
 // Converts the Rest API methods inside a .ts file into the zero api type used in the frontend
-// E = { post(event: API<...>): APIResponse & APIResponse, get(event: API<...>)... }
+// RestAPI = { POST(event: API<...>): APIResponse, GET(event: API<...>)... }
 // M = 'post' | 'get' ...
-type MakeAPI<E extends Endpoint> = {
-	[M in keyof E]: GetEndpointRequest<GetInputs<Parameters<E[M]>[0]>, Simplify<Returned<E, M>>>
+type MakeAPI<const RestAPI extends Endpoint> = {
+	[Method in keyof RestAPI]: GetEndpointRequest<
+		InferAPI<
+			// RestAPI[Method] = POST(event: API<...>)
+			//                        ^^^^^ Parameter 0
+			Parameters<RestAPI[Method]>[0]
+		>, Simplify<Returned<RestAPI, Method>>
+	>
 }
 
 type Requestinit = Omit<RequestInit, 'body'>
@@ -95,4 +101,4 @@ type GetEndpointRequest<T, R> =
 	(request?: Simplify<T> & Requestinit, fetch?: Fetch) => R
 
 /** ZeroAPI */
-export type Z<RestAPI> = MakeAPI<PickMethods<RestAPI>>
+export type Z<const RestAPI> = MakeAPI<PickMethods<RestAPI>>
