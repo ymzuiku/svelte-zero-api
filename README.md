@@ -1,18 +1,19 @@
 <p align="center">
     <img width="542" src="https://raw.githubusercontent.com/Refzlund/sveltekit-zero-api/master/SvelteKit%20Zero%20API.png" alt="SurrealDB Icon">
 </p>
-<h3 align="center">Seamless type-safety &nbsp; means &nbsp; better developer experience.</h3>
+<h3 align="center">Seamless type-safety   means   better developer experience.</h3>
 
 <p align="center">
 	<img src="https://badge.fury.io/js/sveltekit-zero-api.svg">
-	&nbsp;
+	 
 	<img src="https://img.shields.io/npm/dt/sveltekit-zero-api.svg">
 </p>
 
 ## Quick Start
+
 <p align="center">
 	<code>npm i -D sveltekit-zero-api</code>
-	&nbsp;/&nbsp;
+	 / 
 	<code>pnpm add -D sveltekit-zero-api</code>
 </p>
 
@@ -26,9 +27,12 @@ const config: UserConfig = {
 		zeroAPI()
 	]
 }
+
+// .gitignore
+**/sveltekit-zero-api.d.ts
 ```
 
-<h2><img height="24" src="https://raw.githubusercontent.com/sveltejs/branding/c4dfca6743572087a6aef0e109ffe3d95596e86a/svelte-logo.svg">&nbsp;&nbsp;What is SvelteKit Zero API?</h2>
+<h2><img height="24" src="https://raw.githubusercontent.com/sveltejs/branding/c4dfca6743572087a6aef0e109ffe3d95596e86a/svelte-logo.svg">  What is SvelteKit Zero API?</h2>
 <p>
 <b>Zero API</b> attempts to sow the gap between the frontend and backend. This includes typing backend response codes and their content and dealing with them effectively using <a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend#callbacks">callback functions</a>. This may also include error handling. 
 </p>
@@ -45,7 +49,7 @@ const config: UserConfig = {
 ![Assigning variables directly](https://github.com/Refzlund/sveltekit-zero-api/blob/master/assign-var.gif)
 ![Intellisense with API calls](https://github.com/Refzlund/sveltekit-zero-api/blob/master/frontend-intellisense.gif)
 
----------
+---
 
 <p align="center">
 Installation, usage and utility types can all be fond on the GitHub Wiki
@@ -65,4 +69,5 @@ Installation, usage and utility types can all be fond on the GitHub Wiki
 <br>
 
 ## Acknowledgments
+
 Thank you [ymzuiku](https://github.com/ymzuiku) for igniting the initial concept and codebase [svelte-zero-api](https://github.com/ymzuiku/svelte-zero-api). And naturally, a big thanks to the Vite and Svelte family for the worlds best framework!💘
