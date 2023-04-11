@@ -11,3 +11,4 @@ sveltekit-zero-api.tgz
 .pnpm-debug.log
 .vscode
 pnpm-lock.yaml
+./src/packaged-sveltekit-zero-api
