@@ -6,6 +6,8 @@ import type { ZeroAPIPluginConfig } from '$lib/vitePlugin.js'
 
 const cwd = process.cwd()
 
+let running = false
+
 function deleteNestedEmptyObjects(obj: any) {
 	// modify by reference
 	Object.keys(obj).forEach(function(key) {
@@ -17,6 +19,7 @@ function deleteNestedEmptyObjects(obj: any) {
 		}
 	})
 }
+
 function parsePath(resolutionPath: string, path: string) {
 	const _relative = relative(resolutionPath, path).replace('..', '.')
 	const importName = pathToImportPath(_relative)
@@ -30,13 +33,19 @@ export function apiUpdater(
 	/** Resolved to real path i.e. `src/routes = C:/current/project/src/routes` */
 	routesDirectory: string
 ) {
+	if (running)
+		return
+	running = true
+
 	type Directory = { [key: string]: string | Directory }
 	let apiTypes: Directory = {}
 	let importStatements = ''
+	
 	debugging && console.time(`[DEBUG] Updated generated types at ${routesDirectory} ...`)
+	
 	const { tempOutput, outputDir = 'src' } = config
 	const resolution = tempOutput ?
-		resolve(cwd, tempOutput) : resolve(cwd, '.svelte-kit', 'types', outputDir, 'sveltekit-zero-api.d.ts')
+		resolve(cwd, tempOutput) : resolve(cwd, outputDir, 'sveltekit-zero-api.d.ts')
 
 	function recursiveLoad(dir: string, directory: Directory) {
 		const files = fs.readdirSync(dir)
@@ -89,7 +98,6 @@ export function apiUpdater(
 	apiTypes = fixKeys(apiTypes)
 
 	let dirText = JSON.stringify(apiTypes, null, 2)
-		
 	
 	dirText = dirText
 		// Transform routes into API types
@@ -104,7 +112,7 @@ export function apiUpdater(
 			return `${p1}$: (${p1}: Slug<typeof ${alias}>) =>`;
 		})
 		.replaceAll(/=\w+(?=:|\$)/g, '')
-	
+
 	const folder = resolve(resolution, '..')
 	if (!fs.existsSync(folder))
 		fs.mkdirSync(folder, { recursive: true })
@@ -117,6 +125,8 @@ export function apiUpdater(
 	} catch (error) {
 		console.warn(error)
 	}
+
+	running = false
 }
 
 const file = (dirText: string, importCode: string) =>

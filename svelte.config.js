@@ -15,12 +15,11 @@ const exports = [
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: preprocess(),
-	package: {
-		exports: file => exports.includes(file),
-		dir: './package'
-	},
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		alias: {
+			'sveltekit-zero-api': './package'
+		}
 	}
 }
 

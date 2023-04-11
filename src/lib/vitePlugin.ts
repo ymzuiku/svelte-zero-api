@@ -58,27 +58,24 @@ export default function zeroApi(config: ZeroAPIPluginConfig = {}): Plugin {
 
 	const resolvedRoutes = resolve(cwd, routesDir)
 	
-	setTimeout(() => {
-		apiUpdater(config, resolvedRoutes)
-		const generatedTypes = resolve(cwd, '.svelte-kit/types')
-		function scan$types(path: string) {
-			for (const fileName of fs.readdirSync(path)) {
-				const r = resolve(path, fileName)
-				if (fileName.match(/^\$types\.d\.ts$/g)) {
-					$typesUpdater(r)
-				}
-				else if (fs.statSync(r).isDirectory())
-					scan$types(r)
+	apiUpdater(config, resolvedRoutes)
+	const generatedTypes = resolve(cwd, '.svelte-kit/types')
+	function scan$types(path: string) {
+		for (const fileName of fs.readdirSync(path)) {
+			const r = resolve(path, fileName)
+			if (fileName.match(/^\$types\.d\.ts$/g)) {
+				$typesUpdater(r)
 			}
+			else if (fs.statSync(r).isDirectory())
+				scan$types(r)
 		}
-		scan$types(generatedTypes)
-	}, 666)
+	}
+	scan$types(generatedTypes)
 
 	return {
 		name: 'svelte-plugin-zero-api',
 		configureServer(vite) {
-			vite.watcher.on('change', async (path) => {
-				await new Promise(r => setTimeout(r, 10))
+			vite.watcher.on('change', (path) => {
 				$typesUpdater(path)
 				apiUpdater(config, resolvedRoutes)
 			})
