@@ -1,6 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import type { UserConfig } from 'vite'
-import { zeroAPI } from './package'
+import { zeroAPI } from './dist'
 
 const config: UserConfig = {
 	plugins: [

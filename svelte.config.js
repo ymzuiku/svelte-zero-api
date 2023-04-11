@@ -18,7 +18,7 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			'sveltekit-zero-api': './package'
+			'sveltekit-zero-api': './dist'
 		}
 	}
 }
