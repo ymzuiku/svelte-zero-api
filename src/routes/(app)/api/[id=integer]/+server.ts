@@ -1,5 +1,5 @@
-import type { API } from './$types'
-import { Ok } from 'sveltekit-zero-api/http'
+import type { API } from '$sveltekit-zero-api'
+import { Ok } from '$sveltekit-zero-api/http'
 
 export function GET(requestEvent: API<any>) {
 	requestEvent.request.json()

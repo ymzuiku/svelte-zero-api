@@ -11,3 +11,4 @@ dist
 .vscode
 pnpm-lock.yaml
 **/sveltekit-zero-api.d.ts
+vite.config.ts.**

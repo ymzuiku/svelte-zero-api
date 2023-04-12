@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import api from '$browser/api';
-	import type { RequestParams, ResponseBody } from 'sveltekit-zero-api/helpers'
+	import type { RequestParams, ResponseBody } from '$sveltekit-zero-api/helpers'
 	import { onMount } from 'svelte'
 
 	const query: RequestParams<ReturnType<typeof api.fo.sluggers$>['POST']> = {

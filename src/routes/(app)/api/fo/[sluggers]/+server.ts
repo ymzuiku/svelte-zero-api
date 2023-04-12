@@ -1,8 +1,8 @@
-import type { API } from 'sveltekit-zero-api'
+import type { API } from '$sveltekit-zero-api'
 import type { RequestEvent } from './$types'
 
-import { Ok, BadRequest } from 'sveltekit-zero-api/http'
-import { querySpread, err } from 'sveltekit-zero-api'
+import { Ok, BadRequest } from '$sveltekit-zero-api/http'
+import { querySpread, err } from '$sveltekit-zero-api'
 
 interface Optional {
 	query?: {
