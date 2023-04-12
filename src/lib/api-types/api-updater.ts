@@ -137,9 +137,9 @@ export function apiUpdater(
  * when developing sveltekit-zero-api and is an incorrect path.
 */
 const z = debugging ?
-	`import type { Z } from '../../dist/types/zeroapi'`
+	`import type { Z } from '../../dist/z`
 	:
-	`import type { Z } from 'sveltekit-zero-api/types/zeroapi'`
+	`import type { Z } from 'sveltekit-zero-api/z`
 
 const file = (dirText: string, importCode: string) =>
 	`/* eslint-disable */

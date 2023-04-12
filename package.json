@@ -1,7 +1,7 @@
 {
 	"name": "sveltekit-zero-api",
 	"description": "Provides type-safety between front- and backend of your SvelteKit project",
-	"version": "0.13.4",
+	"version": "0.13.5",
 	"scripts": {
 		"dev": "set NODE_ENV=zeroapi && vite dev",
 		"package": "svelte-package -w",
@@ -41,9 +41,7 @@
 		".": "./dist/index.js",
 		"./http": "./dist/http.js",
 		"./api": "./dist/api/index.js",
-		"./types/zeroapi": {
-			"types": "./dist/types/zeroapi.d.ts"
-		},
+		"./z": "./dist/z.js",
 		"./helpers": "./dist/helpers.js"
 	},
 	"typesVersions": {
@@ -54,8 +52,8 @@
 			"api": [
 				"dist/api/index.d.ts"
 			],
-			"types/zeroapi": [
-				"types/zeroapi.d.ts"
+			"z": [
+				"z.d.ts"
 			],
 			"helpers": [
 				"dist/helpers.d.ts"
