@@ -5,6 +5,11 @@ export async function GET(event: API) {
 	return Ok()
 }
 
+interface Bar {}
+
 export async function POST(event: API) {
-	return Ok()
+	const bar: Bar = {}
+	return Ok({
+		body: bar
+	})
 }

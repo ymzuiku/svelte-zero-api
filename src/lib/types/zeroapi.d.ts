@@ -55,12 +55,12 @@ type _Keys<M> = Exclude<StatusCodeFn[keyof StatusCodeFn] | keyof StatusCodeFn, k
 
 // Makes the API return type recursive
 type RecursiveMethodReturn<M extends MethodReturnTypes<any>> = {
-	[Return in keyof M]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M> & Promise<SvelteResponse>
+	[Return in keyof M]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M> & Promise<SvelteResponse<ReturnType<M[Return]>>>
 } & {
 	$: $<M, keyof M>
 	_: {
 		// TODO: Hacky ('prependCallbacks') but I'm tired
-		[Fn in _Keys<M>]: (cb: keyof M extends 'prependCallbacks' ? DefCallback : Callback<M[Return]>) => RecursiveMethodReturn<M>['_'] & Promise<SvelteResponse>
+		[Fn in _Keys<M>]: (cb: keyof M extends 'prependCallbacks' ? DefCallback : Callback<M[Return]>) => RecursiveMethodReturn<M>['_'] & Promise<SvelteResponse<ReturnType<M[Return]>>>
 	} & (keyof M extends 'prependCallbacks' ? {} : {
 		$: $<M, _Keys<M>>
 	})
