@@ -29,3 +29,14 @@ const api = {} as GeneratedAPI
 
 const test = api.users.POST({ body: { foo: 'yas' } })
 	// ^?
+	/*
+		const test: (event: API<{
+			readonly body: {
+				readonly foo: "yas";
+			};
+		}>) => {
+			requestBody: {
+				readonly foo: "yas";
+			};
+		}
+	*/
