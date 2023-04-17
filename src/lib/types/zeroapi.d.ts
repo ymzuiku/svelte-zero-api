@@ -55,12 +55,12 @@ type _Keys<M> = Exclude<StatusCodeFn[keyof StatusCodeFn] | keyof StatusCodeFn, k
 
 // Makes the API return type recursive
 type RecursiveMethodReturn<M extends MethodReturnTypes<any>> = {
-	[Return in keyof M]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M> & Promise<SvelteResponse<ReturnType<M[Return]>>>
+	[Return in keyof M]: (cb: Callback<M[Return]>) => RecursiveMethodReturn<M> & Promise<SvelteResponse>
 } & {
 	$: $<M, keyof M>
 	_: {
 		// TODO: Hacky ('prependCallbacks') but I'm tired
-		[Fn in _Keys<M>]: (cb: keyof M extends 'prependCallbacks' ? DefCallback : Callback<M[Return]>) => RecursiveMethodReturn<M>['_'] & Promise<SvelteResponse<ReturnType<M[Return]>>>
+		[Fn in _Keys<M>]: (cb: keyof M extends 'prependCallbacks' ? DefCallback : Callback<M[Return]>) => RecursiveMethodReturn<M>['_'] & Promise<SvelteResponse>
 	} & (keyof M extends 'prependCallbacks' ? {} : {
 		$: $<M, _Keys<M>>
 	})
@@ -88,7 +88,8 @@ type MakeAPI<const RestAPI extends Endpoint> = {
 			// RestAPI[Method] = POST(event: API<...>)
 			//                        ^^^^^ Parameter 0
 			Parameters<RestAPI[Method]>[0]
-		>, Simplify<Returned<RestAPI, Method>>
+		>,
+		Simplify<Returned<RestAPI, Method>>
 	>
 }
 
