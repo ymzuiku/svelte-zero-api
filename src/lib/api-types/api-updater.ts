@@ -137,7 +137,7 @@ export function apiUpdater(
  * when developing sveltekit-zero-api and is an incorrect path.
 */
 const z = debugging ?
-	`import type { Z } from '../../dist/z'`
+	`import type { Z } from '$dist/z'`
 	:
 	`import type { Z } from 'sveltekit-zero-api/z'`
 

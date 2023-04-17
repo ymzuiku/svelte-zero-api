@@ -1,8 +1,14 @@
-import type { API } from '$sveltekit-zero-api'
-import { Ok } from '$sveltekit-zero-api/http'
+import type { API } from '$dist'
+import { Ok } from '$dist/http'
 
-export async function GET(event: API) {
-	return Ok()
+interface Get<Q> {
+	query: Q
+}
+
+export async function GET<const R extends { query?: any, body?: any }>(event: API<Get<R['query']>>) {
+	return Ok({
+		body: {} as unknown as R
+	})
 }
 
 interface Bar {}

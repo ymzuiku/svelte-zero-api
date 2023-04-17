@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import api from '$browser/api';
-	import type { RequestParams, ResponseBody } from '$sveltekit-zero-api/helpers'
+	import type { RequestParams, ResponseBody } from '$dist/helpers'
 	import { onMount } from 'svelte'
 
 	const query: RequestParams<ReturnType<typeof api.fo.sluggers$>['POST']> = {
@@ -21,12 +21,20 @@
 			console.log('OK', res)
 		}).$.Ok(res => res.body)
 
-	onMount(() => {
+	onMount(async () => {
 		api.fo.sluggers$('boink').GET().Ok(res => console.log(res))
 
-		let test = api.fo.GET()._.$.Accepted(res => '' as const)
+		const res = await api.fo.GET({ 
+			query: {
+				test: 123,
+				str: 'abc'
+			}
+		})
+		
 	})
+
 	
+
 </script>
 
 {#await getMessage()}

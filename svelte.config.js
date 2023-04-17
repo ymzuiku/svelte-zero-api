@@ -7,7 +7,7 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			'$sveltekit-zero-api': './dist',
+			'$dist': './dist',
 			'$browser': './src/(browser)'
 		}
 	}
