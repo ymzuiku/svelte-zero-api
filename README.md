@@ -40,6 +40,7 @@ const config: UserConfig = {
 - Body and query is typed seemlessly in both frontend, and endpoints
 - Queries are easier to use with querySpread which supports objects as query parameters
 - Endpoint routes are automatically typed
+- [Generic endpoints](https://github.com/Refzlund/sveltekit-zero-api/wiki/1.-Backend#generic-endpoints)
 - The returned content of endpoints are typed
 - Supports slugged routes*
 - Can be used in the page `Load` function
