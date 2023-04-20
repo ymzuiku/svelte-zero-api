@@ -7,7 +7,7 @@ type Directory = {
 }
 
 const endpoints = [
-	'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
+	'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
 ] as const
 
 // TODO: I feel like this could be optimized to not check for the keys,

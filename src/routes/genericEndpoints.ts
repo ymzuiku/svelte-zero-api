@@ -28,7 +28,7 @@ type GeneratedAPI = {
 		POST: EP<typeof endpoint.POST> extends { body: any } | { query: any }
 			? <const T extends EP<typeof endpoint.POST>>(request: T, fetch?: Fetch) => R<typeof endpoint.POST<T>>
 			: <const T extends EP<typeof endpoint.POST>>(request?: T, fetch?: Fetch) => R<typeof endpoint.POST<T>>
-	} & Z<Omit<typeof endpoint, 'POST'>>
+	} & Z<Omit<typeof endpoint, 'POST' | 'PUT'>>
 }
 
 const api = {} as GeneratedAPI

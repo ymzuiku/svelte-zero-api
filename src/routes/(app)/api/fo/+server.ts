@@ -1,13 +1,18 @@
-import type { API } from '$dist'
+import { querySpread, type API } from '$dist'
 import { Ok } from '$dist/http'
 
-interface Get<Q> {
-	query: Q
+interface Get {
+	query: {
+		foo: string,
+		bar: string
+	}
 }
 
-export async function GET<const R extends { query?: any, body?: any }>(event: API<Get<R['query']>>) {
+export async function GET<const R extends Get>(event: API<R>) {
+	const query = querySpread(event)
+	
 	return Ok({
-		body: {} as unknown as R
+		body: query as unknown as R['query']
 	})
 }
 
@@ -17,5 +22,18 @@ export async function POST(event: API) {
 	const bar: Bar = {}
 	return Ok({
 		body: bar
+	})
+}
+
+interface Put {
+	body: {
+		foo: string
+		bar: number
+	}
+}
+
+export async function PUT<const R extends Put>(event: API<R>) {
+	return Ok({
+		body: await event.request.json() as unknown as R['body']
 	})
 }

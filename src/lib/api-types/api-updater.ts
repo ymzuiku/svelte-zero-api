@@ -74,10 +74,32 @@ export function apiUpdater(
 				continue
 
 			const { alias, importName } = parsePath(resolution, path)
-			importStatements += `import * as ${alias} from "${importName}"\n`
+			importStatements += `import * as ${alias} from '${importName}'\n`
 
+			// Read file
+			const contents = fs.readFileSync(path, 'utf8')
+
+			const regex = /(GET|HEAD|POST|PUT|DELETE|PATCH|OPTIONS)([\s]*=?[\s]*)</g
+
+			const genericMethods = []
+			let match
+			while ((match = regex.exec(contents)) !== null) {
+				const [, method] = match
+				genericMethods.push(method)
+			}
+			
 			const key = fileName.replace(/\.(ts|js)$/g, '')
 			directory[key] = `Z<typeof ${alias}>`
+
+			if (genericMethods.length > 0) {
+				const omitted = genericMethods.map(method => `'${method}'`).join('|')
+
+				// Take a look at `routes/genericEndpoints.ts` to make sense of this bad boy
+				const type = genericMethods.map(method => `${method}: EP<typeof ${alias}.${method}> extends { body: any } | { query: any } ? <const T extends EP<typeof ${alias}.${method}>>(request: T, fetch?: Fetch) => R<typeof ${alias}.${method}<T>> : <const T extends EP<typeof ${alias}.${method}>>(request?: T, fetch?: Fetch) => R<typeof ${alias}.${method}<T>>`).join(',')
+
+				directory[key] = 
+					`Z<Omit<typeof ${alias}, ${omitted}>> & { ${type}`
+			}
 		}
 	}
 	recursiveLoad(routesDirectory, apiTypes)
@@ -100,7 +122,7 @@ export function apiUpdater(
 	apiTypes = fixKeys(apiTypes)
 
 	let dirText = JSON.stringify(apiTypes, null, 2)
-	
+
 	dirText = dirText
 		// Transform routes into API types
 		.replaceAll(/\"\+server\"\: \"Z/g, '} & Z')
@@ -114,6 +136,7 @@ export function apiUpdater(
 			return `${p1}$: (${p1}: Slug<typeof ${alias}>) =>`;
 		})
 		.replaceAll(/=\w+(?=:|\$)/g, '')
+		.replaceAll(/"/g, '')
 
 	const folder = resolve(resolution, '..')
 	if (!fs.existsSync(folder))
@@ -137,9 +160,9 @@ export function apiUpdater(
  * when developing sveltekit-zero-api and is an incorrect path.
 */
 const z = debugging ?
-	`import type { Z } from '$dist/z'`
+	`import type { EP, Fetch, Z, R } from '$dist/z'`
 	:
-	`import type { Z } from 'sveltekit-zero-api/z'`
+	`import type { EP, Fetch, Z, R } from 'sveltekit-zero-api/z'`
 
 const file = (dirText: string, importCode: string) =>
 	`/* eslint-disable */

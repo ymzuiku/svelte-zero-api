@@ -26,12 +26,12 @@
 
 		const res = await api.fo.GET({ 
 			query: {
-				test: 123,
-				str: 'abc'
+				foo: 'Pizza is great',
+				bar: 'Yas!'
 			}
 		})
 		.Ok(res => {
-			
+			console.log(res.body)
 		})
 		
 	})
