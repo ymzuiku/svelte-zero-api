@@ -1,1 +1,1 @@
-export type { Z } from './types/zeroapi'
+export type { Z, EP, Fetch, R } from './types/zeroapi'

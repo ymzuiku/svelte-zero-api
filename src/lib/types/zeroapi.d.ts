@@ -76,21 +76,28 @@ type MethodReturnTypes<M extends (...args: any[]) => (...args: any[]) => any> =
 	CombineFunctions<Awaited<ReturnType<M>>>
 
 
-type Returned<E, M> = RecursiveMethodReturn<MethodReturnTypes<E[M]>> & Promise<SvelteResponse>
-type Fetch = (info: RequestInfo, init?: RequestInit) => Promise<Response>
+/** Returned value from EndpointMethod */
+export type R<EndpointMethod> = Simplify<RecursiveMethodReturn<MethodReturnTypes<EndpointMethod>> & Promise<SvelteResponse>>
+export type Fetch = (info: RequestInfo, init?: RequestInit) => Promise<Response>
+
+
+/** Endpoint Parameters */
+export type EP<const EndpointMethod> = InferAPI<
+	// RestAPI[Method] = POST(event: API<...>)
+	//                        ^^^^^ Parameter 0
+	Parameters<EndpointMethod>[0]
+>
+
+type InferEndpointMethod<const EndpointMethod> = GetEndpointRequest<
+	EP<EndpointMethod>,
+	R<EndpointMethod>
+>
 
 // Converts the Rest API methods inside a .ts file into the zero api type used in the frontend
 // RestAPI = { POST(event: API<...>): APIResponse, GET(event: API<...>)... }
 // M = 'post' | 'get' ...
 type MakeAPI<const RestAPI extends Endpoint> = {
-	[Method in keyof RestAPI]: GetEndpointRequest<
-		InferAPI<
-			// RestAPI[Method] = POST(event: API<...>)
-			//                        ^^^^^ Parameter 0
-			Parameters<RestAPI[Method]>[0]
-		>,
-		Simplify<Returned<RestAPI, Method>>
-	>
+	[Method in keyof RestAPI]: InferEndpointMethod<RestAPI[Method]>
 }
 
 type Requestinit = Omit<RequestInit, 'body'>
