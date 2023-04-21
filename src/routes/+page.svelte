@@ -21,6 +21,14 @@
 			console.log('OK', res)
 		}).$.Ok(res => res.body)
 
+	api.pipe.POST({ body: { foo: 'yas' } }).Any(res => {
+		console.log('pipe', res)
+	}).BadRequest(res => {
+		if('message' in res.body) {
+			res.body
+		}
+	})
+
 	onMount(async () => {
 		api.fo.sluggers$('boink').GET().Ok(res => console.log(res))
 

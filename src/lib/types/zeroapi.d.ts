@@ -19,15 +19,15 @@ type SearchParams<Input> = {
 	has: <T extends keyof Input['query']>(s: T) => boolean
 } & Omit<RequestEvent['url']['searchParams'], 'get' | 'getAll' | 'has'>
 
-export type API<Input extends APIInputs = {}, RequestEvent = RequestEvent>
-	= Omit<RequestEvent, 'request' | 'url'> & {
+export type API<Input extends APIInputs = {}, TRequestEvent = RequestEvent>
+	= {
 		request: {
 			json: JSON<Input>
-		} & Omit<RequestEvent['request'], 'json'>
+		} & Omit<TRequestEvent['request'], 'json'>
 		url: {
 			searchParams: SearchParams<Input>
-		} & Omit<RequestEvent['url'], 'searchParams'>
-	}
+		} & Omit<TRequestEvent['url'], 'searchParams'>
+	} & Omit<TRequestEvent, 'request' | 'url'>
 
 export type RequestParams<Endpoint> = Pick<Parameters<Endpoint>[0], 'body' | 'query'>
 export type GetResponse<Endpoint, K extends keyof ReturnType<Endpoint>> = ReturnType<Endpoint>[K]

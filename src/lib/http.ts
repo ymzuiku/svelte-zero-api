@@ -20,15 +20,21 @@ function createResponse(obj: Options | undefined, status: number): any {
 }
 
 function y<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
-	return <T extends Options = {}>(obj?: T) =>
+	const fn = <T extends Options = {}>(obj?: T) =>
 		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: true }> }> | GeneralResponse<K, Status, true, T>
+	fn.kitResponse = true
+	return fn
 }
 
 function n<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
-	return <T extends Options = {}>(obj?: T) =>
+	const fn = <T extends Options = {}>(obj?: T) =>
 		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: false }> }> | GeneralResponse<K, Status, false, T>
+	fn.kitResponse = true
+	return fn
 }
- 
+
+
+
 export type CreateResponse<K extends Readonly<keyof StatusText>, Status extends number, OK extends boolean, T extends Record<any, any>> =
 	APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: OK }> }> | GeneralResponse<K, Status, OK, T>
 
@@ -166,3 +172,81 @@ export const
 	NotExtended                   = n(510, 'NotExtended'),
 	/** [511 Network Authentication Required](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/511) — indicates that the client needs to authenticate to gain network access. */
 	NetworkAuthenticationRequired = n(511, 'NetworkAuthenticationRequired')
+
+export type KitResponseFnInformational =
+	| typeof Continue
+	| typeof SwitchingProtocols
+	| typeof Processing
+	| typeof EarlyHints
+
+export type KitResponseFnSuccess =
+	| typeof Ok
+	| typeof Created
+	| typeof Accepted
+	| typeof NonAuthoritativeInformation
+	| typeof NoContent
+	| typeof ResetContent
+	| typeof PartialContent
+	| typeof MultiStatus
+	| typeof AlreadyReported
+	| typeof IMUsed
+
+export type KitResponseFnRedirection =
+	| typeof MultipleChoices
+	| typeof MovedPermanently
+	| typeof Found
+	| typeof SeeOther
+	| typeof NotModified
+	| typeof TemporaryRedirect
+	| typeof PermanentRedirect
+
+export type KitResponseFnClientError =
+	| typeof BadRequest
+	| typeof Unauthorized
+	| typeof PaymentRequired
+	| typeof Forbidden
+	| typeof NotFound
+	| typeof MethodNotAllowed
+	| typeof NotAcceptable
+	| typeof ProxyAuthenticationRequired
+	| typeof RequestTimeout
+	| typeof Conflict
+	| typeof Gone
+	| typeof LengthRequired
+	| typeof PreconditionFailed
+	| typeof PayloadTooLarge
+	| typeof URITooLong
+	| typeof UnsupportedMediaType
+	| typeof RangeNotSatisfiable
+	| typeof ExpectationFailed
+	| typeof ImATeapot
+	| typeof MisdirectedRequest
+	| typeof UnprocessableEntity
+	| typeof Locked
+	| typeof FailedDependency
+	| typeof TooEarly
+	| typeof UpgradeRequired
+	| typeof PreconditionRequired
+	| typeof TooManyRequests
+	| typeof RequestHeaderFieldsTooLarge
+	| typeof UnavailableForLegalReasons
+
+export type KitResponseFnServerError =
+	| typeof InternalServerError
+	| typeof NotImplemented
+	| typeof BadGateway
+	| typeof ServiceUnavailable
+	| typeof GatewayTimeout
+	| typeof HTTPVersionNotSupported
+	| typeof VariantAlsoNegotiates
+	| typeof InsufficientStorage
+	| typeof LoopDetected
+	| typeof NotExtended
+	| typeof NetworkAuthenticationRequired
+
+export type KitResponseFn =
+	| KitResponseFnInformational
+	| KitResponseFnSuccess
+	| KitResponseFnRedirection
+	| KitResponseFnClientError
+	| KitResponseFnServerError

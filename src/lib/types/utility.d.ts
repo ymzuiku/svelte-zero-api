@@ -25,3 +25,5 @@ type Simplify<
 	: AnyType
 
 type Nullable<T> = T | undefined
+
+type Flat<T> = T extends object ? { [K in keyof T]: Flat<T[K]> } : T
