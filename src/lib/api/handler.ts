@@ -48,9 +48,10 @@ export default function handler(options: IOptions, api: APIContent) {
 	const url = (options.config.baseUrl || '') + options.path + ('query' in api ? '?' + new URLSearchParams(api.query).toString() : '')
 	const baseData = options.config.baseData || {}
 
-	const isForm = Object.prototype.toString.call(api.body) === '[object FormData]'
-	if (!('content-type' in api.headers))
-		api.headers['content-type'] = api.headers['content-type'] || isForm ? 'multipart/form-data' : 'application/json'
+	if (!('content-type' in api.headers)) {
+		const isForm = Object.prototype.toString.call(api.body) === '[object FormData]'
+		api.headers['content-type'] = isForm ? 'multipart/form-data' : 'application/json'
+	}
 
 	setBody(options, api)
 
