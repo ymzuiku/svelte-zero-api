@@ -1,6 +1,6 @@
 interface DefaultResponse {
 	status: number
-	body: Record<any, any>
+	body: unknown
 	headers: Record<any, any>
 	bodyUsed: boolean
 	ok: boolean
@@ -15,7 +15,7 @@ type R<T extends Record<any, any> = Record<any, any>> = {
 	[K in keyof DefaultResponse]: K extends keyof T ? NonNullable<T[K]> : NonNullable<DefaultResponse[K]>
 }
 
-type NoBodyResponse<T> = Omit<R<T>, 'body'> & { body?: any }
+type NoBodyResponse<T> = Omit<R<T>, 'body'> & { body?: unknown }
 type BodyResponse<T> = R<T>
 
-type SvelteResponse<T extends Record<any, any> = any> = 'body' extends keyof T ? BodyResponse<T> : NoBodyResponse<T>
+type SvelteResponse<T extends Record<any, any> = any> = DefaultResponse & T

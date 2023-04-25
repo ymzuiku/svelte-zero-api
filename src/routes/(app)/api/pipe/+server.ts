@@ -9,7 +9,7 @@ interface Post {
 
 export async function POST<const R extends Post>(event: KitEvent<Post>) {
 	
-	return endpointPipe(event, () => BadRequest({ body: { message: 'End of the pipe :(' } }))(
+	return endpointPipe(event, () => BadRequest({ body: { message: 'End of the pipe :(', deep: { deeper: true } } }))(
 		authGuard('admin'),
 		parseJSON<Post>,
 		({ locals }) => {
@@ -19,14 +19,17 @@ export async function POST<const R extends Post>(event: KitEvent<Post>) {
 		},
 		() => {
 			console.log('We didn\'t get here')
-		}
+		},
+		undefinedResponse
 	)
 }
 
 
 
 
-
+function undefinedResponse() {
+	return BadRequest()
+}
 
 //
 // * Somewhere else *

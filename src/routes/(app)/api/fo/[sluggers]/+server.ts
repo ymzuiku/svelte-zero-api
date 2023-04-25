@@ -12,7 +12,12 @@ interface Optional {
 
 export function GET(event: API<Optional, RequestEvent>) {
 	
-	return Ok()
+	return Ok({
+		body: {
+			number: 123,
+			string: 'Hello World'
+		}
+	})
 }
 
 interface Post {
@@ -50,7 +55,7 @@ export async function POST(event: API<Post>) {
 	
 	return Ok({
 		body: {
-			message: 'Your message was: ' + message, 
+			message: ('Your message was: ' + message) as `Your message was: ${string}`, 
 			location: event.params.sluggers,
 			queries: {
 				boink,

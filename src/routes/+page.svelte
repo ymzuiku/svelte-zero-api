@@ -23,8 +23,16 @@
 
 	api.pipe.POST({ body: { foo: 'yas' } }).Any(res => {
 		console.log('pipe', res)
+		
+		if(res.status === 400 && res.body) {
+			if('message' in res.body) {
+				res.body.message
+						// ^?
+			}
+		}
+
 	}).BadRequest(res => {
-		if('message' in res.body) {
+		if(res.body && 'message' in res.body) {
 			res.body
 		}
 	})

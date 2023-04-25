@@ -19,16 +19,23 @@ function createResponse(obj: Options | undefined, status: number): any {
 	)
 }
 
+type SimplifyResponse<T, Status, Ok> = Simplify<DeepWriteable<
+	& { status: Status, ok: Ok }
+	& (T extends { body: any } ? T : T & { body: undefined })
+>>
+
 function y<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
-	const fn = <T extends Options = {}>(obj?: T) =>
-		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: true }> }> | GeneralResponse<K, Status, true, T>
+	const fn = <const T extends Options = {}>(obj?: T) =>
+		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => SimplifyResponse<T, Status, true> }> | GeneralResponse<K, Status, true, T>
 	fn.kitResponse = true
 	return fn
 }
 
+
+
 function n<K extends Readonly<keyof StatusText>, Status extends Readonly<number>>(status: Status, str: K) {
-	const fn = <T extends Options = {}>(obj?: T) =>
-		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: false }> }> | GeneralResponse<K, Status, false, T>
+	const fn = <const T extends Options = {}>(obj?: T) =>
+		createResponse(obj, status) as unknown as APIResponse<{ [Key in K]: () => SimplifyResponse<T, Status, false> }> | GeneralResponse<K, Status, false, T>
 	fn.kitResponse = true
 	return fn
 }
@@ -36,14 +43,14 @@ function n<K extends Readonly<keyof StatusText>, Status extends Readonly<number>
 
 
 export type CreateResponse<K extends Readonly<keyof StatusText>, Status extends number, OK extends boolean, T extends Record<any, any>> =
-	APIResponse<{ [Key in K]: () => Simplify<T & { status: Status, ok: OK }> }> | GeneralResponse<K, Status, OK, T>
+	APIResponse<{ [Key in K]: () => SimplifyResponse<T, Status, OK> }> | GeneralResponse<K, Status, OK, T>
 
 type GeneralResponse<
 	K extends Readonly<keyof StatusText>,
 	Status extends Readonly<number>,
 	OK extends Readonly<boolean>,
 	T extends Record<any, any>
-	> = APIResponse<{ [Property in StatusClass[K]]: () => Simplify<T & { status: Status, ok: OK }> }>
+	> = APIResponse<{ [Property in StatusClass[K]]: () => SimplifyResponse<T, Status, OK> }>
 
 export const
 	/** [100 Continue](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/100) — indicates that everything so far is OK and that the client should continue with the request or ignore it if it is already finished. */
