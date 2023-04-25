@@ -75,39 +75,3 @@ Thank you [ymzuiku](https://github.com/ymzuiku) for igniting the initial concept
 
 <br>
 <br>
-
-## Breaking changes for 0.13.0
-
-1. Removed generated `$types` due to multiple issues (`import type { API } from './$types'`)
-
-I tried to be smart by generating an API that used RequestEvent,
-but it couldn't be inferred and sometimes wasn't generated after SvelteKit updated the $types.
-
-Invalid
-```
-import type { API } from './$types'
-
-interface Post {
-	body: { ... }
-	query: { ... }
-}
-
-export const POST(event: API<Post>)
-```
-
-0.13.0
-```
-import type { API } from 'sveltekit-zero-api'
-import type { RequestEvent } from './$types'
-
-interface Post {
-	body: { ... }
-	query: { ... }
-}
-
-export const POST(event: API<Post, RequestEvent>)
-```
-
-2. `sveltekit-zero.api.d.ts` is now generated alongside `api.ts`
-
-So update your `.gitignore` to include `**/sveltekit-zero-api.d.ts`
