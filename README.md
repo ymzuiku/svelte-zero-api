@@ -34,18 +34,19 @@ const config: UserConfig = {
 
 <h2><img height="24" src="https://raw.githubusercontent.com/sveltejs/branding/c4dfca6743572087a6aef0e109ffe3d95596e86a/svelte-logo.svg">  What is SvelteKit Zero API?</h2>
 <p>
-<b>Zero API</b> attempts to sow the gap between the frontend and backend. This includes typing backend response codes and their content and dealing with them effectively using <a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend#callbacks">callback functions</a>. This may also include error handling. 
+<b>Zero API</b> attempts to sow the gap between the frontend and backend. This includes typing backend response codes and their content and dealing with them effectively using <a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/2.-Frontend#callbacks">callback functions</a>. This may also include error handling. 
 </p>
 
 - Body and query is typed seemlessly in both frontend, and endpoints
 - Queries are easier to use with querySpread which supports objects as query parameters
 - Endpoint routes are automatically typed
 - [Generic endpoints](https://github.com/Refzlund/sveltekit-zero-api/wiki/1.-Backend#generic-endpoints)
+- [Typed endpoint pipeline](https://github.com/Refzlund/sveltekit-zero-api/wiki/3.-Endpoint-Pipe-function)
 - The returned content of endpoints are typed
-- Supports slugged routes*
+- Supports slugged routes
 - Can be used in the page `Load` function
 - You can type-define variables with endpoint responses
-- Has handy backend utility functions; [querySpread](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend#queryspread) and [Error Handling](https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend#error-handling)
+- Has handy backend utility functions; [querySpread](https://github.com/Refzlund/sveltekit-zero-api/wiki/1.-Backend#queryspread) and [Error Handling](https://github.com/Refzlund/sveltekit-zero-api/wiki/1.-Backend#error-handling)
 
 ![Assigning variables directly](https://github.com/Refzlund/sveltekit-zero-api/blob/master/assign-var.gif)
 ![Intellisense with API calls](https://github.com/Refzlund/sveltekit-zero-api/blob/master/frontend-intellisense.gif)
@@ -57,13 +58,13 @@ Installation, usage and utility types can all be fond on the GitHub Wiki
 </p>
 
 <h3 align="center">
-	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Get-Started">Getting Started</a>
+	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/0.-Get-Started">Getting Started</a>
 </h3>
 <h3 align="center">
-	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Backend">Backend - Setting up endpoints</a>
+	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/1.-Backend">Backend - Setting up endpoints</a>
 </h3>
 <h3 align="center">
-	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/Frontend">Frontend - Using the API</a>
+	<a href="https://github.com/Refzlund/sveltekit-zero-api/wiki/2.-Frontend">Frontend - Using the API</a>
 </h3>
 
 <br>
