@@ -136,7 +136,7 @@ export function apiUpdater(
 			return `${p1}$: (${p1}: Slug<typeof ${alias}>) =>`;
 		})
 		.replaceAll(/=\w+(?=:|\$)/g, '')
-		.replaceAll(/"/g, '')
+		.replaceAll(/"(\s*[},])/g, '$1')
 
 	const folder = resolve(resolution, '..')
 	if (!fs.existsSync(folder))
