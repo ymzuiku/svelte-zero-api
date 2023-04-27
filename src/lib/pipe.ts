@@ -1,13 +1,8 @@
-import type { KitEvent, KitResponse } from '.'
-import { BadRequest, InternalServerError, Unauthorized } from './http'
-
-type MaybePromise<T> = T | Promise<T>
-type InferMaybePromise<T> = T extends Promise<infer K> ? K : T 
+import type { KitEvent, KitResponse } from './index.js'
+import { InternalServerError } from './http.js'
 
 type Fn<KitEv extends KitEvent, TLocals, R, TReturn extends KitResponse | void> =
 	(event: { locals: Flat<TLocals> } & KitEv, n: R) => TReturn | void
-
- type Has<T extends KitResponse | void> = T extends KitResponse ? T : false
 
 /**
  * @example

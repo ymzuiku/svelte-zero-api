@@ -10,7 +10,7 @@ export type {
 } from './types/zeroapi.js'
 export { querySpread } from './querySpread.js'
 export { err } from './error-handling.js'
-export { endpointPipe } from './pipe'
+export { endpointPipe } from './pipe.js'
 
 export type KitResponse = APIResponse<any>
 export type AnyAPI = API<any> | RequestEvent | ServerLoadEvent
