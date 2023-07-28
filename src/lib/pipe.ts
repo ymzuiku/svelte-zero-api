@@ -2,7 +2,7 @@ import type { KitEvent, KitResponse } from './index.js'
 import { InternalServerError } from './http.js'
 
 type Fn<KitEv extends KitEvent, TLocals, R, TReturn extends KitResponse | void> =
-	(event: { locals: Flat<TLocals> } & KitEv, n: R) => TReturn | void
+	(event: { locals: Simplify<TLocals> } & KitEv, n: R) => TReturn | void
 
 /**
  * @example
